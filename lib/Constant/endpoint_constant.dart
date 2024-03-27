@@ -1,6 +1,5 @@
 class EndPointConstant {
   static const String baseUrl = "https://softhubtechno.com/cloud_kitchen/api/";
-
   static String sendOtp = "send_otp.php";
   static String verifyOtp = "verify_otp.php";
   static String login = "login.php";
@@ -27,4 +26,5 @@ class EndPointConstant {
   static String timeslot = "timeslot.php";
   static String thaliChapatiList = "thali_chapati_itemlist.php";
   static String tiffinOrderList = "order_list_tiffin.php";
+  static String addressListTypewise = "address_list_typewise.php";
 }

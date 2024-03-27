@@ -5,12 +5,10 @@ import 'package:vandana/Constant/storage_key_constant.dart';
 import 'package:vandana/Controllers/get_packaging_list_model.dart';
 import 'package:vandana/Custom_Widgets/custom_loader.dart';
 import 'package:vandana/Custom_Widgets/custom_toast.dart';
-import 'package:vandana/Models/get_sabji_list_model.dart';
-import 'package:vandana/Models/post_order_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
-
+import '../Models/get_address_list_typewise_model.dart';
 import '../Models/get_sabjilist_daywise.dart';
 import '../Models/get_time_slot_model.dart';
 import '../Models/post_tiffin_order_model.dart';
@@ -23,6 +21,8 @@ class TifinBillingController extends GetxController {
   RxList orderItemList = [].obs;
   RxList<DateTime> next7Days = <DateTime>[].obs;
   RxList<String> daysName = <String>[].obs;
+  RxList<String> lunchSubjiList = <String>[].obs;
+  RxList<String> dinnerSubjiList = <String>[].obs;
 
   RxString userCode = "".obs;
   RxString userPhone = "".obs;
@@ -55,10 +55,13 @@ class TifinBillingController extends GetxController {
   RxBool isLunchOfficeSelected = false.obs;
   RxBool isDinnerHomeSelected = true.obs;
   RxBool isDinnerOfficeSelected = false.obs;
+  final getAddressListTypeModel = AddressListTypewiseModel().obs;
 
   Rx<GetTimeSlotModel> getTimeSlotModel = GetTimeSlotModel().obs;
   RxString selectedLunchTime = "Select Time".obs;
   RxString selectedDinnerTime = "Select Time".obs;
+  RxString addressLunchId = "".obs;
+  RxString addressDinnerId = "".obs;
   // TIFFIN TYPE
   RxString tiffinType = "Lunch".obs;
   RxBool tiffinTypeLunch = false.obs;
@@ -148,6 +151,38 @@ class TifinBillingController extends GetxController {
   isEcoFriendly() {
     packRegular.value = false;
     packEcoFriendly.value = true;
+  }
+
+  Future getAddressListTypewise(String type) async {
+    try {
+      CustomLoader.openCustomLoader();
+      Map<String, String> payload = {
+        "user_type": userType.value,
+        "customer_code": userCode.value,
+        "address_type": type
+      };
+
+      log("Get address list payload :::  $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.addressListTypewise, payload: payload);
+
+      log("Get address list typewise response ::: $response");
+
+      getAddressListTypeModel.value =
+          getAddressListTypewiseModelFromJson(response["body"]);
+
+      if (getAddressListTypeModel.value.statusCode == "200" ||
+          getAddressListTypeModel.value.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during getting address list ::: ${getAddressListTypeModel.value.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting address list ::: $error");
+    }
   }
 
   Future getTimeSlot(fromLunch) async {
@@ -293,11 +328,11 @@ class TifinBillingController extends GetxController {
         "tiffintype_lunch": tiffinType.value,
         "lunch_time": selectedLunchTime.value,
         "lunch_address_type": isLunchHomeSelected.value ? 'Home' : 'Office',
-        "lunch_address_id": '1',
-        "tiffintype_dinner": selectedDinnerTime.value,
+        "lunch_address_id": addressLunchId.value,
+        "tiffintype_dinner": tiffinType.value,
         "dinner_time": selectedDinnerTime.value,
         "dinner_address_type": isLunchHomeSelected.value ? 'Home' : 'Office',
-        "dinner_address_id": '2',
+        "dinner_address_id": addressDinnerId.value,
         "subji_list_lunch": '''{[
           {
             "sId": 1,

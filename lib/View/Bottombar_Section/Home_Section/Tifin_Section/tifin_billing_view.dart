@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,9 +8,7 @@ import 'package:vandana/Controllers/tifin_billing_controller.dart';
 import 'package:vandana/Custom_Widgets/custom_appbar.dart';
 import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
-
 import '../../../../Constant/static_decoration.dart';
-import '../../../../Custom_Widgets/text_widgets/input_text_field_widget.dart';
 import '../../../../Custom_Widgets/time_slote_widget.dart';
 
 class TifinBillingView extends StatefulWidget {
@@ -50,7 +47,8 @@ class TifinBillingView extends StatefulWidget {
       required this.total,
       required this.unit,
       required this.weekendPrice,
-      required this.tifinCount, required this.subjiCount});
+      required this.tifinCount,
+      required this.subjiCount});
 
   @override
   State<TifinBillingView> createState() => _TifinBillingViewState();
@@ -180,10 +178,86 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             width05,
                             GestureDetector(
                               onTap: () async {
-                                controller.isLunchOfficeSelected.value = false;
-                                controller.isLunchHomeSelected.value = true;
-                                print(
-                                    "check data ==> ${controller.isLunchOfficeSelected.value}");
+                                controller
+                                    .getAddressListTypewise('Home')
+                                    .then((val) => showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SizedBox(
+                                              height: Get.height,
+                                              width: Get.width,
+                                              child: AlertDialog(
+                                                backgroundColor:
+                                                    ColorConstant.backGround,
+                                                title: Row(
+                                                  children: [
+                                                    IconButton(
+                                                        onPressed: () =>
+                                                            Get.back(),
+                                                        icon: const Icon(
+                                                            Icons.arrow_back)),
+                                                    const Text(
+                                                        "Select Address"),
+                                                  ],
+                                                ),
+                                                content: SizedBox(
+                                                  height: Get.height,
+                                                  width: Get.width,
+                                                  child: Column(
+                                                    children: [
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Obx(() {
+                                                        return SizedBox(
+                                                          height:
+                                                              Get.height * 0.65,
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const BouncingScrollPhysics(),
+                                                            itemCount: controller
+                                                                .getAddressListTypeModel
+                                                                .value
+                                                                .typewiseAddressList
+                                                                ?.length,
+                                                            shrinkWrap: true,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return Card(
+                                                                child: ListTile(
+                                                                  onTap:
+                                                                      () async {
+                                                                    controller
+                                                                        .isLunchOfficeSelected
+                                                                        .value = false;
+                                                                    controller
+                                                                        .isLunchHomeSelected
+                                                                        .value = true;
+                                                                    controller
+                                                                            .addressLunchId
+                                                                            .value =
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}";
+                                                                    print(
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}");
+                                                                    Get.back();
+                                                                  },
+                                                                  title: Text(
+                                                                      "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.address}"),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ));
                               },
                               child: Obx(
                                 () => Container(
@@ -206,8 +280,86 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             width05,
                             GestureDetector(
                               onTap: () async {
-                                controller.isLunchOfficeSelected.value = true;
-                                controller.isLunchHomeSelected.value = false;
+                                controller
+                                    .getAddressListTypewise('Office')
+                                    .then((val) => showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SizedBox(
+                                              height: Get.height,
+                                              width: Get.width,
+                                              child: AlertDialog(
+                                                backgroundColor:
+                                                    ColorConstant.backGround,
+                                                title: Row(
+                                                  children: [
+                                                    IconButton(
+                                                        onPressed: () =>
+                                                            Get.back(),
+                                                        icon: const Icon(
+                                                            Icons.arrow_back)),
+                                                    const Text(
+                                                        "Select Address"),
+                                                  ],
+                                                ),
+                                                content: SizedBox(
+                                                  height: Get.height,
+                                                  width: Get.width,
+                                                  child: Column(
+                                                    children: [
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Obx(() {
+                                                        return SizedBox(
+                                                          height:
+                                                              Get.height * 0.65,
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const BouncingScrollPhysics(),
+                                                            itemCount: controller
+                                                                .getAddressListTypeModel
+                                                                .value
+                                                                .typewiseAddressList
+                                                                ?.length,
+                                                            shrinkWrap: true,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return Card(
+                                                                child: ListTile(
+                                                                  onTap:
+                                                                      () async {
+                                                                    controller
+                                                                        .isLunchOfficeSelected
+                                                                        .value = true;
+                                                                    controller
+                                                                        .isLunchHomeSelected
+                                                                        .value = false;
+                                                                    controller
+                                                                            .addressLunchId
+                                                                            .value =
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}";
+                                                                    print(
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}");
+                                                                    Get.back();
+                                                                  },
+                                                                  title: Text(
+                                                                      "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.address}"),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ));
                               },
                               child: Obx(
                                 () => Container(
@@ -295,8 +447,86 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             width05,
                             GestureDetector(
                               onTap: () {
-                                controller.isDinnerHomeSelected.value = true;
-                                controller.isDinnerOfficeSelected.value = false;
+                                controller
+                                    .getAddressListTypewise('Home')
+                                    .then((val) => showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SizedBox(
+                                              height: Get.height,
+                                              width: Get.width,
+                                              child: AlertDialog(
+                                                backgroundColor:
+                                                    ColorConstant.backGround,
+                                                title: Row(
+                                                  children: [
+                                                    IconButton(
+                                                        onPressed: () =>
+                                                            Get.back(),
+                                                        icon: const Icon(
+                                                            Icons.arrow_back)),
+                                                    const Text(
+                                                        "Select Address"),
+                                                  ],
+                                                ),
+                                                content: SizedBox(
+                                                  height: Get.height,
+                                                  width: Get.width,
+                                                  child: Column(
+                                                    children: [
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Obx(() {
+                                                        return SizedBox(
+                                                          height:
+                                                              Get.height * 0.65,
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const BouncingScrollPhysics(),
+                                                            itemCount: controller
+                                                                .getAddressListTypeModel
+                                                                .value
+                                                                .typewiseAddressList
+                                                                ?.length,
+                                                            shrinkWrap: true,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return Card(
+                                                                child: ListTile(
+                                                                  onTap:
+                                                                      () async {
+                                                                    controller
+                                                                        .isDinnerHomeSelected
+                                                                        .value = true;
+                                                                    controller
+                                                                        .isDinnerOfficeSelected
+                                                                        .value = false;
+                                                                    controller
+                                                                            .addressDinnerId
+                                                                            .value =
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}";
+                                                                    print(
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}");
+                                                                    Get.back();
+                                                                  },
+                                                                  title: Text(
+                                                                      "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.address}"),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ));
                               },
                               child: Obx(
                                 () => Container(
@@ -319,8 +549,86 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             width05,
                             GestureDetector(
                               onTap: () {
-                                controller.isDinnerHomeSelected.value = false;
-                                controller.isDinnerOfficeSelected.value = true;
+                                controller
+                                    .getAddressListTypewise('Office')
+                                    .then((val) => showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SizedBox(
+                                              height: Get.height,
+                                              width: Get.width,
+                                              child: AlertDialog(
+                                                backgroundColor:
+                                                    ColorConstant.backGround,
+                                                title: Row(
+                                                  children: [
+                                                    IconButton(
+                                                        onPressed: () =>
+                                                            Get.back(),
+                                                        icon: const Icon(
+                                                            Icons.arrow_back)),
+                                                    const Text(
+                                                        "Select Address"),
+                                                  ],
+                                                ),
+                                                content: SizedBox(
+                                                  height: Get.height,
+                                                  width: Get.width,
+                                                  child: Column(
+                                                    children: [
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Obx(() {
+                                                        return SizedBox(
+                                                          height:
+                                                              Get.height * 0.65,
+                                                          child:
+                                                              ListView.builder(
+                                                            physics:
+                                                                const BouncingScrollPhysics(),
+                                                            itemCount: controller
+                                                                .getAddressListTypeModel
+                                                                .value
+                                                                .typewiseAddressList
+                                                                ?.length,
+                                                            shrinkWrap: true,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return Card(
+                                                                child: ListTile(
+                                                                  onTap:
+                                                                      () async {
+                                                                    controller
+                                                                        .isDinnerHomeSelected
+                                                                        .value = false;
+                                                                    controller
+                                                                        .isDinnerOfficeSelected
+                                                                        .value = true;
+                                                                    controller
+                                                                            .addressDinnerId
+                                                                            .value =
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}";
+                                                                    print(
+                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}");
+                                                                    Get.back();
+                                                                  },
+                                                                  title: Text(
+                                                                      "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.address}"),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ));
                               },
                               child: Obx(
                                 () => Container(
