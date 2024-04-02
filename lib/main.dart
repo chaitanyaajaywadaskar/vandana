@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Initial_Section/splash_view.dart';
 
-import 'View/Bottombar_Section/Tiffin_Order/tiffin_order_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

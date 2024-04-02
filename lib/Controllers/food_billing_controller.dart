@@ -12,7 +12,7 @@ import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_y
 
 class FoodBillingController extends GetxController {
   PostOrderModel postOrderModel = PostOrderModel();
-  GetPackagingListModel getPackagingListModel = GetPackagingListModel();
+  final getPackagingListModel = GetPackagingListModel().obs;
 
   RxList orderItemList = [].obs;
 
@@ -28,12 +28,9 @@ class FoodBillingController extends GetxController {
   RxString pinCode = "".obs;
   RxString branchName = "".obs;
   RxString currentDate = "".obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    initialFunctioun();
-  }
+  RxBool packRegular = true.obs;
+  RxBool packEcoFriendly = false.obs;
+  RxString packagingName = "Regular".obs;
 
   initialFunctioun() async {
     userCode.value = await StorageServices.getData(
@@ -70,25 +67,38 @@ class FoodBillingController extends GetxController {
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch);
     currentDate.value = DateTime.now().toString().split(" ")[0];
+    getPackagingList();
+  }
+
+  ifRegularSelected() {
+    packRegular.value = true;
+    packEcoFriendly.value = false;
+  }
+
+  isEcoFriendly() {
+    packRegular.value = false;
+    packEcoFriendly.value = true;
   }
 
   Future getPackagingList() async {
     CustomLoader.openCustomLoader();
     try {
-      var response =
-          await HttpServices.getHttpMethod(url: EndPointConstant.packagingList);
+      var data = <String, String>{};
+      data['packaging_category'] = 'Other';
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.packagingList, payload: data);
+      log("payload $data \n, response $response");
 
-      log("Get packaging list response ::: $response");
+      getPackagingListModel.value =
+          getPackagingListModelFromJson(response["body"]);
 
-      getPackagingListModel = getPackagingListModelFromJson(response["body"]);
-
-      if (getPackagingListModel.statusCode == "200" ||
-          getPackagingListModel.statusCode == "201") {
+      if (getPackagingListModel.value.statusCode == "200" ||
+          getPackagingListModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting packaging list ::: ${getPackagingListModel.message}");
       }
+      log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during getting packaging list ::: $error");

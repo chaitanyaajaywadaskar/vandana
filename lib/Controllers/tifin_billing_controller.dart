@@ -5,6 +5,7 @@ import 'package:vandana/Constant/storage_key_constant.dart';
 import 'package:vandana/Controllers/get_packaging_list_model.dart';
 import 'package:vandana/Custom_Widgets/custom_loader.dart';
 import 'package:vandana/Custom_Widgets/custom_toast.dart';
+import 'package:vandana/Models/get_delivery_charges_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
@@ -55,7 +56,9 @@ class TifinBillingController extends GetxController {
   RxBool isLunchOfficeSelected = false.obs;
   RxBool isDinnerHomeSelected = true.obs;
   RxBool isDinnerOfficeSelected = false.obs;
+
   final getAddressListTypeModel = AddressListTypewiseModel().obs;
+  final getDeliveryChargesModel = DeliveryChargesModel().obs;
 
   Rx<GetTimeSlotModel> getTimeSlotModel = GetTimeSlotModel().obs;
   RxString selectedLunchTime = "Select Time".obs;
@@ -64,12 +67,13 @@ class TifinBillingController extends GetxController {
   RxString addressDinnerId = "".obs;
   // TIFFIN TYPE
   RxString tiffinType = "Lunch".obs;
-  RxBool tiffinTypeLunch = false.obs;
+  RxBool tiffinTypeLunch = true.obs;
   RxBool tiffinTypeDinner = false.obs;
   initialFunctioun(
       {required double weekendPrice,
       required String tifinCount,
-      required String tifinPrice}) async {
+      required String tifinPrice,
+      required String category}) async {
     getNext7Days();
     getTotalCount(
         tiffinCount: tifinCount,
@@ -79,7 +83,8 @@ class TifinBillingController extends GetxController {
         regular: getPackagingListModel.value.packagingList?[0].packagingPrice ??
             '0');
     getWeekendCount(price: weekendPrice);
-    getPackagingList();
+    getPackagingList(category: category);
+    getDeliveryCharges(category: category);
     getSabjiListDaywise(day: daysName[0]);
     userCode.value = await StorageServices.getData(
         dataType: StorageKeyConstant.stringType,
@@ -242,13 +247,13 @@ class TifinBillingController extends GetxController {
     }
   }
 
-  Future getPackagingList() async {
+  Future getPackagingList({String category = ''}) async {
     CustomLoader.openCustomLoader();
     try {
-      var response =
-          await HttpServices.getHttpMethod(url: EndPointConstant.packagingList);
-
-      log("Get packaging list response ::: $response");
+      var data = <String, String>{};
+      data['packaging_category'] = category;
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.packagingList, payload: data);
 
       getPackagingListModel.value =
           getPackagingListModelFromJson(response["body"]);
@@ -258,11 +263,36 @@ class TifinBillingController extends GetxController {
         CustomLoader.closeCustomLoader();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
       }
+      log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during getting packaging list ::: $error");
+    }
+  }
+
+  Future getDeliveryCharges({String category = ''}) async {
+    // CustomLoader.openCustomLoader();
+    try {
+      var data = <String, String>{};
+      data['delivery_charges_category'] = category;
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.deliveryChargesList, payload: data);
+
+      getDeliveryChargesModel.value =
+          getDeliveryChargesModelFromJson(response["body"]);
+      totalCount.value += int.parse(
+          getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0');
+      if (getDeliveryChargesModel.value.statusCode == "200" ||
+          getDeliveryChargesModel.value.statusCode == "201") {
+        // CustomLoader.closeCustomLoader();
+      } else {
+        // CustomLoader.closeCustomLoader();
+      }
+      log("Something went wrong during getting delivery charges list ::: ${getDeliveryChargesModel.value.message}");
+    } catch (error) {
+      // CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting delivery charges list ::: $error");
     }
   }
 

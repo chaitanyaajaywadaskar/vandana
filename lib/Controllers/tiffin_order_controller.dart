@@ -14,7 +14,6 @@ class TiffinOrderController extends GetxController {
 
   Future getTiffinOrderList() async {
     CustomLoader.openCustomLoader();
-
     try {
       var code = await StorageServices.getData(
           dataType: StorageKeyConstant.stringType,

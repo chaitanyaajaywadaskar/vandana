@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/color_constant.dart';
 import 'package:vandana/Constant/layout_constant.dart';
@@ -9,7 +11,10 @@ import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import 'package:vandana/View/Bottombar_Section/bottombar_view.dart';
 
-class FoodBillingView extends StatelessWidget {
+import '../../../../Constant/static_decoration.dart';
+import '../Tifin_Section/tifin_billing_view.dart';
+
+class FoodBillingView extends StatefulWidget {
   final String productImage;
   final String productName;
   final String productDescription;
@@ -43,6 +48,18 @@ class FoodBillingView extends StatelessWidget {
       required this.unit});
 
   @override
+  State<FoodBillingView> createState() => _FoodBillingViewState();
+}
+
+class _FoodBillingViewState extends State<FoodBillingView> {
+  final controller = Get.put(FoodBillingController());
+  @override
+  void initState() {
+    controller.initialFunctioun();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.backGround,
@@ -56,41 +73,126 @@ class FoodBillingView extends StatelessWidget {
               icon: const Icon(Icons.shopping_cart, color: ColorConstant.white))
         ],
       ),
-      body: GetBuilder<FoodBillingController>(
-          init: FoodBillingController(),
-          builder: (controller) {
-            return ListView(
-              physics: const BouncingScrollPhysics(),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          SizedBox(
+            width: Get.width,
+            height: Get.height * 0.500,
+            child: Image.network(
+              widget.productImage,
+              fit: BoxFit.fill,
+            ),
+          ),
+          Padding(
+            padding: screenPadding,
+            child: Column(
               children: [
-                SizedBox(
-                  width: Get.width,
-                  height: Get.height * 0.500,
-                  child: Image.network(
-                    productImage,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Padding(
-                  padding: screenPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(productName,
-                          style: TextStyleConstant.semiBold26(
-                              color: ColorConstant.orange)),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: Get.height * 0.050),
-                        child: Text(productDescription,
-                            style: TextStyleConstant.semiBold18(
-                                color: ColorConstant.orangeAccent)),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.productName,
+                              style: TextStyleConstant.semiBold22(
+                                  color: ColorConstant.orange)),
+                          Padding(
+                            padding:
+                                EdgeInsets.only(bottom: Get.height * 0.050),
+                            child: Text(widget.productDescription,
+                                style: TextStyleConstant.semiBold18(
+                                    color: ColorConstant.orangeAccent)),
+                          ),
+                        ],
                       ),
-                      priceWidget(controller: controller),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text.rich(TextSpan(
+                              text: 'MRP ',
+                              style: TextStyleConstant.semiBold26(
+                                  color: ColorConstant.redColor),
+                              children: [
+                                TextSpan(
+                                    text: widget.mrp,
+                                    style: TextStyleConstant.semiBold26(
+                                            color: ColorConstant.redColor)
+                                        .copyWith(
+                                            decoration:
+                                                TextDecoration.lineThrough))
+                              ])),
+                          Text.rich(TextSpan(
+                              text: 'Price ',
+                              style: TextStyleConstant.semiBold26(
+                                  color: ColorConstant.greenColor),
+                              children: [
+                                TextSpan(
+                                  text: widget.price,
+                                )
+                              ])),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    height10,
+                    Text(
+                      "Packaging",
+                      style: TextStyleConstant.regular22(
+                          color: ColorConstant.orange),
+                    ),
+                    height10,
+                    Obx(() {
+                      return GestureDetector(
+                        onTap: () {
+                          controller.ifRegularSelected();
+                          controller.packagingName.value = controller
+                                  .getPackagingListModel
+                                  .value
+                                  .packagingList?[0]
+                                  .packagingName ??
+                              "";
+                        },
+                        child: CustomRadioButton(
+                            buttonName:
+                                "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
+                            isSelected: controller.packRegular),
+                      );
+                    }),
+                    height10,
+                    Obx(() {
+                      return GestureDetector(
+                        onTap: () {
+                          controller.isEcoFriendly();
+                          controller.packagingName.value = controller
+                                  .getPackagingListModel
+                                  .value
+                                  .packagingList?[1]
+                                  .packagingName ??
+                              "";
+                        },
+                        child: CustomRadioButton(
+                            buttonName:
+                                "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
+                            isSelected: controller.packEcoFriendly),
+                      );
+                    }),
+                  ],
+                ),
+                height10,
+                priceWidget(controller: controller),
               ],
-            );
-          }),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -99,16 +201,23 @@ class FoodBillingView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          "Food Price: $mrp",
+          "Food Price: ${widget.mrp}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Text(
-          "Discount: ${int.parse(mrp) - int.parse(price)}",
+          "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Text(
           "Delivery: 0",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
+        ),
+        Obx(
+          () => Text(
+            "Packaging: ${controller.packEcoFriendly.value == true ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * 22}" : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * 22}"}",
+            style: TextStyleConstant.regular18().copyWith(
+                color: ColorConstant.appMainColor, fontWeight: FontWeight.w400),
+          ),
         ),
         Padding(
           padding: EdgeInsets.only(
@@ -118,7 +227,7 @@ class FoodBillingView extends StatelessWidget {
           child: const HorizontalDottedLine(),
         ),
         Text(
-          "Sub Total: $price",
+          "Sub Total: ${widget.price}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Padding(
@@ -133,18 +242,18 @@ class FoodBillingView extends StatelessWidget {
           width: Get.width * 0.400,
           onTap: () {
             controller.postOrder(
-                cartId: cartId,
-                categoryName: categoryName,
-                subCategoryName: subCategoryName,
-                productName: productName,
-                productCode: productCode,
-                price: price,
-                amount: mrp,
-                tax: tax,
-                taxsGst: taxsGst,
-                taxjGst: taxjGst,
-                total: price,
-                unit: unit);
+                cartId: widget.cartId,
+                categoryName: widget.categoryName,
+                subCategoryName: widget.subCategoryName,
+                productName: widget.productName,
+                productCode: widget.productCode,
+                price: widget.price,
+                amount: widget.mrp,
+                tax: widget.tax,
+                taxsGst: widget.taxsGst,
+                taxjGst: widget.taxjGst,
+                total: widget.price,
+                unit: widget.unit);
           },
         ),
       ],

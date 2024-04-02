@@ -14,6 +14,7 @@ class EndPointConstant {
   static String addCart = "add_cart.php";
   static String cartItemList = "cart_item_list.php";
   static String packagingList = "packaging_list.php";
+  static String deliveryChargesList = "delivery_charges_list.php";
   static String removeCartItem = "remove_cart_item.php";
   static String updateCartItem = "update_cart_item.php";
   static String addressList = "address_list.php";
