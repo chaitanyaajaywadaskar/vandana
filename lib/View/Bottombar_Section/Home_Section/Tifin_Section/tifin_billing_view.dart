@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:vandana/Custom_Widgets/custom_appbar.dart';
 import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import '../../../../Constant/static_decoration.dart';
+import '../../../../Custom_Widgets/custom_textfield.dart';
 import '../../../../Custom_Widgets/time_slote_widget.dart';
 
 class TifinBillingView extends StatefulWidget {
@@ -64,6 +67,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
   @override
   void initState() {
     super.initState();
+    controller.subjiCount.value = int.parse(widget.subjiCount);
     tabController = TabController(length: 7, vsync: this);
     tabController2 = TabController(length: 7, vsync: this);
     controller.initialFunctioun(
@@ -71,13 +75,14 @@ class _TifinBillingViewState extends State<TifinBillingView>
         tifinCount: widget.tifinCount,
         tifinPrice: widget.price,
         category: widget.categoryName);
+
     tabController?.addListener(() {
-      controller.getSabjiListDaywise(
+      controller.getSabjiListDaywiseForLunch(
         day: controller.daysName[int.parse('${tabController?.index}')],
       );
     });
     tabController2?.addListener(() {
-      controller.getSabjiListDaywise(
+      controller.getSabjiListDaywiseForDinner(
         day: controller.daysName[int.parse('${tabController2?.index}')],
       );
     });
@@ -85,9 +90,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
 
   @override
   Widget build(BuildContext context) {
+    print(widget.weekendPrice);
     return Scaffold(
       backgroundColor: ColorConstant.backGround,
-      appBar: const CustomAppBar(title: "Tifin Billing"),
+      appBar: const CustomAppBar(title: "Tiffin Billing"),
       body: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
@@ -392,8 +398,6 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                                             .addressLunchId
                                                                             .value =
                                                                         "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}";
-                                                                    print(
-                                                                        "${controller.getAddressListTypeModel.value.typewiseAddressList?[index]?.id}");
                                                                     Get.back();
                                                                   },
                                                                   title: Text(
@@ -705,428 +709,501 @@ class _TifinBillingViewState extends State<TifinBillingView>
                     ),
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    height20,
-                    const HorizontalDottedLine(),
-                    height20,
-                    Text(
-                      "Please Select Subji For Lunch",
-                      style: TextStyleConstant.regular22(
-                          color: ColorConstant.orange),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: Get.height * 0.010, bottom: Get.height * 0.020),
-                      child: DefaultTabController(
-                        length: 7,
-                        child: TabBar(
-                          controller: tabController,
-                          labelColor: ColorConstant.orange,
-                          isScrollable: true,
-                          tabs: [
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[0],
-                                );
-                                tabController?.animateTo(0);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[0].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[0].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[0]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[1],
-                                );
-                                tabController?.animateTo(1);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[1].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[1].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[1]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[2],
-                                );
-                                tabController?.animateTo(2);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[2].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[2].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[2]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[3],
-                                );
-                                tabController?.animateTo(3);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[3].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[3].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[3]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[4],
-                                );
-                                tabController?.animateTo(4);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[4].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[4].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[4]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[5],
-                                );
-                                tabController?.animateTo(5);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[5].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[5].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[5]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[6],
-                                );
-                                tabController?.animateTo(6);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("${controller.next7Days[6].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[6].month}"),
-                                    ],
-                                  ),
-                                  Tab(text: controller.daysName[6]),
-                                ],
-                              ),
-                            ),
-                          ],
+                Obx(() {
+                  if (controller.tiffinTypeLunch.value) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        height20,
+                        const HorizontalDottedLine(),
+                        height20,
+                        Text(
+                          "Please Select Subji For Lunch",
+                          style: TextStyleConstant.regular22(
+                              color: ColorConstant.orange),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.height * 0.34,
-                      child: Obx(() {
-                        return TabBarView(controller: tabController, children: [
-                          // Content for Monday
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                          SelectVegetableWidget(
-                              vegeTableList: controller.getSabjiListDaywiseModel
-                                      .value.sabjiList ??
-                                  []),
-                        ]);
-                      }),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    height20,
-                    const HorizontalDottedLine(),
-                    height20,
-                    Text(
-                      "Please Select Subji For Dinner",
-                      style: TextStyleConstant.regular22(
-                          color: ColorConstant.orange),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: Get.height * 0.010, bottom: Get.height * 0.020),
-                      child: DefaultTabController(
-                        length: 7,
-                        child: TabBar(
-                          controller: tabController2,
-                          labelColor: ColorConstant.orange,
-                          isScrollable: true,
-                          tabs: [
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[0],
-                                );
-                                tabController2?.animateTo(0);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: Get.height * 0.010,
+                              bottom: Get.height * 0.020),
+                          child: DefaultTabController(
+                            length: 7,
+                            child: TabBar(
+                              controller: tabController,
+                              labelColor: ColorConstant.orange,
+                              isScrollable: true,
+                              tabs: [
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[0],
+                                    );
+                                    tabController?.animateTo(0);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[0].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[0].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[0].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[0].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[0]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[0]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[1],
-                                );
-                                tabController2?.animateTo(1);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[1],
+                                    );
+                                    tabController?.animateTo(1);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[1].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[1].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[1].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[1].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[1]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[1]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[2],
-                                );
-                                tabController2?.animateTo(2);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[2],
+                                    );
+                                    tabController?.animateTo(2);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[2].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[2].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[2].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[2].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[2]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[2]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[3],
-                                );
-                                tabController2?.animateTo(3);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[3],
+                                    );
+                                    tabController?.animateTo(3);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[3].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[3].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[3].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[3].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[3]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[3]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[4],
-                                );
-                                tabController2?.animateTo(4);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[4],
+                                    );
+                                    tabController?.animateTo(4);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[4].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[4].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[4].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[4].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[4]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[4]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[5],
-                                );
-                                tabController2?.animateTo(5);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[5],
+                                    );
+                                    tabController?.animateTo(5);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[5].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[5].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[5].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[5].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[5]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[5]),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                controller.getSabjiListDaywise(
-                                  day: controller.daysName[6],
-                                );
-                                tabController2?.animateTo(6);
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForLunch(
+                                      day: controller.daysName[6],
+                                    );
+                                    tabController?.animateTo(6);
+                                  },
+                                  child: Column(
                                     children: [
-                                      Text("${controller.next7Days[6].day}"),
-                                      Text(
-                                          " - ${controller.next7Days[6].month}"),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[6].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[6].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[6]),
                                     ],
                                   ),
-                                  Tab(text: controller.daysName[6]),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.height * 0.34,
-                      child: Obx(() {
-                        return TabBarView(
-                            controller: tabController2,
-                            children: [
-                              // Content for Monday
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                              SelectVegetableWidget(
-                                  vegeTableList: controller
-                                          .getSabjiListDaywiseModel
-                                          .value
-                                          .sabjiList ??
-                                      []),
-                            ]);
-                      }),
-                    ),
-                  ],
-                ),
+                        SizedBox(
+                          height: Get.height * 0.34,
+                          child: Obx(() {
+                            return TabBarView(
+                                controller: tabController,
+                                children: [
+                                  // Content for Monday
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList1,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList2,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList3,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList4,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList5,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList6,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseLunchModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.lunchSubjiList7,
+                                  ),
+                                ]);
+                          }),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
+                //Dinner lunch
+                Obx(() {
+                  if (controller.tiffinTypeDinner.value) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        height20,
+                        const HorizontalDottedLine(),
+                        height20,
+                        Text(
+                          "Please Select Subji For Dinner",
+                          style: TextStyleConstant.regular22(
+                              color: ColorConstant.orange),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: Get.height * 0.010,
+                              bottom: Get.height * 0.020),
+                          child: DefaultTabController(
+                            length: 7,
+                            child: TabBar(
+                              controller: tabController2,
+                              labelColor: ColorConstant.orange,
+                              isScrollable: true,
+                              tabs: [
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[0],
+                                    );
+                                    tabController2?.animateTo(0);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[0].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[0].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[0]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[1],
+                                    );
+                                    tabController2?.animateTo(1);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[1].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[1].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[1]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[2],
+                                    );
+                                    tabController2?.animateTo(2);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[2].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[2].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[2]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[3],
+                                    );
+                                    tabController2?.animateTo(3);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[3].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[3].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[3]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[4],
+                                    );
+                                    tabController2?.animateTo(4);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[4].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[4].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[4]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[5],
+                                    );
+                                    tabController2?.animateTo(5);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[5].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[5].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[5]),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.getSabjiListDaywiseForDinner(
+                                      day: controller.daysName[6],
+                                    );
+                                    tabController2?.animateTo(6);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "${controller.next7Days[6].day}"),
+                                          Text(
+                                              " - ${controller.next7Days[6].month}"),
+                                        ],
+                                      ),
+                                      Tab(text: controller.daysName[6]),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: Get.height * 0.34,
+                          child: Obx(() {
+                            return TabBarView(
+                                controller: tabController2,
+                                children: [
+                                  // Content for Monday
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList1,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList2,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList3,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList4,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList5,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList6,
+                                  ),
+                                  SelectVegetableWidget(
+                                    vegeTableList: controller
+                                            .getSabjiListDaywiseDinnerModel
+                                            .value
+                                            .sabjiList ??
+                                        [],
+                                    storageList: controller.dinnerSubjiList7,
+                                  ),
+                                ]);
+                          }),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
 
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1146,18 +1223,19 @@ class _TifinBillingViewState extends State<TifinBillingView>
                         controller.onSaturday.value =
                             !controller.onSaturday.value;
                         controller.getWeekendCount(
-                            price:
-                                double.parse(widget.weekendPrice.toString()));
-                        controller.getTotalCount(
-                            tiffinCount: widget.tifinCount,
-                            tiffinPrice: widget.price,
-                            ecoFriendly: controller.getPackagingListModel.value
-                                    .packagingList?[1].packagingPrice ??
-                                '0',
-                            regular: controller.getPackagingListModel.value
-                                    .packagingList?[0].packagingPrice ??
-                                '0');
-                        print("Count check ==> ${controller.count.toString()}");
+                            price: int.parse(widget.weekendPrice.toString()));
+                        controller.calculateTotal(widget.price);
+                        // controller.getTotalCount(
+                        //     tiffinCount: widget.tifinCount,
+                        //     tiffinPrice: widget.price,
+                        //     ecoFriendly: controller.getPackagingListModel.value
+                        //             .packagingList?[1].packagingPrice ??
+                        //         '0',
+                        //     regular: controller.getPackagingListModel.value
+                        //             .packagingList?[0].packagingPrice ??
+                        //         '0');
+                        print(
+                            "Count check ==> ${controller.weekendTiffinCount.toString()}");
                       },
                       child: CustomRadioButton(
                           buttonName: "Saturday",
@@ -1169,19 +1247,20 @@ class _TifinBillingViewState extends State<TifinBillingView>
                           controller.onSunday.value =
                               !controller.onSunday.value;
                           controller.getWeekendCount(
-                              price:
-                                  double.parse(widget.weekendPrice.toString()));
-                          controller.getTotalCount(
-                              tiffinCount: widget.tifinCount,
-                              tiffinPrice: widget.price,
-                              ecoFriendly: controller.getPackagingListModel
-                                      .value.packagingList?[1].packagingPrice ??
-                                  '0',
-                              regular: controller.getPackagingListModel.value
-                                      .packagingList?[0].packagingPrice ??
-                                  '0');
+                              price: int.parse(widget.weekendPrice.toString()));
+                          controller.calculateTotal(widget.price);
+
+                          // controller.getTotalCount(
+                          //     tiffinCount: widget.tifinCount,
+                          //     tiffinPrice: widget.price,
+                          //     ecoFriendly: controller.getPackagingListModel
+                          //             .value.packagingList?[1].packagingPrice ??
+                          //         '0',
+                          //     regular: controller.getPackagingListModel.value
+                          //             .packagingList?[0].packagingPrice ??
+                          //         '0');
                           print(
-                              "Count check ==> ${controller.count.toString()}");
+                              "Count check ==> ${controller.weekendTiffinCount.toString()}");
                         },
                         child: CustomRadioButton(
                             buttonName: "Sunday",
@@ -1239,6 +1318,20 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               .packagingList?[0]
                               .packagingName ??
                           "";
+
+                      controller.packagingPrice.value = controller
+                                  .packEcoFriendly.value ==
+                              true
+                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(widget.tifinCount)}"
+                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(widget.tifinCount)}";
+                      controller.calculateTotal(widget.price);
+                      // controller.getTotalCount(
+                      //     tiffinCount: widget.tifinCount,
+                      //     tiffinPrice: widget.price,
+                      //     ecoFriendly: controller.getPackagingListModel.value
+                      //             .packagingList?[1].packagingPrice ??
+                      //         '0',
+                      //     regular: controller.packagingPrice.value);
                     },
                     child: CustomRadioButton(
                         buttonName:
@@ -1257,6 +1350,21 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               .packagingList?[1]
                               .packagingName ??
                           "";
+
+                      controller.packagingPrice.value = controller
+                                  .packEcoFriendly.value ==
+                              true
+                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(widget.tifinCount)}"
+                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(widget.tifinCount)}";
+                      controller.calculateTotal(widget.price);
+
+                      // controller.getTotalCount(
+                      //     tiffinCount: widget.tifinCount,
+                      //     tiffinPrice: widget.price,
+                      //     ecoFriendly: controller.packagingPrice.value,
+                      //     regular: controller.getPackagingListModel.value
+                      //             .packagingList?[0].packagingPrice ??
+                      //         '0');
                     },
                     child: CustomRadioButton(
                         buttonName:
@@ -1273,6 +1381,54 @@ class _TifinBillingViewState extends State<TifinBillingView>
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
+                      if (controller.discountInCart.value == '0')
+                        InkWell(
+                          onTap: () {
+                            Get.dialog(AlertDialog(
+                              contentPadding: EdgeInsets.zero,
+                              content: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CustomTextField(
+                                        controller: controller.coupon,
+                                        fillColor: Colors.grey.withOpacity(0.4),
+                                        hintText: 'Enter a coupon code',
+                                        suffixIcon: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                controller.postCoupon();
+                                              },
+                                              child: Text(
+                                                'Apply',
+                                                style: TextStyleConstant
+                                                    .semiBold14(
+                                                        color: Colors.green),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        enable: true),
+                                  ],
+                                ),
+                              ),
+                            ));
+                          },
+                          child: Text(
+                            "Have any coupon?",
+                            style: TextStyleConstant.regular18(
+                                color: Colors.green),
+                          ),
+                        ),
                       Text(
                         "Tiffin Price: ${widget.mrp}",
                         style: TextStyleConstant.regular18().copyWith(
@@ -1286,9 +1442,19 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             color: ColorConstant.appMainColor,
                             fontWeight: FontWeight.w400),
                       ),
+                      Text(
+                        "Coupon: ${controller.discountInCart.value}",
+                        style: TextStyleConstant.regular18(
+                            color: ColorConstant.orange),
+                      ),
+                      Text(
+                        "Tax: 0",
+                        style: TextStyleConstant.regular18(
+                            color: ColorConstant.orange),
+                      ),
                       Obx(
                         () => Text(
-                          "Packaging: ${controller.packEcoFriendly.value == true ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * 22}" : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * 22}"}",
+                          "Packaging: ${controller.packagingPrice.value}",
                           style: TextStyleConstant.regular18().copyWith(
                               color: ColorConstant.appMainColor,
                               fontWeight: FontWeight.w400),
@@ -1305,7 +1471,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                       Obx(() => controller.onSaturday.value == true ||
                               controller.onSunday.value == true
                           ? Text(
-                              "Weekend Tiffins: ${controller.count.toString()}",
+                              "Weekend Tiffins: ${controller.weekendTiffinCount.toString()}",
                               style: TextStyleConstant.regular18().copyWith(
                                   color: ColorConstant.appMainColor,
                                   fontWeight: FontWeight.w400),
@@ -1344,7 +1510,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               taxsGst: widget.taxsGst,
                               taxjGst: widget.taxjGst,
                               total: widget.total,
-                              unit: widget.unit);
+                              unit: widget.unit,
+                              tiffinCount: widget.tifinCount);
                           // Get.to(() => const ThankYouView(
                           //       isCancelOrder: false,
                           //     ));
@@ -1386,64 +1553,64 @@ class _TifinBillingViewState extends State<TifinBillingView>
     );
   }
 
-  Widget priceWidget({required TifinBillingController controller}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          "Food Price: ${widget.mrp}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Text(
-          "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Obx(() {
-          return Text(
-            "Delivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt}",
-            style: TextStyleConstant.regular18(color: ColorConstant.orange),
-          );
-        }),
-        Padding(
-          padding: EdgeInsets.only(
-              left: Get.width * 0.500,
-              bottom: Get.height * 0.010,
-              top: Get.height * 0.020),
-          child: const HorizontalDottedLine(),
-        ),
-        Text(
-          "Sub Total: ${widget.price}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-              left: Get.width * 0.500,
-              top: Get.height * 0.010,
-              bottom: Get.height * 0.020),
-          child: const HorizontalDottedLine(),
-        ),
-        CustomButton(
-          title: "Place Order",
-          width: Get.width * 0.400,
-          onTap: () {
-            controller.postOrder(
-                cartId: widget.cartId,
-                categoryName: widget.categoryName,
-                subCategoryName: widget.subCategoryName,
-                productName: widget.productName,
-                productCode: widget.productCode,
-                price: widget.price,
-                amount: widget.mrp,
-                tax: widget.tax,
-                taxsGst: widget.taxsGst,
-                taxjGst: widget.taxjGst,
-                total: widget.total,
-                unit: widget.unit);
-          },
-        ),
-      ],
-    );
-  }
+  // Widget priceWidget({required TifinBillingController controller}) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.end,
+  //     children: [
+  //       Text(
+  //         "Food Price: ${widget.mrp}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Text(
+  //         "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Obx(() {
+  //         return Text(
+  //           "Delivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt}",
+  //           style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //         );
+  //       }),
+  //       Padding(
+  //         padding: EdgeInsets.only(
+  //             left: Get.width * 0.500,
+  //             bottom: Get.height * 0.010,
+  //             top: Get.height * 0.020),
+  //         child: const HorizontalDottedLine(),
+  //       ),
+  //       Text(
+  //         "Sub Total: ${widget.price}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Padding(
+  //         padding: EdgeInsets.only(
+  //             left: Get.width * 0.500,
+  //             top: Get.height * 0.010,
+  //             bottom: Get.height * 0.020),
+  //         child: const HorizontalDottedLine(),
+  //       ),
+  //       CustomButton(
+  //         title: "Place Order",
+  //         width: Get.width * 0.400,
+  //         onTap: () {
+  //           controller.postOrder(
+  //               cartId: widget.cartId,
+  //               categoryName: widget.categoryName,
+  //               subCategoryName: widget.subCategoryName,
+  //               productName: widget.productName,
+  //               productCode: widget.productCode,
+  //               price: widget.price,
+  //               amount: widget.mrp,
+  //               tax: widget.tax,
+  //               taxsGst: widget.taxsGst,
+  //               taxjGst: widget.taxjGst,
+  //               total: widget.total,
+  //               unit: widget.unit);
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Future<void> selectDate(
       {required BuildContext context,
@@ -1465,13 +1632,49 @@ class _TifinBillingViewState extends State<TifinBillingView>
 }
 
 // ignore: must_be_immutable
-class SelectVegetableWidget extends StatelessWidget {
-  SelectVegetableWidget({super.key, required this.vegeTableList});
-
-  RxInt selectedSabji = 0.obs;
+class SelectVegetableWidget extends StatefulWidget {
+  SelectVegetableWidget({
+    super.key,
+    required this.vegeTableList,
+    required this.storageList,
+  });
   List vegeTableList;
+  RxList<Map<String, String>> storageList;
 
-  // BillingController controller = Get.find<BillingController>();
+  @override
+  State<SelectVegetableWidget> createState() => _SelectVegetableWidgetState();
+}
+
+class _SelectVegetableWidgetState extends State<SelectVegetableWidget> {
+  TifinBillingController controller = Get.find<TifinBillingController>();
+
+  Color getColor(int index) {
+    return widget.storageList.any(
+                (item) => item['sId'] == "${widget.vegeTableList[index].id}") !=
+            true
+        ? ColorConstant.orange.withOpacity(0.3)
+        : ColorConstant.orange;
+  }
+
+  void addToStorageList(int index) {
+    String sId = widget.vegeTableList[index].id;
+
+    bool containsData =
+        widget.storageList.any((element) => element["sId"] == sId);
+
+    if (containsData) {
+      widget.storageList.removeWhere((element) => element["sId"] == sId);
+    } else {
+      if (widget.storageList.length < controller.subjiCount.value) {
+        widget.storageList.add({
+          "sId": widget.vegeTableList[index].id,
+          "day": widget.vegeTableList[index].day,
+          "sabji": widget.vegeTableList[index].sabji,
+          "tiffin_type": widget.vegeTableList[index].tiffinType
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1479,11 +1682,13 @@ class SelectVegetableWidget extends StatelessWidget {
       child: Column(
         children: [
           ...List.generate(
-              vegeTableList.length,
+              widget.vegeTableList.length,
               (index) => Obx(
                     () => GestureDetector(
                       onTap: () {
-                        selectedSabji.value = index;
+                        addToStorageList(index);
+
+                        setState(() {});
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -1495,25 +1700,19 @@ class SelectVegetableWidget extends StatelessWidget {
                               width: 30,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: (selectedSabji != index)
-                                        ? ColorConstant.orange.withOpacity(0.3)
-                                        : ColorConstant.orange),
+                                border: Border.all(color: getColor(index)),
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: (selectedSabji != index)
-                                      ? ColorConstant.orange.withOpacity(0.3)
-                                      : ColorConstant.orange,
-                                ),
+                                    shape: BoxShape.circle,
+                                    color: getColor(index)),
                               ),
                             ),
                             const SizedBox(
                               width: 15,
                             ),
                             Text(
-                              vegeTableList[index].sabji,
+                              widget.vegeTableList[index].sabji,
                               style: TextStyleConstant.bold18(
                                   color: ColorConstant.orange),
                             )
@@ -1528,6 +1727,7 @@ class SelectVegetableWidget extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class CustomRadioButton extends StatelessWidget {
   CustomRadioButton(
       {super.key, required this.buttonName, required this.isSelected});

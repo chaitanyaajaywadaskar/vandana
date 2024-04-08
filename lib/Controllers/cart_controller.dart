@@ -246,7 +246,12 @@ class CartController extends GetxController {
         "billto_phone": "9090909090",
         "delivery_charges": "0",
         "branch": branchName.value,
-        "order_category": "Food"
+        "order_category": "Food",
+        "coupon_code":coupon.text,
+        "coupon_amount":discountInCart.value,
+        "packaging_type":"Plastic containers",
+        "total_bill_amount":totalPriceInCart.value
+
       };
 
       log("Post order payload ::: $payload");

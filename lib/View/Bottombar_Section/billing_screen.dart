@@ -309,27 +309,27 @@ class _BillingScreenState extends State<BillingScreen>
                                   controller: tabController,
                                   children: [
                                     // Content for Monday
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
-                                    SelectVegetableWidget(
-                                        vegeTableList:
-                                            widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
+                                    // SelectVegetableWidget(
+                                    //     vegeTableList:
+                                    //         widget.getSabjiList ?? []),
                                   ]),
                             ),
                             //! TIFFIN TYPE

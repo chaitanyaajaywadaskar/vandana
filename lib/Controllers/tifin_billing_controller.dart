@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/endpoint_constant.dart';
 import 'package:vandana/Constant/storage_key_constant.dart';
@@ -12,18 +13,82 @@ import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_y
 import '../Models/get_address_list_typewise_model.dart';
 import '../Models/get_sabjilist_daywise.dart';
 import '../Models/get_time_slot_model.dart';
+import '../Models/post_coupon_model.dart.dart';
 import '../Models/post_tiffin_order_model.dart';
 
 class TifinBillingController extends GetxController {
   PostTIffinOrderModel postOrderModel = PostTIffinOrderModel();
   final getPackagingListModel = GetPackagingListModel().obs;
-  final getSabjiListDaywiseModel = GetSabjiListDaywiseModel().obs;
+  final getSabjiListDaywiseLunchModel = GetSabjiListDaywiseModel().obs;
+  final getSabjiListDaywiseDinnerModel = GetSabjiListDaywiseModel().obs;
 
   RxList orderItemList = [].obs;
   RxList<DateTime> next7Days = <DateTime>[].obs;
   RxList<String> daysName = <String>[].obs;
-  RxList<String> lunchSubjiList = <String>[].obs;
-  RxList<String> dinnerSubjiList = <String>[].obs;
+  PostCouponModel postCouponModel = PostCouponModel();
+
+//Day wise list for lunch
+  RxList<Map<String, String>> lunchSubjiList1 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList2 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList3 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList4 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList5 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList6 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> lunchSubjiList7 = <Map<String, String>>[].obs;
+
+  //Day wise list for Dinner
+  RxList<Map<String, String>> dinnerSubjiList1 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList2 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList3 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList4 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList5 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList6 = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList7 = <Map<String, String>>[].obs;
+
+  clearAllSubjiListFeilds({bool isLunch = true}) {
+    if (isLunch) {
+      lunchSubjiList1.clear();
+      lunchSubjiList2.clear();
+      lunchSubjiList3.clear();
+      lunchSubjiList4.clear();
+      lunchSubjiList5.clear();
+      lunchSubjiList6.clear();
+      lunchSubjiList7.clear();
+    } else {
+      dinnerSubjiList1.clear();
+      dinnerSubjiList2.clear();
+      dinnerSubjiList3.clear();
+      dinnerSubjiList4.clear();
+      dinnerSubjiList5.clear();
+      dinnerSubjiList6.clear();
+      dinnerSubjiList7.clear();
+    }
+  }
+
+  void addLunchSubjiLists() {
+    lunchSubjiList.addAll(lunchSubjiList1);
+    lunchSubjiList.addAll(lunchSubjiList2);
+    lunchSubjiList.addAll(lunchSubjiList3);
+    lunchSubjiList.addAll(lunchSubjiList4);
+    lunchSubjiList.addAll(lunchSubjiList5);
+    lunchSubjiList.addAll(lunchSubjiList6);
+    lunchSubjiList.addAll(lunchSubjiList7);
+    log('Lunch $lunchSubjiList');
+  }
+
+  void addDinnerSubjiLists() {
+    dinnerSubjiList.addAll(dinnerSubjiList1);
+    dinnerSubjiList.addAll(dinnerSubjiList2);
+    dinnerSubjiList.addAll(dinnerSubjiList3);
+    dinnerSubjiList.addAll(dinnerSubjiList4);
+    dinnerSubjiList.addAll(dinnerSubjiList5);
+    dinnerSubjiList.addAll(dinnerSubjiList6);
+    dinnerSubjiList.addAll(dinnerSubjiList7);
+    log('Dinner $dinnerSubjiList');
+  }
+
+  RxList<Map<String, String>> lunchSubjiList = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dinnerSubjiList = <Map<String, String>>[].obs;
 
   RxString userCode = "".obs;
   RxString userPhone = "".obs;
@@ -44,8 +109,10 @@ class TifinBillingController extends GetxController {
   RxBool packEcoFriendly = false.obs;
 
   RxInt totalCount = 0.obs;
+  RxInt deliveryPrice = 0.obs;
+  RxInt subjiCount = 0.obs;
 
-  RxDouble count = 0.0.obs;
+  RxInt weekendTiffinCount = 0.obs;
   RxString packagingName = "Regular".obs;
 
   DateTime? picked;
@@ -69,23 +136,35 @@ class TifinBillingController extends GetxController {
   RxString tiffinType = "Lunch".obs;
   RxBool tiffinTypeLunch = true.obs;
   RxBool tiffinTypeDinner = false.obs;
+  RxString discountInCart = "0".obs;
+  var coupon = TextEditingController();
+  RxString totalPriceInCart = "0".obs;
+  RxString packagingPrice = "0".obs;
+
   initialFunctioun(
       {required double weekendPrice,
       required String tifinCount,
       required String tifinPrice,
       required String category}) async {
     getNext7Days();
-    getTotalCount(
-        tiffinCount: tifinCount,
-        tiffinPrice: tifinPrice,
-        ecoFriendly:
-            getPackagingListModel.value.packagingList?[1].packagingPrice ?? '0',
-        regular: getPackagingListModel.value.packagingList?[0].packagingPrice ??
-            '0');
-    getWeekendCount(price: weekendPrice);
-    getPackagingList(category: category);
     getDeliveryCharges(category: category);
-    getSabjiListDaywise(day: daysName[0]);
+    getWeekendCount(price: weekendPrice.toInt());
+    getPackagingList(category: category).then((value) {
+      packagingPrice.value =
+          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tifinCount)}";
+
+      calculateTotal(tifinPrice);
+    });
+    // getTotalCount(
+    //     tiffinCount: tifinCount,
+    //     tiffinPrice: tifinPrice,
+    //     ecoFriendly:
+    //         getPackagingListModel.value.packagingList?[1].packagingPrice ?? '0',
+    //     regular: getPackagingListModel.value.packagingList?[0].packagingPrice ??
+    //         '0');
+
+    getSabjiListDaywiseForLunch(day: daysName[0]);
+    getSabjiListDaywiseForDinner(day: daysName[0]);
     userCode.value = await StorageServices.getData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.userCode);
@@ -123,28 +202,37 @@ class TifinBillingController extends GetxController {
     currentDate.value = currentDate.value.split(" ")[0];
   }
 
-  getTotalCount(
-      {String? tiffinPrice,
-      required String ecoFriendly,
-      required String regular,
-      String? tiffinCount}) {
-    int tiffinPrice1 = int.parse(tiffinPrice.toString());
-    int ecoFriendly1 = packEcoFriendly.value == true
-        ? int.parse(ecoFriendly)
-        : int.parse(regular);
+  calculateTotal(String total) {
+    double tempTotal = double.parse(total) +
+        double.parse(deliveryPrice.value.toString()) +
+        weekendTiffinCount.value;
 
-    totalCount.value = tiffinPrice1 + ecoFriendly1 + count.toInt();
+    tempTotal += double.parse(packagingPrice.value);
+    totalCount.value = tempTotal.toInt();
   }
 
-  getWeekendCount({required double price}) {
+  // getTotalCount(
+  //     {String? tiffinPrice,
+  //     required String ecoFriendly,
+  //     required String regular,
+  //     String? tiffinCount}) {
+  //   int tiffinPrice1 = int.parse(tiffinPrice.toString());
+  //   int ecoFriendly1 = packEcoFriendly.value == true
+  //       ? int.parse(ecoFriendly)
+  //       : int.parse(regular);
+
+  //   totalCount.value = tiffinPrice1 + ecoFriendly1 + weekendTiffinCount.toInt();
+  // }
+
+  getWeekendCount({required int price}) {
     if (onSaturday.value == true && onSunday.value == true) {
-      count.value = price * 4;
+      weekendTiffinCount.value = price * 8;
     } else if (onSaturday.value == true) {
-      count.value = (price / 2) * 4;
+      weekendTiffinCount.value = price * 4;
     } else if (onSunday.value == true) {
-      count.value = (price / 2) * 4;
+      weekendTiffinCount.value = price * 4;
     } else {
-      count.value = (price / 2) * 4;
+      weekendTiffinCount.value = 0;
     }
   }
 
@@ -220,7 +308,7 @@ class TifinBillingController extends GetxController {
     }
   }
 
-  Future getSabjiListDaywise({day = ''}) async {
+  Future getSabjiListDaywiseForLunch({day = ''}) async {
     CustomLoader.openCustomLoader();
     try {
       var map = <String, String>{};
@@ -231,15 +319,42 @@ class TifinBillingController extends GetxController {
       log("Get sabji list payload ::: $map");
       log("Get sabji list response ::: $response");
 
-      getSabjiListDaywiseModel.value =
+      getSabjiListDaywiseLunchModel.value =
           getSabjiListDaywiseModelFromJson(response["body"]);
 
-      if (getSabjiListDaywiseModel.value.statusCode == "200" ||
-          getSabjiListDaywiseModel.value.statusCode == "201") {
+      if (getSabjiListDaywiseLunchModel.value.statusCode == "200" ||
+          getSabjiListDaywiseLunchModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting sabji list ::: ${getSabjiListDaywiseModel.value.message}");
+        log("Something went wrong during getting sabji list ::: ${getSabjiListDaywiseLunchModel.value.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting sabji list ::: $error");
+    }
+  }
+
+  Future getSabjiListDaywiseForDinner({day = ''}) async {
+    CustomLoader.openCustomLoader();
+    try {
+      var map = <String, String>{};
+      map['tiffin_type'] = tiffinType.value;
+      map['day'] = day.toString().substring(0, 3);
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.sabjiListDaywise, payload: map);
+      log("Get sabji list payload ::: $map");
+      log("Get sabji list response ::: $response");
+
+      getSabjiListDaywiseDinnerModel.value =
+          getSabjiListDaywiseModelFromJson(response["body"]);
+
+      if (getSabjiListDaywiseDinnerModel.value.statusCode == "200" ||
+          getSabjiListDaywiseDinnerModel.value.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during getting sabji list ::: ${getSabjiListDaywiseDinnerModel.value.message}");
       }
     } catch (error) {
       CustomLoader.closeCustomLoader();
@@ -281,7 +396,7 @@ class TifinBillingController extends GetxController {
 
       getDeliveryChargesModel.value =
           getDeliveryChargesModelFromJson(response["body"]);
-      totalCount.value += int.parse(
+      deliveryPrice.value += int.parse(
           getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0');
       if (getDeliveryChargesModel.value.statusCode == "200" ||
           getDeliveryChargesModel.value.statusCode == "201") {
@@ -296,36 +411,40 @@ class TifinBillingController extends GetxController {
     }
   }
 
-  Future postOrder(
-      {required String cartId,
-      required String categoryName,
-      required String subCategoryName,
-      required String productName,
-      required String productCode,
-      required String price,
-      required String amount,
-      required String tax,
-      required String taxsGst,
-      required String taxjGst,
-      required String total,
-      required String unit}) async {
+  Future postOrder({
+    required String cartId,
+    required String categoryName,
+    required String subCategoryName,
+    required String productName,
+    required String productCode,
+    required String price,
+    required String amount,
+    required String tax,
+    required String taxsGst,
+    required String taxjGst,
+    required String total,
+    required String unit,
+    required String tiffinCount,
+  }) async {
     CustomLoader.openCustomLoader();
     try {
+      addDinnerSubjiLists();
+      addLunchSubjiLists();
       orderItemList.value = [
         {
-          "cartId": cartId,
-          "category_name": categoryName,
-          "subcategory_name": subCategoryName,
-          "product_name": productName,
-          "product_code": productCode,
-          "quantity": "1",
-          "price": price,
-          "amount": amount,
-          "tax": tax,
-          "tax_sgst": taxsGst,
-          "tax_igst": taxjGst,
-          "total": total,
-          "unit": unit,
+          '\"cartId\"': '\"$cartId\"',
+          '\"category_name\"': '\"$categoryName\"',
+          '\"subcategory_name\"': '\"$subCategoryName\"',
+          '\"product_name\"': '\"$productName\"',
+          '\"product_code\"': '\"$productCode\"',
+          '\"quantity\"': '\"1\"',
+          '\"price\"': '\"$price\"',
+          '\"amount\"': '\"$amount\"',
+          '\"tax\"': '\"$tax\"',
+          '\"tax_sgst\"': '\"$taxsGst\"',
+          '\"tax_igst\"': '\"$taxjGst\"',
+          '\"total\"': '\"$total\"',
+          '\"unit\"': '\"$unit\"',
         },
       ];
 
@@ -344,7 +463,8 @@ class TifinBillingController extends GetxController {
         "order_item": "$orderItemList",
         "receivers_name": "monika gite",
         "billto_phone": "9090909090",
-        "delivery_charges": "0",
+        "delivery_charges":
+            getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0',
         "branch": branchName.value,
         "order_category": "Tiffin",
         "coupon_code": '',
@@ -363,30 +483,24 @@ class TifinBillingController extends GetxController {
         "dinner_time": selectedDinnerTime.value,
         "dinner_address_type": isLunchHomeSelected.value ? 'Home' : 'Office',
         "dinner_address_id": addressDinnerId.value,
-        "subji_list_lunch": '''{[
-          {
-            "sId": 1,
-            "day": "Fri",
-            "sabji": "Panner palak,methi",
-            "tiffin_type": "Lunch"
-          },
-          {
-            "sId": 2,
-            "day": "Fri",
-            "sabji": "Mix veg",
-            "tiffin_type": "Lunch"
-          }
-        ]}''',
-        "subji_list_dinner": '''[
-          {"sId": 1, "day": "Fri", "sabji": "Panner", "tiffin_type": "Dinner"},
-          {
-            "sId": 2,
-            "day": "Fri",
-            "sabji": "Aloo Matar",
-            "tiffin_type": "Dinner"
-          }
-        ]''',
-        "subji_count": "2"
+        'subji_list_lunch': '${lunchSubjiList.map((element) {
+          return {
+            '\"sId\"': '\"${element['sID']}\"',
+            '\"day\"': '\"${element['day']}\"',
+            '\"sabji\"': '\"${element['sabji']}\"',
+            '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+          };
+        }).toList()}',
+        'subji_list_dinner': '${dinnerSubjiList.map((element) {
+          return {
+            '\"sId\"': '\"${element['sID']}\"',
+            '\"day\"': '\"${element['day']}\"',
+            '\"sabji\"': '\"${element['sabji']}\"',
+            '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+          };
+        }).toList()}',
+        "subji_count": '${subjiCount.value}',
+        "total_bill_amount": '$totalPriceInCart'
       };
 
       log("Post order payload ::: $payload");
@@ -449,5 +563,44 @@ class TifinBillingController extends GetxController {
 
     daysName.map((e) => log(e.toString()));
     return next7Days;
+  }
+
+  Future postCoupon() async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {
+        "customer_code": userCode.value,
+        "total": totalPriceInCart.value,
+        "coupon_code": coupon.text,
+      };
+
+      log("Post coupon payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.coupon, payload: payload);
+
+      log("Post coupon response ::: $response");
+
+      postCouponModel = postCouponModelFromJson(response["body"]);
+
+      if (postCouponModel.statusCode == "200" ||
+          postCouponModel.statusCode == "201") {
+        coupon.clear();
+        totalPriceInCart.value = '${postCouponModel.finalPrice ?? 0}';
+        discountInCart.value = '${postCouponModel.couponPrice ?? 0}';
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postCouponModel.message}");
+        Get.back();
+      } else {
+        coupon.clear();
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postCouponModel.message}");
+      }
+    } catch (error) {
+      coupon.clear();
+
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting coupon ::: $error");
+    }
   }
 }

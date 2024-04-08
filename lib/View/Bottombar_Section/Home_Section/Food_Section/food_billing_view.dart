@@ -12,6 +12,7 @@ import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import 'package:vandana/View/Bottombar_Section/bottombar_view.dart';
 
 import '../../../../Constant/static_decoration.dart';
+import '../../../../Custom_Widgets/custom_textfield.dart';
 import '../Tifin_Section/tifin_billing_view.dart';
 
 class FoodBillingView extends StatefulWidget {
@@ -55,7 +56,7 @@ class _FoodBillingViewState extends State<FoodBillingView> {
   final controller = Get.put(FoodBillingController());
   @override
   void initState() {
-    controller.initialFunctioun();
+    controller.initialFunctioun(tifinPrice: widget.price);
     super.initState();
   }
 
@@ -200,12 +201,64 @@ class _FoodBillingViewState extends State<FoodBillingView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        if (controller.discountInCart.value == '0')
+          InkWell(
+            onTap: () {
+              Get.dialog(AlertDialog(
+                contentPadding: EdgeInsets.zero,
+                content: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomTextField(
+                          controller: controller.coupon,
+                          fillColor: Colors.grey.withOpacity(0.4),
+                          hintText: 'Enter a coupon code',
+                          suffixIcon: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  controller.postCoupon();
+                                },
+                                child: Text(
+                                  'Apply',
+                                  style: TextStyleConstant.semiBold14(
+                                      color: Colors.green),
+                                ),
+                              ),
+                            ],
+                          ),
+                          enable: true),
+                    ],
+                  ),
+                ),
+              ));
+            },
+            child: Text(
+              "Have any coupon?",
+              style: TextStyleConstant.regular18(color: Colors.green),
+            ),
+          ),
         Text(
           "Food Price: ${widget.mrp}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Text(
           "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
+          style: TextStyleConstant.regular18(color: ColorConstant.orange),
+        ),
+        Text(
+          "Coupon: ${controller.discountInCart.value}",
+          style: TextStyleConstant.regular18(color: ColorConstant.orange),
+        ),
+        Text(
+          "Coupon: ${controller.discountInCart.value}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Text(
@@ -227,7 +280,7 @@ class _FoodBillingViewState extends State<FoodBillingView> {
           child: const HorizontalDottedLine(),
         ),
         Text(
-          "Sub Total: ${widget.price}",
+          "Sub Total: ${controller.totalPriceInCart}",
           style: TextStyleConstant.regular18(color: ColorConstant.orange),
         ),
         Padding(
