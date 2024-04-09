@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/color_constant.dart';
@@ -32,6 +34,7 @@ class SelectAddressView extends StatelessWidget {
                           child: Card(
                             child: ListTile(
                               onTap: () async {
+                                // log('${controller.getAddressListModel.addressList?[index].address}');
                                 await StorageServices.setData(
                                     dataType: StorageKeyConstant.stringType,
                                     prefKey: StorageKeyConstant.address,

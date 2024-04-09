@@ -1223,7 +1223,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                         controller.onSaturday.value =
                             !controller.onSaturday.value;
                         controller.getWeekendCount(
-                            price: int.parse(widget.weekendPrice.toString()));
+                            price: int.parse(widget.weekendPrice.toString()),
+                            tiffinCount: widget.tifinCount);
                         controller.calculateTotal(widget.price);
                         // controller.getTotalCount(
                         //     tiffinCount: widget.tifinCount,
@@ -1235,7 +1236,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                         //             .packagingList?[0].packagingPrice ??
                         //         '0');
                         print(
-                            "Count check ==> ${controller.weekendTiffinCount.toString()}");
+                            "Count check ==> ${controller.weekendTiffinCalculatedPrice.toString()}");
                       },
                       child: CustomRadioButton(
                           buttonName: "Saturday",
@@ -1247,7 +1248,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                           controller.onSunday.value =
                               !controller.onSunday.value;
                           controller.getWeekendCount(
-                              price: int.parse(widget.weekendPrice.toString()));
+                              price: int.parse(widget.weekendPrice.toString()),
+                              tiffinCount: widget.tifinCount);
                           controller.calculateTotal(widget.price);
 
                           // controller.getTotalCount(
@@ -1260,7 +1262,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                           //             .packagingList?[0].packagingPrice ??
                           //         '0');
                           print(
-                              "Count check ==> ${controller.weekendTiffinCount.toString()}");
+                              "Count check ==> ${controller.weekendTiffinCalculatedPrice.toString()}");
                         },
                         child: CustomRadioButton(
                             buttonName: "Sunday",
@@ -1448,7 +1450,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             color: ColorConstant.orange),
                       ),
                       Text(
-                        "Tax: 0",
+                        "Tax: ${widget.tax}%",
                         style: TextStyleConstant.regular18(
                             color: ColorConstant.orange),
                       ),
@@ -1471,7 +1473,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                       Obx(() => controller.onSaturday.value == true ||
                               controller.onSunday.value == true
                           ? Text(
-                              "Weekend Tiffins: ${controller.weekendTiffinCount.toString()}",
+                              "Weekend Tiffins: ${controller.weekendTiffinCalculatedPrice.toString()}",
                               style: TextStyleConstant.regular18().copyWith(
                                   color: ColorConstant.appMainColor,
                                   fontWeight: FontWeight.w400),
@@ -1512,9 +1514,6 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               total: widget.total,
                               unit: widget.unit,
                               tiffinCount: widget.tifinCount);
-                          // Get.to(() => const ThankYouView(
-                          //       isCancelOrder: false,
-                          //     ));
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -1678,6 +1677,8 @@ class _SelectVegetableWidgetState extends State<SelectVegetableWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        'store list:- ${widget.storageList}, sabji list:${widget.vegeTableList}');
     return SingleChildScrollView(
       child: Column(
         children: [

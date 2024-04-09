@@ -112,6 +112,7 @@ class TifinBillingController extends GetxController {
   RxInt deliveryPrice = 0.obs;
   RxInt subjiCount = 0.obs;
 
+  RxInt weekendTiffinCalculatedPrice = 0.obs;
   RxInt weekendTiffinCount = 0.obs;
   RxString packagingName = "Regular".obs;
 
@@ -148,7 +149,7 @@ class TifinBillingController extends GetxController {
       required String category}) async {
     getNext7Days();
     getDeliveryCharges(category: category);
-    getWeekendCount(price: weekendPrice.toInt());
+    getWeekendCount(price: weekendPrice.toInt(), tiffinCount: tifinCount);
     getPackagingList(category: category).then((value) {
       packagingPrice.value =
           "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tifinCount)}";
@@ -205,7 +206,7 @@ class TifinBillingController extends GetxController {
   calculateTotal(String total) {
     double tempTotal = double.parse(total) +
         double.parse(deliveryPrice.value.toString()) +
-        weekendTiffinCount.value;
+        weekendTiffinCalculatedPrice.value;
 
     tempTotal += double.parse(packagingPrice.value);
     totalCount.value = tempTotal.toInt();
@@ -224,15 +225,44 @@ class TifinBillingController extends GetxController {
   //   totalCount.value = tiffinPrice1 + ecoFriendly1 + weekendTiffinCount.toInt();
   // }
 
-  getWeekendCount({required int price}) {
+  getWeekendCount({required int price, required String tiffinCount}) {
     if (onSaturday.value == true && onSunday.value == true) {
-      weekendTiffinCount.value = price * 8;
+      weekendTiffinCalculatedPrice.value = price * 8;
+      weekendTiffinCount.value = 8;
+      if (packRegular.value) {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 8)}";
+      } else {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 8)}";
+      }
     } else if (onSaturday.value == true) {
-      weekendTiffinCount.value = price * 4;
+      weekendTiffinCalculatedPrice.value = price * 4;
+      weekendTiffinCount.value = 4;
+      if (packRegular.value) {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+      } else {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+      }
     } else if (onSunday.value == true) {
-      weekendTiffinCount.value = price * 4;
+      weekendTiffinCalculatedPrice.value = price * 4;
+      weekendTiffinCount.value = 4;
+
+      if (packRegular.value) {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+      } else {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+      }
     } else {
+      weekendTiffinCalculatedPrice.value = 0;
       weekendTiffinCount.value = 0;
+
+      packagingPrice.value =
+          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tiffinCount)}";
     }
   }
 
@@ -312,7 +342,7 @@ class TifinBillingController extends GetxController {
     CustomLoader.openCustomLoader();
     try {
       var map = <String, String>{};
-      map['tiffin_type'] = tiffinType.value;
+      map['tiffin_type'] = 'Lunch';
       map['day'] = day.toString().substring(0, 3);
       var response = await HttpServices.postHttpMethod(
           url: EndPointConstant.sabjiListDaywise, payload: map);
@@ -339,7 +369,7 @@ class TifinBillingController extends GetxController {
     CustomLoader.openCustomLoader();
     try {
       var map = <String, String>{};
-      map['tiffin_type'] = tiffinType.value;
+      map['tiffin_type'] = 'Dinner';
       map['day'] = day.toString().substring(0, 3);
       var response = await HttpServices.postHttpMethod(
           url: EndPointConstant.sabjiListDaywise, payload: map);
@@ -469,11 +499,11 @@ class TifinBillingController extends GetxController {
         "order_category": "Tiffin",
         "coupon_code": '',
         "coupon_amount": '',
-        "tiffin_count": '22',
+        "tiffin_count": tiffinCount,
         "weekend_sat": onSaturday.value ? 'Yes' : 'no',
         "weekend_sun": onSunday.value ? 'Yes' : 'no',
-        "satsun_tiffin_count": '4',
-        "tiffin_start_dt": '${DateTime.now()}',
+        "satsun_tiffin_count": '${weekendTiffinCount.value}',
+        "tiffin_start_dt": convertedDate.value,
         "packaging_type": packagingName.value,
         "tiffintype_lunch": tiffinType.value,
         "lunch_time": selectedLunchTime.value,
@@ -485,7 +515,7 @@ class TifinBillingController extends GetxController {
         "dinner_address_id": addressDinnerId.value,
         'subji_list_lunch': '${lunchSubjiList.map((element) {
           return {
-            '\"sId\"': '\"${element['sID']}\"',
+            '\"sId\"': '\"${element['sId']}\"',
             '\"day\"': '\"${element['day']}\"',
             '\"sabji\"': '\"${element['sabji']}\"',
             '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
@@ -493,14 +523,14 @@ class TifinBillingController extends GetxController {
         }).toList()}',
         'subji_list_dinner': '${dinnerSubjiList.map((element) {
           return {
-            '\"sId\"': '\"${element['sID']}\"',
+            '\"sId\"': '\"${element['sId']}\"',
             '\"day\"': '\"${element['day']}\"',
             '\"sabji\"': '\"${element['sabji']}\"',
             '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
           };
         }).toList()}',
         "subji_count": '${subjiCount.value}',
-        "total_bill_amount": '$totalPriceInCart'
+        "total_bill_amount": '$totalCount'
       };
 
       log("Post order payload ::: $payload");

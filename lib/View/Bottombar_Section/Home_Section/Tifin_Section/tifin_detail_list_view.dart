@@ -77,14 +77,28 @@ class _TifinDetailListViewState extends State<TifinDetailListView> {
                               cartId: "1",
                               productCode:
                                   "${controller.getFoodDetailListModel.value.productList?[index].productCode}",
-                              tax:
-                                  "${controller.getFoodDetailListModel.value.productList?[index].tax}",
-                              total: "1",
+                              tax: controller.getFoodDetailListModel.value
+                                      .productList?[index].tax ??
+                                  '',
+                              total:
+                                  "${controller.getFoodDetailListModel.value.productList?[index].price}",
                               unit: "nos",
-                              taxjGst:
-                                  "${controller.getFoodDetailListModel.value.productList?[index].tax}",
-                              taxsGst:
-                                  "${controller.getFoodDetailListModel.value.productList?[index].tax}",
+                              taxjGst: (int.parse(controller
+                                              .getFoodDetailListModel
+                                              .value
+                                              .productList?[index]
+                                              .tax ??
+                                          '') /
+                                      2)
+                                  .toString(),
+                              taxsGst: (int.parse(controller
+                                              .getFoodDetailListModel
+                                              .value
+                                              .productList?[index]
+                                              .tax ??
+                                          '') /
+                                      2)
+                                  .toString(),
                               weekendPrice:
                                   "${controller.getFoodDetailListModel.value.productList?[index].satSundayPrice}",
                               tifinCount:

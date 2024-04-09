@@ -220,7 +220,7 @@ class CartView extends StatelessWidget {
                 '\"subcategory_name\"': '\"${element.subcategoryName}\"',
                 '\"product_name\"': '\"${element.productName}\"',
                 '\"product_code\"': '\"${element.productCode}\"',
-                '\"quantity\"': '\"1\"',
+                '\"quantity\"': '\"${element.quantity}\"',
                 '\"price\"': '\"${element.price}\"',
                 '\"amount\"': '\"${element.price}\"',
                 '\"tax\"': '\"${element.tax}\"',

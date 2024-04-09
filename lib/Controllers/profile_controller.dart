@@ -76,6 +76,10 @@ class ProfileController extends GetxController {
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.pinCode,
         stringData: getAddressListModel.addressList?[index].pincode);
+    await StorageServices.setData(
+        dataType: StorageKeyConstant.stringType,
+        prefKey: StorageKeyConstant.branch,
+        stringData: getAddressListModel.addressList?[index].city);
   }
 
   Future getAddressList() async {

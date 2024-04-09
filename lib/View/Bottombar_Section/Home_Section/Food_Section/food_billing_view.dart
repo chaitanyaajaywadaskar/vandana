@@ -12,7 +12,9 @@ import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import 'package:vandana/View/Bottombar_Section/bottombar_view.dart';
 
 import '../../../../Constant/static_decoration.dart';
+import '../../../../Controllers/profile_controller.dart';
 import '../../../../Custom_Widgets/custom_textfield.dart';
+import '../../../Authentication_Section/address_view.dart';
 import '../Tifin_Section/tifin_billing_view.dart';
 
 class FoodBillingView extends StatefulWidget {
@@ -198,9 +200,137 @@ class _FoodBillingViewState extends State<FoodBillingView> {
   }
 
   Widget priceWidget({required FoodBillingController controller}) {
+    final profileController = Get.put(ProfileController());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                    height: Get.height,
+                    width: Get.width,
+                    child: AlertDialog(
+                      backgroundColor: ColorConstant.backGround,
+                      title: Row(
+                        children: [
+                          IconButton(
+                              onPressed: () => Get.back(),
+                              icon: const Icon(Icons.arrow_back)),
+                          const Text("Select Address"),
+                        ],
+                      ),
+                      content: SizedBox(
+                        height: Get.height,
+                        width: Get.width,
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Get.to(() => const AddressView(
+                                      isEditAddress: false,
+                                    ));
+                              },
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.black,
+                                  ),
+                                  Text("Add Address"),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            SizedBox(
+                              height: Get.height * 0.65,
+                              child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: profileController
+                                    .getAddressListModel.addressList?.length,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: ListTile(
+                                      onTap: () async {
+                                        profileController
+                                                .addressController.text =
+                                            "${profileController.getAddressListModel.addressList?[index].address}";
+                                        await profileController
+                                            .setAddressDetail(index: index);
+
+                                        profileController.update();
+                                        Get.back();
+                                      },
+                                      leading: IconButton(
+                                          onPressed: () {
+                                            Get.to(() => AddressView(
+                                                  isEditAddress: true,
+                                                  state: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .state,
+                                                  pinCode: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .pincode,
+                                                  latLng: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .latLong,
+                                                  city: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .city,
+                                                  addressType: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .addressType,
+                                                  addressId: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .id,
+                                                  address: profileController
+                                                      .getAddressListModel
+                                                      .addressList?[index]
+                                                      .address,
+                                                ));
+                                          },
+                                          icon: const Icon(Icons.edit)),
+                                      title: Text(
+                                          "${profileController.getAddressListModel.addressList?[index].address}"),
+                                      trailing: IconButton(
+                                          onPressed: () {
+                                            profileController.removeAddress(
+                                                addressId:
+                                                    "${profileController.getAddressListModel.addressList?[index].id}");
+                                          },
+                                          icon: const Icon(Icons.remove)),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Card(
+                surfaceTintColor: CupertinoColors.white,
+                child: ListTile(
+                    leading: Text(
+                  'Select Address',
+                  style: TextStyleConstant.semiBold14(),
+                )))),
         if (controller.discountInCart.value == '0')
           InkWell(
             onTap: () {

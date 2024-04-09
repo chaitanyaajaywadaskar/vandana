@@ -1,10 +1,6 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/color_constant.dart';
-import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Controllers/profile_controller.dart';
 import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_textfield.dart';
@@ -113,6 +109,7 @@ class ProfileView extends StatelessWidget {
                                                 await controller
                                                     .setAddressDetail(
                                                         index: index);
+
                                                 controller.update();
                                                 Get.back();
                                               },
