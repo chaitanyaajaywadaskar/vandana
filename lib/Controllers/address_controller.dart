@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,6 +15,8 @@ import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Bottombar_Section/main_view.dart';
 
+import '../Models/get_branch_list_model.dart';
+
 class AddressController extends GetxController {
   PostAddressModel postAddressModel = PostAddressModel();
   PostEditAddressModel postEditAddressModel = PostEditAddressModel();
@@ -23,8 +26,10 @@ class AddressController extends GetxController {
   TextEditingController pinCodeController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController coordinatesController = TextEditingController();
+  RxString selectedBranch = "".obs;
 
   final formKey = GlobalKey<FormState>();
+  GetBranchListModel getBranchListModel = GetBranchListModel();
 
   RxList<String> addressTypeList = ["Home", "Office"].obs;
 
@@ -34,13 +39,16 @@ class AddressController extends GetxController {
   RxString latitude = "".obs;
   RxString longitude = "".obs;
   RxString selectedAddressType = "".obs;
+  RxDouble distance = 0.0.obs;
 
   Position? position;
   Placemark placeMark = const Placemark();
   LatLng coordinates = const LatLng(0.0, 0.0);
 
   initialFunctioun() async {
-    await getCurrentLocation();
+    await getCurrentLocation().then((value) {
+      getBranchList();
+    });
     userType.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userType) ??
@@ -84,6 +92,7 @@ class AddressController extends GetxController {
       log("Place is :- $placeMark");
       addressController.text =
           "${placeMark.name}, ${placeMark.subThoroughfare}, ${placeMark.thoroughfare}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea} ${placeMark.postalCode}, ${placeMark.country}";
+      log('locality:- ${placeMark.locality} sublocality:- ${placeMark.subLocality}');
       await StorageServices.setData(
           dataType: StorageKeyConstant.stringType,
           prefKey: StorageKeyConstant.branch,
@@ -107,6 +116,98 @@ class AddressController extends GetxController {
       log("Something went wrong during getting current location and address ::: $error");
     }
     return await Geolocator.getCurrentPosition();
+  }
+
+  String? getClosestBranch(
+    Position position,
+  ) {
+    // We'll calculate the distance between the device's position and each branch
+    double minDistance = double.infinity;
+    String? closestBranch;
+
+    for (var branchInfo in getBranchListModel.branchList!) {
+      String branchName = branchInfo?.branchName?.toString() ?? '';
+      // For simplicity, we'll just assume branch locations based on latitude and longitude
+      // You would typically have the latitude and longitude of each branch
+      double branchLatitude = 18.5204; // Example latitude of the branch
+      double branchLongitude = 73.8567; // Example longitude of the branch
+
+      double distance = Geolocator.distanceBetween(position.latitude,
+          position.longitude, branchLatitude, branchLongitude);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestBranch = branchName;
+      }
+    }
+
+    return closestBranch;
+  }
+
+  Future getBranchList() async {
+    try {
+      CustomLoader.openCustomLoader();
+
+      var response =
+          await HttpServices.getHttpMethod(url: EndPointConstant.branchList);
+
+      debugPrint("Get branch list response ::: $response");
+
+      getBranchListModel = getBranchListModelFromJson(response["body"]);
+
+      if (getBranchListModel.statusCode == "200" ||
+          getBranchListModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        for (int i = 0;
+            i < int.parse('${getBranchListModel.branchList?.length ?? 0}');
+            i++) {
+          distance.value = calculateDistance(
+              double.parse(latitude.value),
+              double.parse(longitude.value),
+              double.parse(
+                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[0]}"),
+              double.parse(
+                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[1]}"));
+
+          if (distance.value <= 7) {
+            await StorageServices.setData(
+                dataType: StorageKeyConstant.stringType,
+                prefKey: StorageKeyConstant.branch,
+                stringData: getBranchListModel.branchList?[i]?.branchName);
+            selectedBranch.value =
+                '${getBranchListModel.branchList?[i]?.branchName}';
+          } else {
+            debugPrint('not contain');
+          }
+        }
+
+        update();
+      } else {
+        CustomLoader.closeCustomLoader();
+        debugPrint(
+            "Something went wrong during getting branch list ::: ${getBranchListModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      debugPrint("Something went wrong during getting branch list ::: $error");
+    }
+  }
+
+  double degreesToRadians(double degrees) {
+    return degrees * pi / 180.0;
+  }
+
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    double dLat = degreesToRadians(lat2 - lat1);
+    double dLon = degreesToRadians(lon2 - lon1);
+
+    double a = math.pow(math.sin(dLat / 2), 2) +
+        math.cos(degreesToRadians(lat1)) *
+            math.cos(degreesToRadians(lat2)) *
+            math.pow(math.sin(dLon / 2), 2);
+
+    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+
+    return earthRadius * c;
   }
 
   Future postAddress() async {

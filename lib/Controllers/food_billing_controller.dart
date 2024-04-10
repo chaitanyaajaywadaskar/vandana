@@ -132,6 +132,7 @@ class FoodBillingController extends GetxController {
 
     totalCount.value = tiffinPrice1 + ecoFriendly1 + count.toInt();
   }
+  
   Future postOrder(
       {required String cartId,
       required String categoryName,

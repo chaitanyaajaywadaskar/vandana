@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +20,19 @@ class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
   Future postLogin() async {
+    var response;
     try {
       CustomLoader.openCustomLoader();
       Map<String, String> payload = {"phone": phoneController.text};
 
       log("Post login payload :::  $payload");
 
-      var response = await HttpServices.postHttpMethod(
+      response = await HttpServices.postHttpMethod(
           url: EndPointConstant.login, payload: payload);
 
       log("Post login response ::: $response");
 
       postLoginModel = postLoginModelFromJson(response["body"]);
-
       if (postLoginModel.statusCode == "200" ||
           postLoginModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
@@ -74,7 +75,9 @@ class LoginController extends GetxController {
       }
     } catch (error) {
       CustomLoader.closeCustomLoader();
-      log("Something went wrong during posting login ::: $error");
+      customToast(message: "phone or password wrong");
+
+      log("Something went wrong during posting login ::: $response");
     }
   }
 }

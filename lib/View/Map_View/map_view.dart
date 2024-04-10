@@ -88,6 +88,8 @@ class _MapScreenState extends State<MapScreen> {
     addressController.stateController.text = '${first.administrativeArea}';
     addressController.cityController.text = '${first.locality}';
     addressController.pinCodeController.text = '${first.postalCode}';
+    addressController.latitude.value = '${position.latitude}';
+    addressController.longitude.value = '${position.longitude}';
     addressController.addressController.text =
         "${first.name}, ${first.subThoroughfare}, ${first.thoroughfare}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea} ${first.postalCode}, ${first.country}";
     addressController.coordinatesController.text =

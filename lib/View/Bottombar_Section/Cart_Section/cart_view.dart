@@ -212,8 +212,9 @@ class CartView extends StatelessWidget {
             CartController controller = Get.find();
 
             final payload = [];
-
             controller.getCartItemsListModel.cartItemList?.forEach((element) {
+              String tax = (int.parse(element.tax ?? '0') / 2).toString();
+
               payload.add({
                 '\"cartId\"': '\"${element.id}\"',
                 '\"category_name\"': '\"${element.categoryName}\"',
@@ -223,9 +224,9 @@ class CartView extends StatelessWidget {
                 '\"quantity\"': '\"${element.quantity}\"',
                 '\"price\"': '\"${element.price}\"',
                 '\"amount\"': '\"${element.price}\"',
-                '\"tax\"': '\"${element.tax}\"',
-                '\"tax_sgst\"': '\"${element.tax}\"',
-                '\"tax_igst\"': '\"${element.tax}\"',
+                '\"tax\"': '\"${tax != '0.0' ? tax : ''}\"',
+                '\"tax_sgst\"': '\"${tax != '0.0' ? tax : ''}\"',
+                '\"tax_igst\"': '\"\"',
                 '\"total\"':
                     '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
                 '\"unit\"': '\"${element.unit}\"',

@@ -110,7 +110,8 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                                         "${controller.getFoodDetailListModel.value.productList?[index].productCode}",
                                     tax:
                                         "${controller.getFoodDetailListModel.value.productList?[index].tax}",
-                                    total: "1",
+                                    total:
+                                        "${controller.getFoodDetailListModel.value.productList?[index].price}",
                                     unit: "nos",
                                     taxjGst:
                                         "${controller.getFoodDetailListModel.value.productList?[index].tax}",

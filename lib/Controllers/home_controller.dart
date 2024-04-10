@@ -172,9 +172,9 @@ class HomeController extends GetxController {
               double.parse(latitude.value),
               double.parse(longitude.value),
               double.parse(
-                  "${getBranchListModel.branchList?[i].latLong?.split(", ")[0]}"),
+                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[0]}"),
               double.parse(
-                  "${getBranchListModel.branchList?[i].latLong?.split(", ")[1]}"));
+                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[1]}"));
 
           if (distance.value <= 7) {
             selectedBranch.value = "${distance.value}";
@@ -229,6 +229,7 @@ class HomeController extends GetxController {
       debugPrint("Error location during getting category list ::: $st");
     }
   }
+
   Rx<GetSabjiDataModel> getSabjiDataModel = GetSabjiDataModel().obs;
 
   Future getSabjiList() async {
@@ -249,7 +250,8 @@ class HomeController extends GetxController {
         // Your Statement
       } else {
         CustomLoader.closeCustomLoader();
-        debugPrint("Something went wrong during getting category list ::: ${getSabjiDataModel.value.message}");
+        debugPrint(
+            "Something went wrong during getting category list ::: ${getSabjiDataModel.value.message}");
         // Your Message
       }
     } catch (e, st) {
@@ -284,7 +286,8 @@ class HomeController extends GetxController {
         // Your Statement
       } else {
         CustomLoader.closeCustomLoader();
-        debugPrint("Something went wrong during getting category list ::: ${getItemListModel.value.message}");
+        debugPrint(
+            "Something went wrong during getting category list ::: ${getItemListModel.value.message}");
         // Your Message
       }
     } catch (e, st) {
@@ -293,5 +296,4 @@ class HomeController extends GetxController {
       debugPrint("Error location during getting category list ::: $st");
     }
   }
-
 }

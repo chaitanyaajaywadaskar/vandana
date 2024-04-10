@@ -69,7 +69,9 @@ class HomeView extends StatelessWidget {
                                     ),
                                   ),
                                   child: Text(
-                                    controller.selectedBranch.value,
+                                    controller.selectedBranch.value.isNotEmpty
+                                        ? controller.selectedBranch.value
+                                        : 'Not Available',
                                     textAlign: TextAlign.center,
                                     style: TextStyleConstant.semiBold18(
                                         color: ColorConstant.white),

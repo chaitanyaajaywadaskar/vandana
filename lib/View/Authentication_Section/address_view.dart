@@ -57,6 +57,7 @@ class _AddressViewState extends State<AddressView> {
 
   @override
   Widget build(BuildContext context) {
+    controller.getCurrentLocation();
     return Scaffold(
       body: Form(
         key: controller.formKey,
@@ -173,6 +174,7 @@ class _AddressViewState extends State<AddressView> {
                                   controller.selectedAddressType.value ==
                                       "Office") {
                                 if (widget.isEditAddress) {
+                                  controller.getBranchList();
                                   controller.editAddress(
                                       addressId: "${widget.addressId}",
                                       addressType: "${widget.addressType}",
@@ -182,6 +184,7 @@ class _AddressViewState extends State<AddressView> {
                                       address: "${widget.address}",
                                       latLng: "${widget.latLng}");
                                 } else {
+                                  controller.getBranchList();
                                   controller.postAddress();
                                 }
                               } else {
