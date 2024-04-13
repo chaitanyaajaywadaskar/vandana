@@ -7,8 +7,10 @@ import 'package:vandana/Controllers/cart_controller.dart';
 import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_no_data_found.dart';
 
+import '../../../Constant/static_decoration.dart';
 import '../../../Custom_Widgets/custom_dotted_line.dart';
 import '../../../Custom_Widgets/custom_textfield.dart';
+import '../Home_Section/Tifin_Section/tifin_billing_view.dart';
 
 class CartView extends StatelessWidget {
   const CartView({super.key});
@@ -31,6 +33,7 @@ class CartView extends StatelessWidget {
                 padding: screenHorizontalPadding,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     (controller.getCartItemsListModel.cartItemList != null)
                         ? ListView.builder(
@@ -119,6 +122,62 @@ class CartView extends StatelessWidget {
                             },
                           )
                         : const CustomNoDataFound(),
+                    height10,
+                    Text(
+                      "Packaging",
+                      style: TextStyleConstant.regular22(
+                          color: ColorConstant.orange),
+                    ),
+                    Obx(() {
+                      return GestureDetector(
+                        onTap: () {
+                          controller.ifRegularSelected();
+                          controller.packagingName.value = controller
+                                  .getPackagingListModel
+                                  .value
+                                  .packagingList?[0]
+                                  .packagingName ??
+                              "";
+
+                          controller.packagingPrice.value = controller
+                                      .packEcoFriendly.value ==
+                                  true
+                              ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
+                              : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                        },
+                        child: CustomRadioButton(
+                            buttonName:
+                                "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
+                            isSelected: controller.packRegular),
+                      );
+                    }),
+                    height10,
+                    Obx(() {
+                      return GestureDetector(
+                        onTap: () {
+                          controller.isEcoFriendly();
+                          controller.packagingName.value = controller
+                                  .getPackagingListModel
+                                  .value
+                                  .packagingList?[1]
+                                  .packagingName ??
+                              "";
+
+                          controller.packagingPrice.value = controller
+                                      .packEcoFriendly.value ==
+                                  true
+                              ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
+                              : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                        },
+                        child: CustomRadioButton(
+                            buttonName:
+                                "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
+                            isSelected: controller.packEcoFriendly),
+                      );
+                    }),
+                    height10,
+                    const HorizontalDottedLine(),
+                    height20,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -178,6 +237,22 @@ class CartView extends StatelessWidget {
                         ),
                         Obx(() {
                           return Text(
+                            "Dilivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0'}",
+                            style: TextStyleConstant.regular18().copyWith(
+                                color: ColorConstant.appMainColor,
+                                fontWeight: FontWeight.w400),
+                          );
+                        }),
+                        Obx(
+                          () => Text(
+                            "Packaging: ${controller.packagingPrice.value}",
+                            style: TextStyleConstant.regular18().copyWith(
+                                color: ColorConstant.appMainColor,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                        Obx(() {
+                          return Text(
                             "Discount: ${controller.discountInCart.value}",
                             style: TextStyleConstant.regular18(
                                 color: ColorConstant.orange),
@@ -223,7 +298,8 @@ class CartView extends StatelessWidget {
                 '\"product_code\"': '\"${element.productCode}\"',
                 '\"quantity\"': '\"${element.quantity}\"',
                 '\"price\"': '\"${element.price}\"',
-                '\"amount\"': '\"${element.price}\"',
+                '\"amount\"':
+                    '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
                 '\"tax\"': '\"${tax != '0.0' ? tax : ''}\"',
                 '\"tax_sgst\"': '\"${tax != '0.0' ? tax : ''}\"',
                 '\"tax_igst\"': '\"\"',

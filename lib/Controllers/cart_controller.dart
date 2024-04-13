@@ -14,8 +14,13 @@ import 'package:vandana/Models/post_remove_cart_item_model.dart';
 import 'package:vandana/Models/post_update_cart_item_model.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
 
+import '../Models/get_delivery_charges_model.dart';
+import 'get_packaging_list_model.dart';
+
 class CartController extends GetxController {
   GetCartItemsListModel getCartItemsListModel = GetCartItemsListModel();
+  final getDeliveryChargesModel = DeliveryChargesModel().obs;
+
   PostOrderModel postOrderModel = PostOrderModel();
   PostCouponModel postCouponModel = PostCouponModel();
   PostRemoveCartItemModel postRemoveCartItemModel = PostRemoveCartItemModel();
@@ -34,7 +39,14 @@ class CartController extends GetxController {
   RxString branchName = "".obs;
   RxString currentDate = "".obs;
   RxString totalPriceInCart = "0".obs;
+  RxString totalQuantityInCart = "0".obs;
   RxString discountInCart = "0".obs;
+  RxBool packRegular = true.obs;
+  RxBool packEcoFriendly = false.obs;
+  final getPackagingListModel = GetPackagingListModel().obs;
+  RxString packagingPrice = "0".obs;
+  RxString packagingName = "Regular".obs;
+  RxInt deliveryPrice = 0.obs;
 
   @override
   void onInit() {
@@ -84,6 +96,36 @@ class CartController extends GetxController {
     currentDate.value = "${DateTime.now()}";
     currentDate.value = currentDate.value.split(" ")[0];
     await getCartItemsList().whenComplete(() => update());
+    getDeliveryCharges();
+    getPackagingList().then((value) {
+      packagingPrice.value =
+          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
+    });
+  }
+
+  Future getDeliveryCharges() async {
+    // CustomLoader.openCustomLoader();
+    try {
+      var data = <String, String>{};
+      data['delivery_charges_category'] = 'Other';
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.deliveryChargesList, payload: data);
+
+      getDeliveryChargesModel.value =
+          getDeliveryChargesModelFromJson(response["body"]);
+      deliveryPrice.value += int.parse(
+          getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0');
+      if (getDeliveryChargesModel.value.statusCode == "200" ||
+          getDeliveryChargesModel.value.statusCode == "201") {
+        // CustomLoader.closeCustomLoader();
+      } else {
+        // CustomLoader.closeCustomLoader();
+      }
+      log("Something went wrong during getting delivery charges list ::: ${getDeliveryChargesModel.value.message}");
+    } catch (error) {
+      // CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting delivery charges list ::: $error");
+    }
   }
 
   Future getCartItemsList() async {
@@ -107,13 +149,16 @@ class CartController extends GetxController {
       if (getCartItemsListModel.statusCode == "200" ||
           getCartItemsListModel.statusCode == "201") {
         double total = 0;
+        double quantity = 0;
         getCartItemsListModel.cartItemList?.forEach((element) {
           var singleTotal = double.parse(
                   '${element.price != 'null' ? element.price ?? 0 : 0}') *
               double.parse('${element.quantity ?? 0}');
           total += singleTotal;
+          quantity += int.parse('${element.quantity ?? 0}');
         });
         totalPriceInCart.value = '$total';
+        totalQuantityInCart.value = quantity.toStringAsFixed(0);
         CustomLoader.closeCustomLoader();
         update();
       } else {
@@ -124,6 +169,30 @@ class CartController extends GetxController {
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during getting cart items list ::: $error");
+    }
+  }
+
+  Future getPackagingList() async {
+    CustomLoader.openCustomLoader();
+    try {
+      var data = <String, String>{};
+      data['packaging_category'] = 'Other';
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.packagingList, payload: data);
+
+      getPackagingListModel.value =
+          getPackagingListModelFromJson(response["body"]);
+
+      if (getPackagingListModel.value.statusCode == "200" ||
+          getPackagingListModel.value.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+      } else {
+        CustomLoader.closeCustomLoader();
+      }
+      log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting packaging list ::: $error");
     }
   }
 
@@ -242,16 +311,16 @@ class CartController extends GetxController {
         "city": city.value,
         "pincode": pinCode.value,
         "order_item": "$orderItems",
-        "receivers_name": "monika gite",
-        "billto_phone": "9090909090",
-        "delivery_charges": "0",
+        "receivers_name": userName.value,
+        "billto_phone": userPhone.value,
         "branch": branchName.value,
         "order_category": "Food",
-        "coupon_code":coupon.text,
-        "coupon_amount":discountInCart.value,
-        "packaging_type":"Plastic containers",
-        "total_bill_amount":totalPriceInCart.value
-
+        "coupon_code": coupon.text,
+        "coupon_amount": discountInCart.value,
+        "packaging_type": packagingName.value,
+        "delivery_charges":
+            getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0',
+        "total_bill_amount": totalPriceInCart.value
       };
 
       log("Post order payload ::: $payload");
@@ -267,7 +336,9 @@ class CartController extends GetxController {
           postOrderModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
         customToast(message: "${postOrderModel.message}");
-        Get.offAll(() => const ThankYouView(isCancelOrder: false, ));
+        Get.offAll(() => const ThankYouView(
+              isCancelOrder: false,
+            ));
       } else {
         CustomLoader.closeCustomLoader();
         customToast(message: "${postOrderModel.message}");
@@ -276,6 +347,16 @@ class CartController extends GetxController {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during posting order ::: $error");
     }
+  }
+
+  ifRegularSelected() {
+    packRegular.value = true;
+    packEcoFriendly.value = false;
+  }
+
+  isEcoFriendly() {
+    packRegular.value = false;
+    packEcoFriendly.value = true;
   }
 
   Future postCoupon() async {

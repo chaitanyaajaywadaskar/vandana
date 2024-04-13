@@ -491,8 +491,8 @@ class TifinBillingController extends GetxController {
         "city": city.value,
         "pincode": pinCode.value,
         "order_item": "$orderItemList",
-        "receivers_name": "monika gite",
-        "billto_phone": "9090909090",
+        "receivers_name": userName.value,
+        "billto_phone": userPhone.value,
         "delivery_charges":
             getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0',
         "branch": branchName.value,
