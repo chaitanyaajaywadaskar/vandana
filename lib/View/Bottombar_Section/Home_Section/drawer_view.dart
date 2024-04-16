@@ -18,8 +18,8 @@ class DrawerView extends StatefulWidget {
 }
 
 class _DrawerViewState extends State<DrawerView> {
-  RxString userName = "".obs;
-  RxString userEmail = "".obs;
+  String userName = "";
+  String userEmail = "";
 
   @override
   void initState() {
@@ -28,14 +28,15 @@ class _DrawerViewState extends State<DrawerView> {
   }
 
   initialFunctioun() async {
-    userName.value = await StorageServices.getData(
+    userName = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userName) ??
         "";
-    userEmail.value = await StorageServices.getData(
+    userEmail = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userEmail) ??
         "";
+    setState(() {});
   }
 
   @override
@@ -65,12 +66,12 @@ class _DrawerViewState extends State<DrawerView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userName.value,
+                      userName,
                       style:
                           TextStyleConstant.bold18(color: ColorConstant.white),
                     ),
                     Text(
-                      userEmail.value,
+                      userEmail,
                       style: TextStyleConstant.regular14(
                           color: ColorConstant.white),
                     ),
@@ -87,7 +88,7 @@ class _DrawerViewState extends State<DrawerView> {
               ),
             ),
             drawerWidget(
-              tabName: "My Tiffin Order",
+              tabName: "My Order",
               icon: Icons.account_box_outlined,
               onTap: () {
                 Get.to(() => const TiffinOrderView());

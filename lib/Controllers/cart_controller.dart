@@ -59,48 +59,63 @@ class CartController extends GetxController {
     discountInCart.value = '0';
     coupon.clear();
     userCode.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userCode);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userCode) ??
+        '';
     userPhone.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userPhone);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userPhone) ??
+        '';
     userName.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userName);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userName) ??
+        '';
     userType.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userType);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userType) ??
+        '';
     addressType.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.addressType);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.addressType) ??
+        '';
     address.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.address);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.address) ??
+        '';
     latLng.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.latLng);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.latLng) ??
+        '';
     state.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.state);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.state) ??
+        '';
     city.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.city);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.city) ??
+        '';
     pinCode.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.pinCode);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.pinCode) ??
+        '';
     branchName.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.branch) ??
         "";
-
     currentDate.value = "${DateTime.now()}";
     currentDate.value = currentDate.value.split(" ")[0];
-    await getCartItemsList().whenComplete(() => update());
-    getDeliveryCharges();
-    getPackagingList().then((value) {
-      packagingPrice.value =
-          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
+    getCartItemsList().whenComplete(() {
+      update();
+      getPackagingList().then((value) {
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
+        packagingName.value = getPackagingListModel
+                .value.packagingList?[0].packagingName
+                .toString() ??
+            '';
+      });
     });
+    getDeliveryCharges();
   }
 
   Future getDeliveryCharges() async {
@@ -159,6 +174,9 @@ class CartController extends GetxController {
         });
         totalPriceInCart.value = '$total';
         totalQuantityInCart.value = quantity.toStringAsFixed(0);
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
+
         CustomLoader.closeCustomLoader();
         update();
       } else {
@@ -347,16 +365,6 @@ class CartController extends GetxController {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during posting order ::: $error");
     }
-  }
-
-  ifRegularSelected() {
-    packRegular.value = true;
-    packEcoFriendly.value = false;
-  }
-
-  isEcoFriendly() {
-    packRegular.value = false;
-    packEcoFriendly.value = true;
   }
 
   Future postCoupon() async {

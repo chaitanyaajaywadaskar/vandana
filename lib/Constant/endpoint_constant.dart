@@ -28,4 +28,7 @@ class EndPointConstant {
   static String thaliChapatiList = "thali_chapati_itemlist.php";
   static String tiffinOrderList = "order_list_tiffin.php";
   static String addressListTypewise = "address_list_typewise.php";
+  static String selectedAddressUpdate = "selected_address_update.php";
+  static String userSelectedAddress = "user_selected_address.php";
+  static String cancelTiffin = "cancel_tiffin.php";
 }

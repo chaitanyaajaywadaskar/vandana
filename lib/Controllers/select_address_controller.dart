@@ -135,8 +135,9 @@ class SelectAddressController extends GetxController {
       if (getBranchListModel.statusCode == "200" ||
           getBranchListModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
+
         for (int i = 0;
-            i < int.parse('${getBranchListModel.branchList?.length ?? 0}');
+            i < int.parse('${getBranchListModel.branchList?.length}');
             i++) {
           distance.value = calculateDistance(
               double.parse(latitude.value),

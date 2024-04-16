@@ -50,7 +50,6 @@ class SelectAddressView extends StatelessWidget {
                                 controller.longitude.value =
                                     '${controller.getAddressListModel.addressList?[index].latLong?.split(' ')[1]}';
                                 controller.getBranchList().then((value) async {
-                                  print(value);
                                   if (value) {
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,

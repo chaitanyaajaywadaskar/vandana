@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../Controllers/address_controller.dart';
+import '../../Custom_Widgets/custom_toast.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({
@@ -24,7 +26,6 @@ class _MapScreenState extends State<MapScreen> {
   var long = null;
   List<LatLng> polylineCoordinates = [];
   List<Marker> marker = [];
-  late Timer _timer;
 
   BitmapDescriptor myHomeIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor employeeIcon = BitmapDescriptor.defaultMarker;
@@ -58,7 +59,6 @@ class _MapScreenState extends State<MapScreen> {
         lat = value.latitude;
         long = value.longitude;
       });
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
       marker.add(
         Marker(
           markerId: const MarkerId('current-location'),
@@ -74,7 +74,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
   }
 
@@ -83,6 +82,7 @@ class _MapScreenState extends State<MapScreen> {
     controller.animateCamera(CameraUpdate.newLatLng(position));
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
+    customToast(message: "Address selected");
 
     var first = placemarks.first;
     addressController.stateController.text = '${first.administrativeArea}';
@@ -94,6 +94,26 @@ class _MapScreenState extends State<MapScreen> {
         "${first.name}, ${first.subThoroughfare}, ${first.thoroughfare}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea} ${first.postalCode}, ${first.country}";
     addressController.coordinatesController.text =
         '${double.parse('${position.latitude}').toStringAsFixed(3)}, ${double.parse('${position.longitude}').toStringAsFixed(3)}';
+
+    bool isContain = addressController.getBranchListModel.branchList?.any(
+            (element) =>
+                element?.branchName.toString().trim().toLowerCase() ==
+                first.subLocality.toString().trim().toLowerCase()) ??
+        false;
+    if (isContain) {
+      addressController.selectedBranch.value =
+          first.subLocality ?? 'Not Available';
+      addressController.getBranchListModel.branchList?.forEach((element) {
+        if (element?.branchName.toString().trim().toLowerCase() ==
+            first.subLocality.toString().trim().toLowerCase()) {
+          addressController.selectedBranchCode.value = element?.loginId ?? '';
+        }
+      });
+
+      log('data:------------>>> ${addressController.selectedBranchCode.value}');
+    } else {
+      addressController.selectedBranch.value = 'Not Available';
+    }
   }
 
   @override

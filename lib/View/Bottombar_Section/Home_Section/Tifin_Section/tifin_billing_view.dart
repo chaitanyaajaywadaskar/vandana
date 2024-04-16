@@ -90,7 +90,6 @@ class _TifinBillingViewState extends State<TifinBillingView>
 
   @override
   Widget build(BuildContext context) {
-    print(widget.weekendPrice);
     return Scaffold(
       backgroundColor: ColorConstant.backGround,
       appBar: const CustomAppBar(title: "Tiffin Billing"),
@@ -898,6 +897,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList1,
+                                    date: formatDate(
+                                        controller.next7Days[0].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -906,6 +907,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList2,
+                                    date: formatDate(
+                                        controller.next7Days[1].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -914,6 +917,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList3,
+                                    date: formatDate(
+                                        controller.next7Days[2].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -922,6 +927,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList4,
+                                    date: formatDate(
+                                        controller.next7Days[3].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -930,6 +937,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList5,
+                                    date: formatDate(
+                                        controller.next7Days[4].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -938,6 +947,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList6,
+                                    date: formatDate(
+                                        controller.next7Days[5].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -946,6 +957,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.lunchSubjiList7,
+                                    date: formatDate(
+                                        controller.next7Days[6].toString()),
                                   ),
                                 ]);
                           }),
@@ -1146,6 +1159,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList1,
+                                    date: formatDate(
+                                        controller.next7Days[0].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1154,6 +1169,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList2,
+                                    date: formatDate(
+                                        controller.next7Days[1].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1162,6 +1179,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList3,
+                                    date: formatDate(
+                                        controller.next7Days[2].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1170,6 +1189,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList4,
+                                    date: formatDate(
+                                        controller.next7Days[3].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1178,6 +1199,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList5,
+                                    date: formatDate(
+                                        controller.next7Days[4].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1186,6 +1209,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList6,
+                                    date: formatDate(
+                                        controller.next7Days[5].toString()),
                                   ),
                                   SelectVegetableWidget(
                                     vegeTableList: controller
@@ -1194,6 +1219,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                             .sabjiList ??
                                         [],
                                     storageList: controller.dinnerSubjiList7,
+                                    date: formatDate(
+                                        controller.next7Days[6].toString()),
                                   ),
                                 ]);
                           }),
@@ -1632,13 +1659,14 @@ class _TifinBillingViewState extends State<TifinBillingView>
 
 // ignore: must_be_immutable
 class SelectVegetableWidget extends StatefulWidget {
-  SelectVegetableWidget({
-    super.key,
-    required this.vegeTableList,
-    required this.storageList,
-  });
+  SelectVegetableWidget(
+      {super.key,
+      required this.vegeTableList,
+      required this.storageList,
+      this.date});
   List vegeTableList;
   RxList<Map<String, String>> storageList;
+  String? date;
 
   @override
   State<SelectVegetableWidget> createState() => _SelectVegetableWidgetState();
@@ -1669,7 +1697,8 @@ class _SelectVegetableWidgetState extends State<SelectVegetableWidget> {
           "sId": widget.vegeTableList[index].id,
           "day": widget.vegeTableList[index].day,
           "sabji": widget.vegeTableList[index].sabji,
-          "tiffin_type": widget.vegeTableList[index].tiffinType
+          "tiffin_type": widget.vegeTableList[index].tiffinType,
+          "date": widget.date ?? ''
         });
       }
     }
@@ -1677,8 +1706,6 @@ class _SelectVegetableWidgetState extends State<SelectVegetableWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'store list:- ${widget.storageList}, sabji list:${widget.vegeTableList}');
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -1767,4 +1794,9 @@ class CustomRadioButton extends StatelessWidget {
       ],
     );
   }
+}
+
+String formatDate(String date) {
+  String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(date));
+  return formattedDate;
 }

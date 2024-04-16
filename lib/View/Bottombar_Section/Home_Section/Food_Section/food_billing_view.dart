@@ -142,55 +142,55 @@ class _FoodBillingViewState extends State<FoodBillingView> {
                     ),
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    height10,
-                    Text(
-                      "Packaging",
-                      style: TextStyleConstant.regular22(
-                          color: ColorConstant.orange),
-                    ),
-                    height10,
-                    Obx(() {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.ifRegularSelected();
-                          controller.packagingName.value = controller
-                                  .getPackagingListModel
-                                  .value
-                                  .packagingList?[0]
-                                  .packagingName ??
-                              "";
-                        },
-                        child: CustomRadioButton(
-                            buttonName:
-                                "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
-                            isSelected: controller.packRegular),
-                      );
-                    }),
-                    height10,
-                    Obx(() {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.isEcoFriendly();
-                          controller.packagingName.value = controller
-                                  .getPackagingListModel
-                                  .value
-                                  .packagingList?[1]
-                                  .packagingName ??
-                              "";
-                        },
-                        child: CustomRadioButton(
-                            buttonName:
-                                "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
-                            isSelected: controller.packEcoFriendly),
-                      );
-                    }),
-                  ],
-                ),
-                height10,
-                priceWidget(controller: controller),
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     height10,
+                //     Text(
+                //       "Packaging",
+                //       style: TextStyleConstant.regular22(
+                //           color: ColorConstant.orange),
+                //     ),
+                //     height10,
+                //     Obx(() {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           controller.ifRegularSelected();
+                //           controller.packagingName.value = controller
+                //                   .getPackagingListModel
+                //                   .value
+                //                   .packagingList?[0]
+                //                   .packagingName ??
+                //               "";
+                //         },
+                //         child: CustomRadioButton(
+                //             buttonName:
+                //                 "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
+                //             isSelected: controller.packRegular),
+                //       );
+                //     }),
+                //     height10,
+                //     Obx(() {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           controller.isEcoFriendly();
+                //           controller.packagingName.value = controller
+                //                   .getPackagingListModel
+                //                   .value
+                //                   .packagingList?[1]
+                //                   .packagingName ??
+                //               "";
+                //         },
+                //         child: CustomRadioButton(
+                //             buttonName:
+                //                 "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
+                //             isSelected: controller.packEcoFriendly),
+                //       );
+                //     }),
+                //   ],
+                // ),
+                // height10,
+                // priceWidget(controller: controller),
               ],
             ),
           ),
@@ -199,121 +199,121 @@ class _FoodBillingViewState extends State<FoodBillingView> {
     );
   }
 
-  Widget priceWidget({required FoodBillingController controller}) {
-    final profileController = Get.put(ProfileController());
+  // Widget priceWidget({required FoodBillingController controller}) {
+  //   final profileController = Get.put(ProfileController());
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        if (controller.discountInCart.value == '0')
-          InkWell(
-            onTap: () {
-              Get.dialog(AlertDialog(
-                contentPadding: EdgeInsets.zero,
-                content: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomTextField(
-                          controller: controller.coupon,
-                          fillColor: Colors.grey.withOpacity(0.4),
-                          hintText: 'Enter a coupon code',
-                          suffixIcon: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  controller.postCoupon();
-                                },
-                                child: Text(
-                                  'Apply',
-                                  style: TextStyleConstant.semiBold14(
-                                      color: Colors.green),
-                                ),
-                              ),
-                            ],
-                          ),
-                          enable: true),
-                    ],
-                  ),
-                ),
-              ));
-            },
-            child: Text(
-              "Have any coupon?",
-              style: TextStyleConstant.regular18(color: Colors.green),
-            ),
-          ),
-        Text(
-          "Food Price: ${widget.mrp}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Text(
-          "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Text(
-          "Coupon: ${controller.discountInCart.value}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Text(
-          "Coupon: ${controller.discountInCart.value}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Text(
-          "Delivery: 0",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Obx(
-          () => Text(
-            "Packaging: ${controller.packEcoFriendly.value == true ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * 22}" : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * 22}"}",
-            style: TextStyleConstant.regular18().copyWith(
-                color: ColorConstant.appMainColor, fontWeight: FontWeight.w400),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-              left: Get.width * 0.500,
-              bottom: Get.height * 0.010,
-              top: Get.height * 0.020),
-          child: const HorizontalDottedLine(),
-        ),
-        Text(
-          "Sub Total: ${controller.totalPriceInCart}",
-          style: TextStyleConstant.regular18(color: ColorConstant.orange),
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-              left: Get.width * 0.500,
-              top: Get.height * 0.010,
-              bottom: Get.height * 0.020),
-          child: const HorizontalDottedLine(),
-        ),
-        // CustomButton(
-        //   title: "Place Order",
-        //   width: Get.width * 0.400,
-        //   onTap: () {
-        //     controller.postOrder(
-        //         cartId: widget.cartId,
-        //         categoryName: widget.categoryName,
-        //         subCategoryName: widget.subCategoryName,
-        //         productName: widget.productName,
-        //         productCode: widget.productCode,
-        //         price: widget.price,
-        //         amount: widget.mrp,
-        //         tax: widget.tax,
-        //         taxsGst: widget.taxsGst,
-        //         taxjGst: widget.taxjGst,
-        //         total: widget.price,
-        //         unit: widget.unit);
-        //   },
-        // ),
-      ],
-    );
-  }
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.end,
+  //     children: [
+  //       if (controller.discountInCart.value == '0')
+  //         InkWell(
+  //           onTap: () {
+  //             Get.dialog(AlertDialog(
+  //               contentPadding: EdgeInsets.zero,
+  //               content: Container(
+  //                 padding: const EdgeInsets.all(10),
+  //                 decoration: BoxDecoration(
+  //                     color: Colors.white,
+  //                     borderRadius: BorderRadius.circular(8)),
+  //                 child: Column(
+  //                   mainAxisSize: MainAxisSize.min,
+  //                   children: [
+  //                     CustomTextField(
+  //                         controller: controller.coupon,
+  //                         fillColor: Colors.grey.withOpacity(0.4),
+  //                         hintText: 'Enter a coupon code',
+  //                         suffixIcon: Column(
+  //                           mainAxisAlignment: MainAxisAlignment.center,
+  //                           crossAxisAlignment: CrossAxisAlignment.center,
+  //                           children: [
+  //                             TextButton(
+  //                               onPressed: () {
+  //                                 controller.postCoupon();
+  //                               },
+  //                               child: Text(
+  //                                 'Apply',
+  //                                 style: TextStyleConstant.semiBold14(
+  //                                     color: Colors.green),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         enable: true),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ));
+  //           },
+  //           child: Text(
+  //             "Have any coupon?",
+  //             style: TextStyleConstant.regular18(color: Colors.green),
+  //           ),
+  //         ),
+  //       Text(
+  //         "Food Price: ${widget.mrp}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Text(
+  //         "Discount: ${int.parse(widget.mrp) - int.parse(widget.price)}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Text(
+  //         "Coupon: ${controller.discountInCart.value}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Text(
+  //         "Coupon: ${controller.discountInCart.value}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Text(
+  //         "Delivery: 0",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Obx(
+  //         () => Text(
+  //           "Packaging: ${controller.packEcoFriendly.value == true ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * 22}" : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * 22}"}",
+  //           style: TextStyleConstant.regular18().copyWith(
+  //               color: ColorConstant.appMainColor, fontWeight: FontWeight.w400),
+  //         ),
+  //       ),
+  //       Padding(
+  //         padding: EdgeInsets.only(
+  //             left: Get.width * 0.500,
+  //             bottom: Get.height * 0.010,
+  //             top: Get.height * 0.020),
+  //         child: const HorizontalDottedLine(),
+  //       ),
+  //       Text(
+  //         "Sub Total: ${controller.totalPriceInCart}",
+  //         style: TextStyleConstant.regular18(color: ColorConstant.orange),
+  //       ),
+  //       Padding(
+  //         padding: EdgeInsets.only(
+  //             left: Get.width * 0.500,
+  //             top: Get.height * 0.010,
+  //             bottom: Get.height * 0.020),
+  //         child: const HorizontalDottedLine(),
+  //       ),
+  //       // CustomButton(
+  //       //   title: "Place Order",
+  //       //   width: Get.width * 0.400,
+  //       //   onTap: () {
+  //       //     controller.postOrder(
+  //       //         cartId: widget.cartId,
+  //       //         categoryName: widget.categoryName,
+  //       //         subCategoryName: widget.subCategoryName,
+  //       //         productName: widget.productName,
+  //       //         productCode: widget.productCode,
+  //       //         price: widget.price,
+  //       //         amount: widget.mrp,
+  //       //         tax: widget.tax,
+  //       //         taxsGst: widget.taxsGst,
+  //       //         taxjGst: widget.taxjGst,
+  //       //         total: widget.price,
+  //       //         unit: widget.unit);
+  //       //   },
+  //       // ),
+  //     ],
+  //   );
+  // }
 }

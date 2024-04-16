@@ -200,7 +200,6 @@ class TifinBillingController extends GetxController {
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch);
     currentDate.value = "${DateTime.now()}";
-    currentDate.value = currentDate.value.split(" ")[0];
   }
 
   calculateTotal(String total) {
@@ -483,7 +482,7 @@ class TifinBillingController extends GetxController {
         "customer_name": userName.value,
         "user_type": userType.value,
         "phone": userPhone.value,
-        "order_dt": currentDate.value,
+        "order_dt": "${DateTime.now()}",
         "address_type": addressType.value,
         "address": address.value,
         "lat_long": latLng.value,
@@ -497,8 +496,8 @@ class TifinBillingController extends GetxController {
             getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0',
         "branch": branchName.value,
         "order_category": "Tiffin",
-        "coupon_code": '',
-        "coupon_amount": '',
+        "coupon_code": coupon.text,
+        "coupon_amount": discountInCart.value,
         "tiffin_count": tiffinCount,
         "weekend_sat": onSaturday.value ? 'Yes' : 'no',
         "weekend_sun": onSunday.value ? 'Yes' : 'no',
@@ -511,7 +510,7 @@ class TifinBillingController extends GetxController {
         "lunch_address_id": addressLunchId.value,
         "tiffintype_dinner": tiffinType.value,
         "dinner_time": selectedDinnerTime.value,
-        "dinner_address_type": isLunchHomeSelected.value ? 'Home' : 'Office',
+        "dinner_address_type": isDinnerHomeSelected.value ? 'Home' : 'Office',
         "dinner_address_id": addressDinnerId.value,
         'subji_list_lunch': '${lunchSubjiList.map((element) {
           return {
@@ -519,6 +518,7 @@ class TifinBillingController extends GetxController {
             '\"day\"': '\"${element['day']}\"',
             '\"sabji\"': '\"${element['sabji']}\"',
             '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+            '\"date\"': '\"${element['date']}\"',
           };
         }).toList()}',
         'subji_list_dinner': '${dinnerSubjiList.map((element) {
@@ -527,6 +527,7 @@ class TifinBillingController extends GetxController {
             '\"day\"': '\"${element['day']}\"',
             '\"sabji\"': '\"${element['sabji']}\"',
             '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+            '\"date\"': '\"${element['date']}\"',
           };
         }).toList()}',
         "subji_count": '${subjiCount.value}',

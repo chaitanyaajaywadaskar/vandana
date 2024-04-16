@@ -12,6 +12,8 @@ import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Authentication_Section/select_address_view.dart';
 
+import '../View/Bottombar_Section/main_view.dart';
+
 class LoginController extends GetxController {
   PostLoginModel postLoginModel = PostLoginModel();
 
@@ -67,8 +69,9 @@ class LoginController extends GetxController {
             stringData: postLoginModel.result?.id);
 
         customToast(message: "${postLoginModel.message}");
+        Get.offAll(() => const MainView());
 
-        Get.offAll(() => const SelectAddressView());
+        // Get.offAll(() => const SelectAddressView());
       } else {
         CustomLoader.closeCustomLoader();
         customToast(message: "${postLoginModel.message}");

@@ -57,7 +57,6 @@ class _AddressViewState extends State<AddressView> {
 
   @override
   Widget build(BuildContext context) {
-    controller.getCurrentLocation();
     return Scaffold(
       body: Form(
         key: controller.formKey,
@@ -149,11 +148,7 @@ class _AddressViewState extends State<AddressView> {
                       ),
                       CustomButton(
                         title: "Select from Map",
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MapScreen(),
-                            )),
+                        onTap: () => Get.to(() => const MapScreen()),
                       ),
                       const SizedBox(
                         height: 15,
@@ -174,7 +169,7 @@ class _AddressViewState extends State<AddressView> {
                                   controller.selectedAddressType.value ==
                                       "Office") {
                                 if (widget.isEditAddress) {
-                                  controller.getBranchList();
+                                  // controller.getBranchList();
                                   controller.editAddress(
                                       addressId: "${widget.addressId}",
                                       addressType: "${widget.addressType}",
@@ -184,7 +179,7 @@ class _AddressViewState extends State<AddressView> {
                                       address: "${widget.address}",
                                       latLng: "${widget.latLng}");
                                 } else {
-                                  controller.getBranchList();
+                                  // controller.getBranchList();
                                   controller.postAddress();
                                 }
                               } else {

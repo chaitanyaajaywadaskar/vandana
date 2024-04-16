@@ -43,12 +43,7 @@ class FoodBillingController extends GetxController {
   RxDouble count = 0.0.obs;
 
   initialFunctioun({ required String tifinPrice,}) async {
-    getTotalCount(
-        tiffinPrice: tifinPrice,
-        ecoFriendly:
-            getPackagingListModel.value.packagingList?[1].packagingPrice ?? '0',
-        regular: getPackagingListModel.value.packagingList?[0].packagingPrice ??
-            '0');
+   
     userCode.value = await StorageServices.getData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.userCode);
@@ -83,7 +78,6 @@ class FoodBillingController extends GetxController {
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch);
     currentDate.value = DateTime.now().toString().split(" ")[0];
-    getPackagingList();
   }
 
   ifRegularSelected() {
@@ -96,123 +90,123 @@ class FoodBillingController extends GetxController {
     packEcoFriendly.value = true;
   }
 
-  Future getPackagingList() async {
-    CustomLoader.openCustomLoader();
-    try {
-      var data = <String, String>{};
-      data['packaging_category'] = 'Other';
-      var response = await HttpServices.postHttpMethod(
-          url: EndPointConstant.packagingList, payload: data);
-      log("payload $data \n, response $response");
+  // Future getPackagingList() async {
+  //   CustomLoader.openCustomLoader();
+  //   try {
+  //     var data = <String, String>{};
+  //     data['packaging_category'] = 'Other';
+  //     var response = await HttpServices.postHttpMethod(
+  //         url: EndPointConstant.packagingList, payload: data);
+  //     log("payload $data \n, response $response");
 
-      getPackagingListModel.value =
-          getPackagingListModelFromJson(response["body"]);
+  //     getPackagingListModel.value =
+  //         getPackagingListModelFromJson(response["body"]);
 
-      if (getPackagingListModel.value.statusCode == "200" ||
-          getPackagingListModel.value.statusCode == "201") {
-        CustomLoader.closeCustomLoader();
-      } else {
-        CustomLoader.closeCustomLoader();
-      }
-      log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
-    } catch (error) {
-      CustomLoader.closeCustomLoader();
-      log("Something went wrong during getting packaging list ::: $error");
-    }
-  }
- getTotalCount(
-      {String? tiffinPrice,
-      required String ecoFriendly,
-      required String regular,
-      }) {
-    int tiffinPrice1 = int.parse(tiffinPrice.toString());
-    int ecoFriendly1 = packEcoFriendly.value == true
-        ? int.parse(ecoFriendly)
-        : int.parse(regular);
+  //     if (getPackagingListModel.value.statusCode == "200" ||
+  //         getPackagingListModel.value.statusCode == "201") {
+  //       CustomLoader.closeCustomLoader();
+  //     } else {
+  //       CustomLoader.closeCustomLoader();
+  //     }
+  //     log("Something went wrong during getting packaging list ::: ${getPackagingListModel.value.message}");
+  //   } catch (error) {
+  //     CustomLoader.closeCustomLoader();
+  //     log("Something went wrong during getting packaging list ::: $error");
+  //   }
+  // }
+//  getTotalCount(
+//       {String? tiffinPrice,
+//       required String ecoFriendly,
+//       required String regular,
+//       }) {
+//     int tiffinPrice1 = int.parse(tiffinPrice.toString());
+//     int ecoFriendly1 = packEcoFriendly.value == true
+//         ? int.parse(ecoFriendly)
+//         : int.parse(regular);
 
-    totalCount.value = tiffinPrice1 + ecoFriendly1 + count.toInt();
-  }
+//     totalCount.value = tiffinPrice1 + ecoFriendly1 + count.toInt();
+//   }
   
-  Future postOrder(
-      {required String cartId,
-      required String categoryName,
-      required String subCategoryName,
-      required String productName,
-      required String productCode,
-      required String price,
-      required String amount,
-      required tax,
-      required taxsGst,
-      required String taxjGst,
-      required String total,
-      required String unit}) async {
-    CustomLoader.openCustomLoader();
-    try {
-      orderItemList.value = [
-        {
-          '\"cartId\"': '\"$cartId\"',
-          '\"category_name\"': '\"$categoryName\"',
-          '\"subcategory_name\"': '\"$subCategoryName\"',
-          '\"product_name\"': '\"$productName\"',
-          '\"product_code\"': '\"$productCode\"',
-          '\"quantity\"': '\"1\"',
-          '\"price\"': '\"$price\"',
-          '\"amount\"': '\"$amount\"',
-          '\"tax\"': '\"$tax\"',
-          '\"tax_sgst\"': '\"$taxsGst\"',
-          '\"tax_igst\"': '\"$taxjGst\"',
-          '\"total\"': '\"$total\"',
-          '\"unit\"': '\"$unit\"',
-        },
-      ];
+  // Future postOrder(
+  //     {required String cartId,
+  //     required String categoryName,
+  //     required String subCategoryName,
+  //     required String productName,
+  //     required String productCode,
+  //     required String price,
+  //     required String amount,
+  //     required tax,
+  //     required taxsGst,
+  //     required String taxjGst,
+  //     required String total,
+  //     required String unit}) async {
+  //   CustomLoader.openCustomLoader();
+  //   try {
+  //     orderItemList.value = [
+  //       {
+  //         '\"cartId\"': '\"$cartId\"',
+  //         '\"category_name\"': '\"$categoryName\"',
+  //         '\"subcategory_name\"': '\"$subCategoryName\"',
+  //         '\"product_name\"': '\"$productName\"',
+  //         '\"product_code\"': '\"$productCode\"',
+  //         '\"quantity\"': '\"1\"',
+  //         '\"price\"': '\"$price\"',
+  //         '\"amount\"': '\"$amount\"',
+  //         '\"tax\"': '\"$tax\"',
+  //         '\"tax_sgst\"': '\"$taxsGst\"',
+  //         '\"tax_igst\"': '\"$taxjGst\"',
+  //         '\"total\"': '\"$total\"',
+  //         '\"unit\"': '\"$unit\"',
+  //       },
+  //     ];
 
-      Map<String, dynamic> payload = {
-        "customer_code": userCode.value,
-        "customer_name": userName.value,
-        "user_type": userType.value,
-        "phone": userPhone.value,
-        "order_dt": DateTime.now().toString().split(" ")[0],
-        "address_type": addressType.value,
-        "address": address.value,
-        "lat_long": latLng.value,
-        "state": state.value,
-        "city": city.value,
-        "pincode": pinCode.value,
-        "order_item": "$orderItemList",
-        "receivers_name": "monika gite",
-        "billto_phone": "9090909090",
-        "delivery_charges": "0",
-        "branch": branchName.value,
-        "order_category": categoryName,
-        "coupon_code": 'FOODABC1232',
-        "coupon_amount": '50',
-        "packaging_type": packagingName.value,
-        "total_bill_amount": total
-      };
+  //     Map<String, dynamic> payload = {
+  //       "customer_code": userCode.value,
+  //       "customer_name": userName.value,
+  //       "user_type": userType.value,
+  //       "phone": userPhone.value,
+  //       "order_dt": DateTime.now().toString().split(" ")[0],
+  //       "address_type": addressType.value,
+  //       "address": address.value,
+  //       "lat_long": latLng.value,
+  //       "state": state.value,
+  //       "city": city.value,
+  //       "pincode": pinCode.value,
+  //       "order_item": "$orderItemList",
+  //       "receivers_name": "monika gite",
+  //       "billto_phone": "9090909090",
+  //       "delivery_charges": "0",
+  //       "branch": branchName.value,
+  //       "order_category": categoryName,
+  //       "coupon_code": 'FOODABC1232',
+  //       "coupon_amount": '50',
+  //       "packaging_type": packagingName.value,
+  //       "total_bill_amount": total
+  //     };
 
-      log("Post order payload ::: $payload");
+  //     log("Post order payload ::: $payload");
 
-      var response = await HttpServices.postHttpMethod(
-          url: EndPointConstant.saleOrderPlace, payload: payload);
+  //     var response = await HttpServices.postHttpMethod(
+  //         url: EndPointConstant.saleOrderPlace, payload: payload);
 
-      log("Post order response ::: $response");
+  //     log("Post order response ::: $response");
 
-      postOrderModel = postOrderModelFromJson(response["body"]);
+  //     postOrderModel = postOrderModelFromJson(response["body"]);
 
-      if (postOrderModel.statusCode == "200" ||
-          postOrderModel.statusCode == "201") {
-        CustomLoader.closeCustomLoader();
-        customToast(message: "${postOrderModel.message}");
-        Get.offAll(() => const ThankYouView(isCancelOrder: false));
-      } else {
-        CustomLoader.closeCustomLoader();
-        customToast(message: "${postOrderModel.message}");
-      }
-    } catch (error) {
-      CustomLoader.closeCustomLoader();
-      log("Something went wrong during posting order ::: $error");
-    }
-  }
+  //     if (postOrderModel.statusCode == "200" ||
+  //         postOrderModel.statusCode == "201") {
+  //       CustomLoader.closeCustomLoader();
+  //       customToast(message: "${postOrderModel.message}");
+  //       Get.offAll(() => const ThankYouView(isCancelOrder: false));
+  //     } else {
+  //       CustomLoader.closeCustomLoader();
+  //       customToast(message: "${postOrderModel.message}");
+  //     }
+  //   } catch (error) {
+  //     CustomLoader.closeCustomLoader();
+  //     log("Something went wrong during posting order ::: $error");
+  //   }
+  // }
 
   Future postCoupon() async {
     CustomLoader.openCustomLoader();
@@ -253,28 +247,28 @@ class FoodBillingController extends GetxController {
     }
   }
 
-  Future getDeliveryCharges({String category = ''}) async {
-    // CustomLoader.openCustomLoader();
-    try {
-      var data = <String, String>{};
-      data['delivery_charges_category'] = category;
-      var response = await HttpServices.postHttpMethod(
-          url: EndPointConstant.deliveryChargesList, payload: data);
+  // Future getDeliveryCharges({String category = ''}) async {
+  //   // CustomLoader.openCustomLoader();
+  //   try {
+  //     var data = <String, String>{};
+  //     data['delivery_charges_category'] = category;
+  //     var response = await HttpServices.postHttpMethod(
+  //         url: EndPointConstant.deliveryChargesList, payload: data);
 
-      getDeliveryChargesModel.value =
-          getDeliveryChargesModelFromJson(response["body"]);
-      totalCount.value += int.parse(
-          getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0');
-      if (getDeliveryChargesModel.value.statusCode == "200" ||
-          getDeliveryChargesModel.value.statusCode == "201") {
-        // CustomLoader.closeCustomLoader();
-      } else {
-        // CustomLoader.closeCustomLoader();
-      }
-      log("Something went wrong during getting delivery charges list ::: ${getDeliveryChargesModel.value.message}");
-    } catch (error) {
-      // CustomLoader.closeCustomLoader();
-      log("Something went wrong during getting delivery charges list ::: $error");
-    }
-  }
+  //     getDeliveryChargesModel.value =
+  //         getDeliveryChargesModelFromJson(response["body"]);
+  //     totalCount.value += int.parse(
+  //         getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0');
+  //     if (getDeliveryChargesModel.value.statusCode == "200" ||
+  //         getDeliveryChargesModel.value.statusCode == "201") {
+  //       // CustomLoader.closeCustomLoader();
+  //     } else {
+  //       // CustomLoader.closeCustomLoader();
+  //     }
+  //     log("Something went wrong during getting delivery charges list ::: ${getDeliveryChargesModel.value.message}");
+  //   } catch (error) {
+  //     // CustomLoader.closeCustomLoader();
+  //     log("Something went wrong during getting delivery charges list ::: $error");
+  //   }
+  // }
 }

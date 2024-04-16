@@ -10,11 +10,17 @@ import 'package:vandana/Custom_Widgets/custom_no_data_found.dart';
 import '../../../Constant/static_decoration.dart';
 import '../../../Custom_Widgets/custom_dotted_line.dart';
 import '../../../Custom_Widgets/custom_textfield.dart';
+import '../../../Custom_Widgets/custom_toast.dart';
 import '../Home_Section/Tifin_Section/tifin_billing_view.dart';
 
-class CartView extends StatelessWidget {
+class CartView extends StatefulWidget {
   const CartView({super.key});
 
+  @override
+  State<CartView> createState() => _CartViewState();
+}
+
+class _CartViewState extends State<CartView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +83,7 @@ class CartView extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             SizedBox(
-                                              width: Get.width * 0.40,
+                                              width: Get.width * 0.37,
                                               child: Text(
                                                 controller
                                                         .getCartItemsListModel
@@ -123,60 +129,115 @@ class CartView extends StatelessWidget {
                           )
                         : const CustomNoDataFound(),
                     height10,
-                    Text(
-                      "Packaging",
-                      style: TextStyleConstant.regular22(
-                          color: ColorConstant.orange),
-                    ),
-                    Obx(() {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.ifRegularSelected();
-                          controller.packagingName.value = controller
-                                  .getPackagingListModel
-                                  .value
-                                  .packagingList?[0]
-                                  .packagingName ??
-                              "";
+                    if (controller
+                            .getCartItemsListModel.cartItemList?.isNotEmpty ==
+                        true)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const HorizontalDottedLine(),
+                          height10,
+                          Text(
+                            "Packaging",
+                            style: TextStyleConstant.regular22(
+                                color: ColorConstant.orange),
+                          ),
+                          height10,
 
-                          controller.packagingPrice.value = controller
-                                      .packEcoFriendly.value ==
-                                  true
-                              ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
-                              : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
-                        },
-                        child: CustomRadioButton(
-                            buttonName:
-                                "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
-                            isSelected: controller.packRegular),
-                      );
-                    }),
-                    height10,
-                    Obx(() {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.isEcoFriendly();
-                          controller.packagingName.value = controller
-                                  .getPackagingListModel
-                                  .value
-                                  .packagingList?[1]
-                                  .packagingName ??
-                              "";
+                          Obx(
+                            () => controller.getPackagingListModel.value
+                                            .packagingList !=
+                                        null &&
+                                    controller.getPackagingListModel.value
+                                            .packagingList?.isNotEmpty ==
+                                        true
+                                ? ListView.builder(
+                                    itemBuilder: (context, index) =>
+                                        NewRadioButton(
+                                      buttonName:
+                                          "${controller.getPackagingListModel.value.packagingList?[index].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[index].packagingPrice ?? ""}",
+                                      isSelected:
+                                          controller.packagingName.value ==
+                                              controller
+                                                  .getPackagingListModel
+                                                  .value
+                                                  .packagingList?[index]
+                                                  .packagingName
+                                                  .toString(),
+                                      onTap: () {
+                                        controller.packagingName.value =
+                                            controller
+                                                    .getPackagingListModel
+                                                    .value
+                                                    .packagingList?[index]
+                                                    .packagingName ??
+                                                "";
 
-                          controller.packagingPrice.value = controller
-                                      .packEcoFriendly.value ==
-                                  true
-                              ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
-                              : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
-                        },
-                        child: CustomRadioButton(
-                            buttonName:
-                                "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
-                            isSelected: controller.packEcoFriendly),
-                      );
-                    }),
-                    height10,
-                    const HorizontalDottedLine(),
+                                        controller.packagingPrice.value =
+                                            "${int.parse(controller.getPackagingListModel.value.packagingList?[index].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                                        setState(() {});
+                                      },
+                                    ),
+                                    itemCount: controller.getPackagingListModel
+                                        .value.packagingList?.length,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                  )
+                                : const CircularProgressIndicator(),
+                          ),
+
+                          // Obx(() {
+                          //   return GestureDetector(
+                          //     onTap: () {
+                          //       controller.ifRegularSelected();
+                          //       controller.packagingName.value = controller
+                          //               .getPackagingListModel
+                          //               .value
+                          //               .packagingList?[0]
+                          //               .packagingName ??
+                          //           "";
+
+                          //       controller.packagingPrice.value = controller
+                          //                   .packEcoFriendly.value ==
+                          //               true
+                          //           ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
+                          //           : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                          //     },
+                          //     child: CustomRadioButton(
+                          //         buttonName:
+                          //             "${controller.getPackagingListModel.value.packagingList?[0].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? ""}",
+                          //         isSelected: controller.packRegular),
+                          //   );
+                          // }),
+                          // height10,
+                          // Obx(() {
+                          //   return GestureDetector(
+                          //     onTap: () {
+                          //       controller.isEcoFriendly();
+                          //       controller.packagingName.value = controller
+                          //               .getPackagingListModel
+                          //               .value
+                          //               .packagingList?[1]
+                          //               .packagingName ??
+                          //           "";
+
+                          //       controller.packagingPrice.value = controller
+                          //                   .packEcoFriendly.value ==
+                          //               true
+                          //           ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}"
+                          //           : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                          //     },
+                          //     child: CustomRadioButton(
+                          //         buttonName:
+                          //             "${controller.getPackagingListModel.value.packagingList?[1].packagingName ?? ""}  \u{20B9}${controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? ""}",
+                          //         isSelected: controller.packEcoFriendly),
+                          //   );
+                          // }),
+                          height10,
+                          const HorizontalDottedLine(),
+                        ],
+                      ),
                     height20,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -285,30 +346,34 @@ class CartView extends StatelessWidget {
           title: "Place Order",
           onTap: () async {
             CartController controller = Get.find();
+            if (controller.getCartItemsListModel.cartItemList?.isNotEmpty ==
+                true) {
+              final payload = [];
+              controller.getCartItemsListModel.cartItemList?.forEach((element) {
+                String tax = (int.parse(element.tax ?? '0') / 2).toString();
 
-            final payload = [];
-            controller.getCartItemsListModel.cartItemList?.forEach((element) {
-              String tax = (int.parse(element.tax ?? '0') / 2).toString();
-
-              payload.add({
-                '\"cartId\"': '\"${element.id}\"',
-                '\"category_name\"': '\"${element.categoryName}\"',
-                '\"subcategory_name\"': '\"${element.subcategoryName}\"',
-                '\"product_name\"': '\"${element.productName}\"',
-                '\"product_code\"': '\"${element.productCode}\"',
-                '\"quantity\"': '\"${element.quantity}\"',
-                '\"price\"': '\"${element.price}\"',
-                '\"amount\"':
-                    '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
-                '\"tax\"': '\"${tax != '0.0' ? tax : ''}\"',
-                '\"tax_sgst\"': '\"${tax != '0.0' ? tax : ''}\"',
-                '\"tax_igst\"': '\"\"',
-                '\"total\"':
-                    '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
-                '\"unit\"': '\"${element.unit}\"',
+                payload.add({
+                  '\"cartId\"': '\"${element.id}\"',
+                  '\"category_name\"': '\"${element.categoryName}\"',
+                  '\"subcategory_name\"': '\"${element.subcategoryName}\"',
+                  '\"product_name\"': '\"${element.productName}\"',
+                  '\"product_code\"': '\"${element.productCode}\"',
+                  '\"quantity\"': '\"${element.quantity}\"',
+                  '\"price\"': '\"${element.price}\"',
+                  '\"amount\"':
+                      '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
+                  '\"tax\"': '\"${tax != '0.0' ? tax : ''}\"',
+                  '\"tax_sgst\"': '\"${tax != '0.0' ? tax : ''}\"',
+                  '\"tax_igst\"': '\"\"',
+                  '\"total\"':
+                      '\"${double.parse('${element.quantity == 'null' ? 0 : element.quantity ?? 0}') * double.parse('${element.price == 'null' ? 0 : element.price ?? 0}')}\"',
+                  '\"unit\"': '\"${element.unit}\"',
+                });
               });
-            });
-            controller.postOrder(orderItems: payload);
+              controller.postOrder(orderItems: payload);
+            } else {
+              customToast(message: "No item in cart!");
+            }
           },
         ),
       ),
@@ -319,5 +384,54 @@ class CartView extends StatelessWidget {
       {required Function()? onTap, required IconData icon}) {
     return IconButton(
         onPressed: onTap, icon: Icon(icon, color: ColorConstant.orange));
+  }
+}
+
+class NewRadioButton extends StatelessWidget {
+  const NewRadioButton(
+      {super.key,
+      required this.buttonName,
+      required this.isSelected,
+      required this.onTap});
+
+  final String buttonName;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(2),
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: ColorConstant.orange),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected
+                      ? ColorConstant.orange
+                      : ColorConstant.orangeAccent,
+                ),
+              ),
+            ),
+            width10,
+            Text(
+              buttonName,
+              style: TextStyleConstant.regular16(
+                  color: ColorConstant.orangeAccent),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -67,21 +67,21 @@ class _TiffinOrderViewState extends State<TiffinOrderView> {
                   child: Image.asset(
                     ImagePathConstant.leftShapeBg,
                   )),
-              (tiffinOrderController.getTifinOrderModel.value.orderList !=
+              (tiffinOrderController.getTifinOrderListModel.value.orderList !=
                           null &&
-                      tiffinOrderController
-                              .getTifinOrderModel.value.orderList?.isNotEmpty ==
+                      tiffinOrderController.getTifinOrderListModel.value
+                              .orderList?.isNotEmpty ==
                           true)
                   ? Padding(
                       padding: screenPadding,
                       child: ListView.separated(
                         physics: const BouncingScrollPhysics(),
-                        itemCount: tiffinOrderController
-                                .getTifinOrderModel.value.orderList?.length ??
+                        itemCount: tiffinOrderController.getTifinOrderListModel
+                                .value.orderList?.length ??
                             0,
                         itemBuilder: (context, index) {
                           var data = tiffinOrderController
-                              .getTifinOrderModel.value.orderList;
+                              .getTifinOrderListModel.value.orderList;
                           return ListTile(
                             tileColor: ColorConstant.white,
                             shape: const RoundedRectangleBorder(

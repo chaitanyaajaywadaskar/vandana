@@ -16,9 +16,12 @@ import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Bottombar_Section/main_view.dart';
 
 import '../Models/get_branch_list_model.dart';
+import '../Models/post_selected_address_model.dart';
 
 class AddressController extends GetxController {
   PostAddressModel postAddressModel = PostAddressModel();
+  PostSelectedAddressModel postSelectedAddressModel =
+      PostSelectedAddressModel();
   PostEditAddressModel postEditAddressModel = PostEditAddressModel();
 
   TextEditingController stateController = TextEditingController();
@@ -27,6 +30,7 @@ class AddressController extends GetxController {
   TextEditingController addressController = TextEditingController();
   TextEditingController coordinatesController = TextEditingController();
   RxString selectedBranch = "".obs;
+  RxString selectedBranchCode = "".obs;
 
   final formKey = GlobalKey<FormState>();
   GetBranchListModel getBranchListModel = GetBranchListModel();
@@ -34,6 +38,7 @@ class AddressController extends GetxController {
   RxList<String> addressTypeList = ["Home", "Office"].obs;
 
   RxString userType = "".obs;
+  RxString userName = "".obs;
   RxString userCode = "".obs;
   RxString userPhone = "".obs;
   RxString latitude = "".obs;
@@ -46,9 +51,10 @@ class AddressController extends GetxController {
   LatLng coordinates = const LatLng(0.0, 0.0);
 
   initialFunctioun() async {
-    await getCurrentLocation().then((value) {
-      getBranchList();
+    getBranchList().then((value) {
+      getCurrentLocation();
     });
+
     userType.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userType) ??
@@ -60,6 +66,10 @@ class AddressController extends GetxController {
     userPhone.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userPhone) ??
+        "";
+    userName.value = await StorageServices.getData(
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userName) ??
         "";
   }
 
@@ -93,12 +103,7 @@ class AddressController extends GetxController {
       addressController.text =
           "${placeMark.name}, ${placeMark.subThoroughfare}, ${placeMark.thoroughfare}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea} ${placeMark.postalCode}, ${placeMark.country}";
       log('locality:- ${placeMark.locality} sublocality:- ${placeMark.subLocality}');
-      await StorageServices.setData(
-          dataType: StorageKeyConstant.stringType,
-          prefKey: StorageKeyConstant.branch,
-          stringData: placeMark.subLocality?.isEmpty == true
-              ? placeMark.locality
-              : placeMark.subLocality);
+
       stateController.text = placeMark.administrativeArea ?? "";
       cityController.text = placeMark.locality ?? "";
       pinCodeController.text = placeMark.postalCode ?? "";
@@ -106,6 +111,25 @@ class AddressController extends GetxController {
           "${coordinates.latitude} ${coordinates.longitude}";
       latitude.value = "${coordinates.latitude}";
       longitude.value = "${coordinates.longitude}";
+
+      bool isContain = getBranchListModel.branchList?.any((element) =>
+              element?.branchName.toString().trim().toLowerCase() ==
+              placeMark.subLocality.toString().trim().toLowerCase()) ??
+          false;
+      if (isContain) {
+        selectedBranch.value = placeMark.subLocality ?? 'Not Available';
+        getBranchListModel.branchList?.forEach((element) {
+          if (element?.branchName.toString().trim().toLowerCase() ==
+              placeMark.subLocality.toString().trim().toLowerCase()) {
+            selectedBranchCode.value = element?.loginId ?? '';
+          }
+        });
+
+        log('data:------------>>> ${selectedBranchCode.value}');
+      } else {
+        selectedBranch.value = 'Not Available';
+      }
+
       log("Current address ::: ${addressController.text}");
       update();
       CustomLoader.closeCustomLoader();
@@ -157,28 +181,28 @@ class AddressController extends GetxController {
       if (getBranchListModel.statusCode == "200" ||
           getBranchListModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
-        for (int i = 0;
-            i < int.parse('${getBranchListModel.branchList?.length ?? 0}');
-            i++) {
-          distance.value = calculateDistance(
-              double.parse(latitude.value),
-              double.parse(longitude.value),
-              double.parse(
-                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[0]}"),
-              double.parse(
-                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[1]}"));
+        // for (int i = 0;
+        //     i < int.parse('${getBranchListModel.branchList?.length ?? 0}');
+        //     i++) {
+        //   distance.value = calculateDistance(
+        //       double.parse(latitude.value),
+        //       double.parse(longitude.value),
+        //       double.parse(
+        //           "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[0]}"),
+        //       double.parse(
+        //           "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[1]}"));
 
-          if (distance.value <= 7) {
-            await StorageServices.setData(
-                dataType: StorageKeyConstant.stringType,
-                prefKey: StorageKeyConstant.branch,
-                stringData: getBranchListModel.branchList?[i]?.branchName);
-            selectedBranch.value =
-                '${getBranchListModel.branchList?[i]?.branchName}';
-          } else {
-            debugPrint('not contain');
-          }
-        }
+        //   if (distance.value <= 7) {
+        //     await StorageServices.setData(
+        //         dataType: StorageKeyConstant.stringType,
+        //         prefKey: StorageKeyConstant.branch,
+        //         stringData: getBranchListModel.branchList?[i]?.branchName);
+        //     selectedBranch.value =
+        //         '${getBranchListModel.branchList?[i]?.branchName}';
+        //   } else {
+        //     debugPrint('not contain');
+        //   }
+        // }
 
         update();
       } else {
@@ -223,8 +247,9 @@ class AddressController extends GetxController {
         "pincode": pinCodeController.text,
         "address": addressController.text,
         "lat_long": "${latitude.value} ${longitude.value}",
-        "receivers_name": "Monika",
-        "contact_no": "9325612162",
+        "receivers_name": userName.value,
+        "contact_no": userPhone.value,
+        "branch": selectedBranchCode.value
       };
 
       log("Post address payload ::: $payload");
@@ -239,7 +264,7 @@ class AddressController extends GetxController {
       if (postAddressModel.statusCode == "200" ||
           postAddressModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
-
+        updateSelectedAddress(postAddressModel.addressDetails?.id ?? '');
         await StorageServices.setData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.addressType,
@@ -264,10 +289,45 @@ class AddressController extends GetxController {
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.latLng,
             stringData: postAddressModel.addressDetails?.latLong);
-
+        await StorageServices.setData(
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.branch,
+            stringData: selectedBranch.value);
         customToast(message: "${postAddressModel.message}");
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during posting address ::: ${postAddressModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting address ::: $error");
+    }
+  }
 
+  Future updateSelectedAddress(String id) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {
+        "id": id,
+        "customer_code": userCode.value,
+        "address_status": "selected",
+      };
+
+      log("Post selected address payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.selectedAddressUpdate, payload: payload);
+
+      log("Post selected address response ::: $response");
+
+      postSelectedAddressModel =
+          postSelectedAddressModelFromJson(response["body"]);
+
+      if (postSelectedAddressModel.statusCode == "200" ||
+          postSelectedAddressModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
         Get.offAll(() => const MainView());
+        // customToast(message: "${postSelectedAddressModel.message}");
       } else {
         CustomLoader.closeCustomLoader();
         log("Something went wrong during posting address ::: ${postAddressModel.message}");
@@ -296,8 +356,9 @@ class AddressController extends GetxController {
         "pincode": pinCode,
         "address": address,
         "lat_long": latLng,
-        "receivers_name": "Monika Gite",
-        "contact_no": "9090909090",
+        "receivers_name": userName.value,
+        "contact_no": userPhone.value,
+        "branch": selectedBranchCode.value
       };
 
       log("Edit address payload ::: $payload");

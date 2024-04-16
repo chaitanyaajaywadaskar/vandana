@@ -12,15 +12,19 @@ import 'package:vandana/Services/storage_services.dart';
 
 import '../Models/get_item_list_model.dart';
 import '../Models/get_sabji_list_model copy.dart';
+import '../Models/get_selected_address_model.dart';
 import '../Models/get_sub_category_data_model.dart';
 
 class HomeController extends GetxController {
   GetBannerImagesModel getBannerImagesModel = GetBannerImagesModel();
+  GetSelectedAddressModel getSelectedAddressModel = GetSelectedAddressModel();
   GetCategoryListModel getCategoryListModel = GetCategoryListModel();
   GetBranchListModel getBranchListModel = GetBranchListModel();
   Rx<SubCategoryDataModel> subCategoryDataModel = SubCategoryDataModel().obs;
 
   RxString userName = "".obs;
+  RxString userType = "".obs;
+  RxString customerCode = "".obs;
   RxString selectedBranch = "".obs;
   RxString latLng = "".obs;
   RxString latitude = "".obs;
@@ -62,37 +66,31 @@ class HomeController extends GetxController {
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.latLng) ??
         "";
-    latitude.value = latLng.value.split(" ")[0];
-    longitude.value = latLng.value.split(" ")[1];
-    await getBranchList();
+    if (latLng.value.isNotEmpty) {
+      latitude.value = latLng.value.split(" ")[0];
+      longitude.value = latLng.value.split(" ")[1];
+    }
+
     userName.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userName) ??
+        "";
+    userType.value = await StorageServices.getData(
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userType) ??
+        "";
+    customerCode.value = await StorageServices.getData(
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userCode) ??
         "";
     selectedBranch.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.branch) ??
         "Not Available";
+    getSelectedBranch();
+    getBranchList();
     getBannerImages();
     getCategoryList();
-  }
-
-  double degreesToRadians(double degrees) {
-    return degrees * pi / 180.0;
-  }
-
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    double dLat = degreesToRadians(lat2 - lat1);
-    double dLon = degreesToRadians(lon2 - lon1);
-
-    double a = pow(sin(dLat / 2), 2) +
-        cos(degreesToRadians(lat1)) *
-            cos(degreesToRadians(lat2)) *
-            pow(sin(dLon / 2), 2);
-
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
-    return earthRadius * c;
   }
 
   Future getBannerImages() async {
@@ -122,6 +120,80 @@ class HomeController extends GetxController {
       CustomLoader.closeCustomLoader();
       debugPrint(
           "Something went wrong during getting banner images ::: $error");
+    }
+  }
+
+  Future getSelectedBranch() async {
+    try {
+      CustomLoader.openCustomLoader();
+      Map<String, String> payload = {
+        "user_type": userType.value,
+        "customer_code": customerCode.value
+      };
+
+      debugPrint("Get user selected payload :::  $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.userSelectedAddress, payload: payload);
+
+      debugPrint("Get user selected response ::: $response");
+
+      getSelectedAddressModel =
+          getSelectedAddressModelFromJson(response["body"]);
+
+      if (getSelectedAddressModel.statusCode == "200" ||
+          getSelectedAddressModel.statusCode == "201") {
+        if (getSelectedAddressModel.UserSelectedAddress != null &&
+            getSelectedAddressModel.UserSelectedAddress?.isNotEmpty == true) {
+          selectedBranch.value =
+              getSelectedAddressModel.UserSelectedAddress?.first?.bname ?? '';
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.addressType,
+              stringData: getSelectedAddressModel
+                  .UserSelectedAddress?.first?.addressType);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.state,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.state);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.city,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.city);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.pinCode,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.pincode);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.address,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.address);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.latLng,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.latLong);
+          await StorageServices.setData(
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.branch,
+              stringData:
+                  getSelectedAddressModel.UserSelectedAddress?.first?.bname);
+        }
+        CustomLoader.closeCustomLoader();
+        update();
+      } else {
+        CustomLoader.closeCustomLoader();
+        debugPrint(
+            "Something went wrong during getting user selected  ::: ${getSelectedAddressModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      debugPrint(
+          "Something went wrong during getting user selected  ::: $error");
     }
   }
 
@@ -167,24 +239,6 @@ class HomeController extends GetxController {
           getBranchListModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
 
-        for (int i = 1; i <= getBranchListModel.branchList!.length; i++) {
-          distance.value = calculateDistance(
-              double.parse(latitude.value),
-              double.parse(longitude.value),
-              double.parse(
-                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[0]}"),
-              double.parse(
-                  "${getBranchListModel.branchList?[i]?.latLong?.split(", ")[1]}"));
-
-          if (distance.value <= 7) {
-            selectedBranch.value = "${distance.value}";
-          }
-        }
-        await StorageServices.setData(
-          dataType: StorageKeyConstant.stringType,
-          prefKey: StorageKeyConstant.branch,
-          stringData: selectedBranch.value,
-        );
         update();
       } else {
         CustomLoader.closeCustomLoader();
