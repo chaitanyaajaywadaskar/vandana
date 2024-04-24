@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:vandana/Custom_Widgets/custom_toast.dart';
 import 'package:vandana/Models/post_login_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
-import 'package:vandana/View/Authentication_Section/select_address_view.dart';
 
 import '../View/Bottombar_Section/main_view.dart';
 
@@ -80,7 +78,7 @@ class LoginController extends GetxController {
       CustomLoader.closeCustomLoader();
       customToast(message: "phone or password wrong");
 
-      log("Something went wrong during posting login ::: $response");
+      log("Something went wrong during posting login ::: $error");
     }
   }
 }

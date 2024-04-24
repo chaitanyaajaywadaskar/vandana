@@ -6,37 +6,27 @@ GetAddressListModel getAddressListModelFromJson(String str) =>
 String getAddressListModelToJson(GetAddressListModel data) =>
     json.encode(data.toJson());
 
-class GetAddressListModel {
-  String? statusCode;
-  String? status;
-  String? message;
-  List<AddressList>? addressList;
+class GetAddressListModelAddressList {
+/*
+{
+  "id": "65",
+  "customer_code": "VK79",
+  "user_type": "User",
+  "phone": "8080156839",
+  "address_type": "Home",
+  "state": "Maharashtra",
+  "city": "Pune",
+  "pincode": "411021",
+  "address": "High Class Society, , , Bavdhan, Pune, Maharashtra 411021, India",
+  "lat_long": "18.5204261 73.7720075",
+  "receivers_name": "Chaitanya ",
+  "contact_no": "8080156839",
+  "branch": "Bavdhan",
+  "date": "2024-04-16",
+  "bname": null
+} 
+*/
 
-  GetAddressListModel({
-    this.statusCode,
-    this.status,
-    this.message,
-    this.addressList,
-  });
-
-  factory GetAddressListModel.fromJson(Map<String, dynamic> json) =>
-      GetAddressListModel(
-        statusCode: json["status_code"],
-        status: json["status"],
-        message: json["message"],
-        addressList: List<AddressList>.from(
-            json["address_list"].map((x) => AddressList.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "status_code": statusCode,
-        "status": status,
-        "message": message,
-        "address_list": List<dynamic>.from(addressList!.map((x) => x.toJson())),
-      };
-}
-
-class AddressList {
   String? id;
   String? customerCode;
   String? userType;
@@ -49,9 +39,11 @@ class AddressList {
   String? latLong;
   String? receiversName;
   String? contactNo;
-  DateTime? date;
+  String? branch;
+  String? date;
+  String? bname;
 
-  AddressList({
+  GetAddressListModelAddressList({
     this.id,
     this.customerCode,
     this.userType,
@@ -64,39 +56,113 @@ class AddressList {
     this.latLong,
     this.receiversName,
     this.contactNo,
+    this.branch,
     this.date,
+    this.bname,
   });
+  GetAddressListModelAddressList.fromJson(Map<String, dynamic> json) {
+    id = json['id']?.toString();
+    customerCode = json['customer_code']?.toString();
+    userType = json['user_type']?.toString();
+    phone = json['phone']?.toString();
+    addressType = json['address_type']?.toString();
+    state = json['state']?.toString();
+    city = json['city']?.toString();
+    pincode = json['pincode']?.toString();
+    address = json['address']?.toString();
+    latLong = json['lat_long']?.toString();
+    receiversName = json['receivers_name']?.toString();
+    contactNo = json['contact_no']?.toString();
+    branch = json['branch']?.toString();
+    date = json['date']?.toString();
+    bname = json['bname']?.toString();
+  }
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['customer_code'] = customerCode;
+    data['user_type'] = userType;
+    data['phone'] = phone;
+    data['address_type'] = addressType;
+    data['state'] = state;
+    data['city'] = city;
+    data['pincode'] = pincode;
+    data['address'] = address;
+    data['lat_long'] = latLong;
+    data['receivers_name'] = receiversName;
+    data['contact_no'] = contactNo;
+    data['branch'] = branch;
+    data['date'] = date;
+    data['bname'] = bname;
+    return data;
+  }
+}
 
-  factory AddressList.fromJson(Map<String, dynamic> json) => AddressList(
-        id: json["id"],
-        customerCode: json["customer_code"],
-        userType: json["user_type"],
-        phone: json["phone"],
-        addressType: json["address_type"],
-        state: json["state"],
-        city: json["city"],
-        pincode: json["pincode"],
-        address: json["address"],
-        latLong: json["lat_long"],
-        receiversName: json["receivers_name"],
-        contactNo: json["contact_no"],
-        date: DateTime.parse(json["date"]),
-      );
+class GetAddressListModel {
+/*
+{
+  "status_code": "200",
+  "status": "success",
+  "message": "Address List",
+  "address_list": [
+    {
+      "id": "65",
+      "customer_code": "VK79",
+      "user_type": "User",
+      "phone": "8080156839",
+      "address_type": "Home",
+      "state": "Maharashtra",
+      "city": "Pune",
+      "pincode": "411021",
+      "address": "High Class Society, , , Bavdhan, Pune, Maharashtra 411021, India",
+      "lat_long": "18.5204261 73.7720075",
+      "receivers_name": "Chaitanya ",
+      "contact_no": "8080156839",
+      "branch": "Bavdhan",
+      "date": "2024-04-16",
+      "bname": null
+    }
+  ]
+} 
+*/
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "customer_code": customerCode,
-        "user_type": userType,
-        "phone": phone,
-        "address_type": addressType,
-        "state": state,
-        "city": city,
-        "pincode": pincode,
-        "address": address,
-        "lat_long": latLong,
-        "receivers_name": receiversName,
-        "contact_no": contactNo,
-        "date":
-            "${date?.year.toString().padLeft(4, '0')}-${date?.month.toString().padLeft(2, '0')}-${date?.day.toString().padLeft(2, '0')}",
-      };
+  String? statusCode;
+  String? status;
+  String? message;
+  List<GetAddressListModelAddressList?>? addressList;
+
+  GetAddressListModel({
+    this.statusCode,
+    this.status,
+    this.message,
+    this.addressList,
+  });
+  GetAddressListModel.fromJson(Map<String, dynamic> json) {
+    statusCode = json['status_code']?.toString();
+    status = json['status']?.toString();
+    message = json['message']?.toString();
+  if (json['address_list'] != null) {
+  final v = json['address_list'];
+  final arr0 = <GetAddressListModelAddressList>[];
+  v.forEach((v) {
+  arr0.add(GetAddressListModelAddressList.fromJson(v));
+  });
+    addressList = arr0;
+    }
+  }
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['status_code'] = statusCode;
+    data['status'] = status;
+    data['message'] = message;
+    if (addressList != null) {
+      final v = addressList;
+      final arr0 = [];
+  v!.forEach((v) {
+  arr0.add(v!.toJson());
+  });
+      data['address_list'] = arr0;
+    }
+    return data;
+  }
 }

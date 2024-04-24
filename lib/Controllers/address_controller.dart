@@ -142,30 +142,30 @@ class AddressController extends GetxController {
     return await Geolocator.getCurrentPosition();
   }
 
-  String? getClosestBranch(
-    Position position,
-  ) {
-    // We'll calculate the distance between the device's position and each branch
-    double minDistance = double.infinity;
-    String? closestBranch;
+  // String? getClosestBranch(
+  //   Position position,
+  // ) {
+  //   // We'll calculate the distance between the device's position and each branch
+  //   double minDistance = double.infinity;
+  //   String? closestBranch;
 
-    for (var branchInfo in getBranchListModel.branchList!) {
-      String branchName = branchInfo?.branchName?.toString() ?? '';
-      // For simplicity, we'll just assume branch locations based on latitude and longitude
-      // You would typically have the latitude and longitude of each branch
-      double branchLatitude = 18.5204; // Example latitude of the branch
-      double branchLongitude = 73.8567; // Example longitude of the branch
+  //   for (var branchInfo in getBranchListModel.branchList!) {
+  //     String branchName = branchInfo?.branchName?.toString() ?? '';
+  //     // For simplicity, we'll just assume branch locations based on latitude and longitude
+  //     // You would typically have the latitude and longitude of each branch
+  //     double branchLatitude = 18.5204; // Example latitude of the branch
+  //     double branchLongitude = 73.8567; // Example longitude of the branch
 
-      double distance = Geolocator.distanceBetween(position.latitude,
-          position.longitude, branchLatitude, branchLongitude);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestBranch = branchName;
-      }
-    }
+  //     double distance = Geolocator.distanceBetween(position.latitude,
+  //         position.longitude, branchLatitude, branchLongitude);
+  //     if (distance < minDistance) {
+  //       minDistance = distance;
+  //       closestBranch = branchName;
+  //     }
+  //   }
 
-    return closestBranch;
-  }
+  //   return closestBranch;
+  // }
 
   Future getBranchList() async {
     try {
@@ -216,23 +216,23 @@ class AddressController extends GetxController {
     }
   }
 
-  double degreesToRadians(double degrees) {
-    return degrees * pi / 180.0;
-  }
+  // double degreesToRadians(double degrees) {
+  //   return degrees * pi / 180.0;
+  // }
 
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    double dLat = degreesToRadians(lat2 - lat1);
-    double dLon = degreesToRadians(lon2 - lon1);
+  // double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  //   double dLat = degreesToRadians(lat2 - lat1);
+  //   double dLon = degreesToRadians(lon2 - lon1);
 
-    double a = math.pow(math.sin(dLat / 2), 2) +
-        math.cos(degreesToRadians(lat1)) *
-            math.cos(degreesToRadians(lat2)) *
-            math.pow(math.sin(dLon / 2), 2);
+  //   double a = math.pow(math.sin(dLat / 2), 2) +
+  //       math.cos(degreesToRadians(lat1)) *
+  //           math.cos(degreesToRadians(lat2)) *
+  //           math.pow(math.sin(dLon / 2), 2);
 
-    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+  //   double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
 
-    return earthRadius * c;
-  }
+  //   return earthRadius * c;
+  // }
 
   Future postAddress() async {
     CustomLoader.openCustomLoader();
@@ -249,7 +249,9 @@ class AddressController extends GetxController {
         "lat_long": "${latitude.value} ${longitude.value}",
         "receivers_name": userName.value,
         "contact_no": userPhone.value,
-        "branch": selectedBranchCode.value
+        "branch": selectedBranchCode.value.isNotEmpty
+            ? selectedBranchCode.value
+            : 'mr0035'
       };
 
       log("Post address payload ::: $payload");
@@ -292,7 +294,7 @@ class AddressController extends GetxController {
         await StorageServices.setData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.branch,
-            stringData: selectedBranch.value);
+            stringData: selectedBranchCode.value);
         customToast(message: "${postAddressModel.message}");
       } else {
         CustomLoader.closeCustomLoader();

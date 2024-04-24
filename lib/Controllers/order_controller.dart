@@ -9,74 +9,77 @@ import 'package:vandana/View/Bottombar_Section/Home_Section/Tifin_Section/tifin_
 
 import '../Constant/storage_key_constant.dart';
 import '../Custom_Widgets/custom_toast.dart';
-import '../Models/get_tiffin_order_list_model.dart';
+import '../Models/get_order_list_model.dart';
 import '../Models/post_cancel_tiffin_model.dart';
 import '../Services/storage_services.dart';
 
-class TiffinOrderController extends GetxController {
-  var getTifinOrderListModel = GetTiffinOrderListModel().obs;
+class OrderController extends GetxController {
+  var getOrderListModel = GetOrderListModel().obs;
   PostCancelTiffinModel postCancelModel = PostCancelTiffinModel();
   RxString branchCode = "".obs;
   RxString userCode = "".obs;
   RxString userPhone = "".obs;
   RxString userName = "".obs;
-  RxBool tiffinTypeLunch = true.obs;
-  RxBool tiffinTypeDinner = false.obs;
+  RxBool isOrderLoading = false.obs;
+
   initialFunction() async {
     userName.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.userName) ??
         "";
     userCode.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userCode);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userCode) ??
+        '';
     userPhone.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.userPhone);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.userPhone) ??
+        '';
     branchCode.value = await StorageServices.getData(
-        dataType: StorageKeyConstant.stringType,
-        prefKey: StorageKeyConstant.branch);
+            dataType: StorageKeyConstant.stringType,
+            prefKey: StorageKeyConstant.branch) ??
+        '';
+    getOrderList();
   }
 
-  Future getTiffinOrderList() async {
+  Future getOrderList() async {
     CustomLoader.openCustomLoader();
     try {
-      var code = await StorageServices.getData(
-          dataType: StorageKeyConstant.stringType,
-          prefKey: StorageKeyConstant.userCode);
-      var phone = await StorageServices.getData(
-          dataType: StorageKeyConstant.stringType,
-          prefKey: StorageKeyConstant.userPhone);
       Map<String, String> payload = {
-        "customer_code": code,
-        "phone": phone,
+        "customer_code": userCode.value,
+        "phone": userPhone.value,
       };
-
-      log("Get subcategory payload ::: $payload");
+      isOrderLoading.value = true;
+      log("Get order list payload ::: $payload");
 
       var response = await HttpServices.postHttpMethod(
-          url: EndPointConstant.tiffinOrderList, payload: payload);
+          url: EndPointConstant.orderList, payload: payload);
 
-      log("Get subcategory response ::: $response");
+      log("Get order list response ::: $response");
 
-      getTifinOrderListModel.value =
-          getTiffinOrderListModelFromJson(response["body"]);
+      getOrderListModel.value = getOrderListModelFromJson(response["body"]);
+      isOrderLoading.value = false;
 
-      if (getTifinOrderListModel.value.statusCode == "200" ||
-          getTifinOrderListModel.value.statusCode == "201") {
+      if (getOrderListModel.value.statusCode == "200" ||
+          getOrderListModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
         update();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting subcategory ::: ${getTifinOrderListModel.value.message}");
+        log("Something went wrong during getting order list ::: ${getOrderListModel.value.message}");
       }
     } catch (error) {
+      isOrderLoading.value = false;
+
       CustomLoader.closeCustomLoader();
-      log("Something went wrong during getting subcategory ::: $error");
+      log("Something went wrong during getting order list ::: $error");
     }
   }
 
-  Future cancelOrder({String soNumber = '', date = ''}) async {
+  Future cancelOrder(
+      {String soNumber = '',
+      tiffinTypeLunch = '',
+      tiffinTypeDinner = ''}) async {
     CustomLoader.openCustomLoader();
     try {
       Map<String, dynamic> payload = {
@@ -84,9 +87,9 @@ class TiffinOrderController extends GetxController {
         "phone": userPhone.value,
         "so_number": soNumber,
         "branch_name": branchCode.value,
-        "tiffintype_lunch": tiffinTypeLunch.value ? 'Lunch' : '',
-        "tiffintype_dinner": tiffinTypeDinner.value ? 'Dinner' : '',
-        "tiffin_cancel_date": date,
+        "tiffintype_lunch": tiffinTypeLunch,
+        "tiffintype_dinner": tiffinTypeDinner,
+        "tiffin_cancel_date": formatDate(DateTime.now().toString()),
       };
 
       log("Post order cancel payload ::: $payload");

@@ -105,7 +105,7 @@ class ProfileView extends StatelessWidget {
                                               onTap: () async {
                                                 controller.addressController
                                                         .text =
-                                                    "${controller.getAddressListModel.addressList?[index].address}";
+                                                    "${controller.getAddressListModel.addressList?[index]?.address}";
                                                 await controller
                                                     .setAddressDetail(
                                                         index: index);
@@ -121,47 +121,47 @@ class ProfileView extends StatelessWidget {
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .state,
+                                                              ?.state,
                                                           pinCode: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .pincode,
+                                                              ?.pincode,
                                                           latLng: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .latLong,
+                                                              ?.latLong,
                                                           city: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .city,
+                                                              ?.city,
                                                           addressType: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .addressType,
+                                                              ?.addressType,
                                                           addressId: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .id,
+                                                              ?.id,
                                                           address: controller
                                                               .getAddressListModel
                                                               .addressList?[
                                                                   index]
-                                                              .address,
+                                                              ?.address,
                                                         ));
                                                   },
                                                   icon: const Icon(Icons.edit)),
                                               title: Text(
-                                                  "${controller.getAddressListModel.addressList?[index].address}"),
+                                                  "${controller.getAddressListModel.addressList?[index]?.address}"),
                                               trailing: IconButton(
                                                   onPressed: () {
                                                     controller.removeAddress(
                                                         addressId:
-                                                            "${controller.getAddressListModel.addressList?[index].id}");
+                                                            "${controller.getAddressListModel.addressList?[index]?.id}");
                                                   },
                                                   icon:
                                                       const Icon(Icons.remove)),

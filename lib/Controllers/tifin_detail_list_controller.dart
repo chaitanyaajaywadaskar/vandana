@@ -68,18 +68,18 @@ class TifinDetailListController extends GetxController {
         "customer_code": userCode.value,
         "phone": userPhone.value,
         "category_name":
-            "${getFoodDetailListModel.productList?[index].categoryName}",
+            "${getFoodDetailListModel.productList?[index]?.categoryName}",
         "subcategory_name":
-            "${getFoodDetailListModel.productList?[index].subcategoryName}",
+            "${getFoodDetailListModel.productList?[index]?.subcategoryName}",
         "product_name":
-            "${getFoodDetailListModel.productList?[index].productName}",
+            "${getFoodDetailListModel.productList?[index]?.productName}",
         "product_code":
-            "${getFoodDetailListModel.productList?[index].productCode}",
+            "${getFoodDetailListModel.productList?[index]?.productCode}",
         "unit": "nos",
         "quantity": "1",
-        "price": "${getFoodDetailListModel.productList?[index].price}",
+        "price": "${getFoodDetailListModel.productList?[index]?.price}",
         "total": "1",
-        "tax": "${getFoodDetailListModel.productList?[index].tax}",
+        "tax": "${getFoodDetailListModel.productList?[index]?.tax}",
       };
 
       log("Post to cart payload ::: $payload");

@@ -46,8 +46,9 @@ class FoodDetailListController extends GetxController {
     CustomLoader.openCustomLoader();
     try {
       var code = await StorageServices.getData(
-          dataType: StorageKeyConstant.stringType,
-          prefKey: StorageKeyConstant.userCode);
+              dataType: StorageKeyConstant.stringType,
+              prefKey: StorageKeyConstant.userCode) ??
+          '';
       Map<String, String> payload = {
         "category_name": categoryName.value,
         "subcategory_name": subCategoryName.value,
@@ -126,18 +127,18 @@ class FoodDetailListController extends GetxController {
         "customer_code": userCode.value,
         "phone": userPhone.value,
         "category_name":
-            "${getFoodDetailListModel.value.productList?[index].categoryName}",
+            "${getFoodDetailListModel.value.productList?[index]?.categoryName}",
         "subcategory_name":
-            "${getFoodDetailListModel.value.productList?[index].subcategoryName}",
+            "${getFoodDetailListModel.value.productList?[index]?.subcategoryName}",
         "product_name":
-            "${getFoodDetailListModel.value.productList?[index].productName}",
+            "${getFoodDetailListModel.value.productList?[index]?.productName}",
         "product_code":
-            "${getFoodDetailListModel.value.productList?[index].productCode}",
+            "${getFoodDetailListModel.value.productList?[index]?.productCode}",
         "unit": "nos",
         "quantity": "1",
-        "price": "${getFoodDetailListModel.value.productList?[index].price}",
+        "price": "${getFoodDetailListModel.value.productList?[index]?.price}",
         "total": "1",
-        "tax": "${getFoodDetailListModel.value.productList?[index].tax}",
+        "tax": "${getFoodDetailListModel.value.productList?[index]?.tax}",
       };
 
       log("Post to cart payload ::: $payload");
@@ -166,24 +167,29 @@ class FoodDetailListController extends GetxController {
 
   Future manageCartItems(
       {required int index, required bool isAdd, String type = 'Food'}) async {
+    print(
+        '${getFoodDetailListModel.value.productList?[index]?.itemAddQuantity ?? 0}');
     int quantity = (isAdd)
-        ? int.parse(getFoodDetailListModel
-                .value.productList![index].itemAddQuantity!) +
+        ? int.parse(
+                '${getFoodDetailListModel.value.productList?[index]?.itemAddQuantity ?? 0}') +
             1
-        : int.parse(getFoodDetailListModel
-                .value.productList![index].itemAddQuantity!) -
+        : int.parse(
+                '${getFoodDetailListModel.value.productList![index]?.itemAddQuantity ?? 0}') -
             1;
 
     num total = (isAdd)
-        ? int.parse(getFoodDetailListModel.value.productList![index].price!) *
+        ? int.parse(
+                '${getFoodDetailListModel.value.productList?[index]?.price}') *
             quantity
-        : int.parse(getFoodDetailListModel.value.productList![index].price!) -
-            int.parse(getFoodDetailListModel.value.productList![index].price!);
+        : int.parse(
+                '${getFoodDetailListModel.value.productList?[index]?.price}') -
+            int.parse(
+                '${getFoodDetailListModel.value.productList?[index]?.price}');
     print('quantity:- $quantity');
 
     if (quantity < 1) {
       removeCartItem(
-          cartId: "${getFoodDetailListModel.value.productList![index].pid}");
+          cartId: "${getFoodDetailListModel.value.productList?[index]?.pid}");
     } else {
       updateCartItems(
           index: index, isAdd: isAdd, quantity: "$quantity", total: "$total");
@@ -202,18 +208,18 @@ class FoodDetailListController extends GetxController {
         "customer_code": userCode.value,
         "phone": userPhone.value,
         "category_name":
-            getFoodDetailListModel.value.productList![index].categoryName,
+            getFoodDetailListModel.value.productList![index]?.categoryName,
         "subcategory_name":
-            getFoodDetailListModel.value.productList![index].subcategoryName,
+            getFoodDetailListModel.value.productList![index]?.subcategoryName,
         "product_name":
-            getFoodDetailListModel.value.productList![index].productName,
+            getFoodDetailListModel.value.productList![index]?.productName,
         "product_code":
-            getFoodDetailListModel.value.productList![index].productCode,
+            getFoodDetailListModel.value.productList![index]?.productCode,
         "unit": "nos",
         "quantity": quantity,
-        "price": getFoodDetailListModel.value.productList![index].price,
+        "price": getFoodDetailListModel.value.productList![index]?.price,
         "total": total,
-        "tax": getFoodDetailListModel.value.productList![index].tax,
+        "tax": getFoodDetailListModel.value.productList![index]?.tax,
       };
 
       log("Post update cart items payload ::: $payload");

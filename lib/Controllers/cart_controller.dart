@@ -18,7 +18,7 @@ import '../Models/get_delivery_charges_model.dart';
 import 'get_packaging_list_model.dart';
 
 class CartController extends GetxController {
-  GetCartItemsListModel getCartItemsListModel = GetCartItemsListModel();
+  final getCartItemsListModel = GetCartItemsListModel().obs;
   final getDeliveryChargesModel = DeliveryChargesModel().obs;
 
   PostOrderModel postOrderModel = PostOrderModel();
@@ -48,11 +48,6 @@ class CartController extends GetxController {
   RxString packagingName = "Regular".obs;
   RxInt deliveryPrice = 0.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    initialFunctioun();
-  }
 
   initialFunctioun() async {
     totalPriceInCart.value = '0';
@@ -159,13 +154,13 @@ class CartController extends GetxController {
 
       log("Get cart items list response ::: $response");
 
-      getCartItemsListModel = getCartItemsListModelFromJson(response["body"]);
+      getCartItemsListModel.value = getCartItemsListModelFromJson(response["body"]);
 
-      if (getCartItemsListModel.statusCode == "200" ||
-          getCartItemsListModel.statusCode == "201") {
+      if (getCartItemsListModel.value.statusCode == "200" ||
+          getCartItemsListModel.value.statusCode == "201") {
         double total = 0;
         double quantity = 0;
-        getCartItemsListModel.cartItemList?.forEach((element) {
+        getCartItemsListModel.value.cartItemList?.forEach((element) {
           var singleTotal = double.parse(
                   '${element.price != 'null' ? element.price ?? 0 : 0}') *
               double.parse('${element.quantity ?? 0}');
@@ -181,7 +176,7 @@ class CartController extends GetxController {
         update();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting cart items list ::: ${getCartItemsListModel.message}");
+        log("Something went wrong during getting cart items list ::: ${getCartItemsListModel.value.message}");
         update();
       }
     } catch (error) {
@@ -216,17 +211,17 @@ class CartController extends GetxController {
 
   manageCartItems({required int index, required bool isAdd}) {
     int quantity = (isAdd)
-        ? int.parse(getCartItemsListModel.cartItemList![index].quantity!) + 1
-        : int.parse(getCartItemsListModel.cartItemList![index].quantity!) - 1;
+        ? int.parse(getCartItemsListModel.value.cartItemList![index].quantity!) + 1
+        : int.parse(getCartItemsListModel.value.cartItemList![index].quantity!) - 1;
 
     num total = (isAdd)
-        ? int.parse(getCartItemsListModel.cartItemList![index].price!) *
+        ? int.parse(getCartItemsListModel.value.cartItemList![index].price!) *
             quantity
-        : int.parse(getCartItemsListModel.cartItemList![index].total!) -
-            int.parse(getCartItemsListModel.cartItemList![index].price!);
+        : int.parse(getCartItemsListModel.value.cartItemList![index].total!) -
+            int.parse(getCartItemsListModel.value.cartItemList![index].price!);
     if (quantity < 1) {
       removeCartItem(
-          cartId: "${getCartItemsListModel.cartItemList?[index].id}");
+          cartId: "${getCartItemsListModel.value.cartItemList?[index].id}");
     } else {
       updateCartItems(
           index: index, isAdd: isAdd, quantity: "$quantity", total: "$total");
@@ -245,16 +240,16 @@ class CartController extends GetxController {
         "customer_code": userCode.value,
         "phone": userPhone.value,
         "category_name":
-            getCartItemsListModel.cartItemList?[index].categoryName,
+            getCartItemsListModel.value.cartItemList?[index].categoryName,
         "subcategory_name":
-            getCartItemsListModel.cartItemList?[index].subcategoryName,
-        "product_name": getCartItemsListModel.cartItemList?[index].productName,
-        "product_code": getCartItemsListModel.cartItemList?[index].productCode,
+            getCartItemsListModel.value.cartItemList?[index].subcategoryName,
+        "product_name": getCartItemsListModel.value.cartItemList?[index].productName,
+        "product_code": getCartItemsListModel.value.cartItemList?[index].productCode,
         "unit": "nos",
         "quantity": quantity,
-        "price": getCartItemsListModel.cartItemList?[index].price,
+        "price": getCartItemsListModel.value.cartItemList?[index].price,
         "total": total,
-        "tax": getCartItemsListModel.cartItemList?[index].tax,
+        "tax": getCartItemsListModel.value.cartItemList?[index].tax,
       };
 
       log("Post update cart items payload ::: $payload");

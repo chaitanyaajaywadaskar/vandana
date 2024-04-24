@@ -10,6 +10,8 @@ import 'package:vandana/Models/post_remove_address_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 
+import '../Models/post_selected_address_model.dart';
+
 class ProfileController extends GetxController {
   GetAddressListModel getAddressListModel = GetAddressListModel();
   PostRemoveAddressModel postRemoveAddressModel = PostRemoveAddressModel();
@@ -21,7 +23,8 @@ class ProfileController extends GetxController {
 
   RxString userType = "".obs;
   RxString userCode = "".obs;
-
+  PostSelectedAddressModel postSelectedAddressModel =
+      PostSelectedAddressModel();
   @override
   void onInit() {
     super.onInit();
@@ -47,39 +50,72 @@ class ProfileController extends GetxController {
     userCode.value = await StorageServices.getData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.userCode);
-
-    await getAddressList();
+    getAddressList();
   }
 
-  setAddressDetail({required int index}) async {
+  Future updateSelectedAddress(String id) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {
+        "id": id,
+        "customer_code": userCode.value,
+        "address_status": "selected",
+      };
+
+      log("Post selected address payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.selectedAddressUpdate, payload: payload);
+
+      log("Post selected address response ::: $response");
+
+      postSelectedAddressModel =
+          postSelectedAddressModelFromJson(response["body"]);
+
+      if (postSelectedAddressModel.statusCode == "200" ||
+          postSelectedAddressModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        // customToast(message: "${postSelectedAddressModel.message}");
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during posting address ::: ${postSelectedAddressModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting address ::: $error");
+    }
+  }
+
+  Future setAddressDetail({required int index}) async {
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.address,
-        stringData: getAddressListModel.addressList?[index].address);
+        stringData: getAddressListModel.addressList?[index]?.address);
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.addressType,
-        stringData: getAddressListModel.addressList?[index].addressType);
+        stringData: getAddressListModel.addressList?[index]?.addressType ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.city,
-        stringData: getAddressListModel.addressList?[index].city);
+        stringData: getAddressListModel.addressList?[index]?.city ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.state,
-        stringData: getAddressListModel.addressList?[index].state);
+        stringData: getAddressListModel.addressList?[index]?.state ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.latLng,
-        stringData: getAddressListModel.addressList?[index].latLong);
+        stringData: getAddressListModel.addressList?[index]?.latLong ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.pinCode,
-        stringData: getAddressListModel.addressList?[index].pincode);
+        stringData: getAddressListModel.addressList?[index]?.pincode ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch,
-        stringData: getAddressListModel.addressList?[index].city);
+        stringData: getAddressListModel.addressList?[index]?.branch ?? '');
+    updateSelectedAddress('${getAddressListModel.addressList?[index]?.id}');
   }
 
   Future getAddressList() async {

@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,7 +6,6 @@ import 'package:vandana/Constant/layout_constant.dart';
 import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Controllers/tifin_billing_controller.dart';
 import 'package:vandana/Custom_Widgets/custom_appbar.dart';
-import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import '../../../../Constant/static_decoration.dart';
 import '../../../../Custom_Widgets/custom_textfield.dart';
@@ -33,6 +29,7 @@ class TifinBillingView extends StatefulWidget {
   final String weekendPrice;
   final String tifinCount;
   final String subjiCount;
+  final String satSunTiffinCount;
 
   const TifinBillingView(
       {super.key,
@@ -52,7 +49,8 @@ class TifinBillingView extends StatefulWidget {
       required this.unit,
       required this.weekendPrice,
       required this.tifinCount,
-      required this.subjiCount});
+      required this.subjiCount,
+      required this.satSunTiffinCount});
 
   @override
   State<TifinBillingView> createState() => _TifinBillingViewState();
@@ -67,6 +65,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
   @override
   void initState() {
     super.initState();
+    controller.satSunTiffinCount.value = int.parse(widget.satSunTiffinCount);
     controller.subjiCount.value = int.parse(widget.subjiCount);
     tabController = TabController(length: 7, vsync: this);
     tabController2 = TabController(length: 7, vsync: this);
@@ -1253,15 +1252,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             price: int.parse(widget.weekendPrice.toString()),
                             tiffinCount: widget.tifinCount);
                         controller.calculateTotal(widget.price);
-                        // controller.getTotalCount(
-                        //     tiffinCount: widget.tifinCount,
-                        //     tiffinPrice: widget.price,
-                        //     ecoFriendly: controller.getPackagingListModel.value
-                        //             .packagingList?[1].packagingPrice ??
-                        //         '0',
-                        //     regular: controller.getPackagingListModel.value
-                        //             .packagingList?[0].packagingPrice ??
-                        //         '0');
+
                         print(
                             "Count check ==> ${controller.weekendTiffinCalculatedPrice.toString()}");
                       },
@@ -1535,7 +1526,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               productCode: widget.productCode,
                               price: widget.price,
                               amount: widget.price,
-                              tax: widget.tax,
+                              tax: widget.taxjGst,
                               taxsGst: widget.taxsGst,
                               taxjGst: widget.taxjGst,
                               total: widget.total,

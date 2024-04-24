@@ -27,8 +27,10 @@ class EndPointConstant {
   static String timeslot = "timeslot.php";
   static String thaliChapatiList = "thali_chapati_itemlist.php";
   static String tiffinOrderList = "order_list_tiffin.php";
+  static String orderList = "order_list.php";
   static String addressListTypewise = "address_list_typewise.php";
   static String selectedAddressUpdate = "selected_address_update.php";
   static String userSelectedAddress = "user_selected_address.php";
   static String cancelTiffin = "cancel_tiffin.php";
+  static String orderTiffinSubjiList = "orderplaced_tiffin_subjilist.php";
 }

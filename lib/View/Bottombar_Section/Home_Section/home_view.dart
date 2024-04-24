@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -11,8 +12,23 @@ import 'package:vandana/Custom_Widgets/custom_no_data_found.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/select_food_view.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Tifin_Section/select_tifin_view.dart';
 
-class HomeView extends StatelessWidget {
+import '../../../Controllers/profile_controller.dart';
+import '../../Authentication_Section/address_view.dart';
+
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final profileController = Get.find<ProfileController>();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   profileController.initialFunctioun();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +73,154 @@ class HomeView extends StatelessWidget {
                               ),
                               const Spacer(),
                               GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SizedBox(
+                                        height: Get.height,
+                                        width: Get.width,
+                                        child: AlertDialog(
+                                          backgroundColor:
+                                              ColorConstant.backGround,
+                                          title: Row(
+                                            children: [
+                                              IconButton(
+                                                  onPressed: () => Get.back(),
+                                                  icon: const Icon(
+                                                      Icons.arrow_back)),
+                                              const Text("Select Address"),
+                                            ],
+                                          ),
+                                          content: SizedBox(
+                                            height: Get.height,
+                                            width: Get.width,
+                                            child: Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    Get.to(() =>
+                                                        const AddressView(
+                                                          isEditAddress: false,
+                                                        ));
+                                                  },
+                                                  child: const Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.add,
+                                                        color: Colors.black,
+                                                      ),
+                                                      Text("Add Address"),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 15,
+                                                ),
+                                                SizedBox(
+                                                  height: Get.height * 0.65,
+                                                  child: ListView.builder(
+                                                    physics:
+                                                        const BouncingScrollPhysics(),
+                                                    itemCount: profileController
+                                                        .getAddressListModel
+                                                        .addressList
+                                                        ?.length,
+                                                    shrinkWrap: true,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return Card(
+                                                        child: ListTile(
+                                                          onTap: () async {
+                                                            profileController
+                                                                    .addressController
+                                                                    .text =
+                                                                "${profileController.getAddressListModel.addressList?[index]?.address}";
+                                                            await profileController
+                                                                .setAddressDetail(
+                                                                    index:
+                                                                        index)
+                                                                .then(
+                                                                    (value) async {
+                                                              setState(() {});
+                                                              controller
+                                                                  .getSelectedBranch();
+                                                            });
+
+                                                            profileController
+                                                                .update();
+                                                            Get.back();
+                                                          },
+                                                          leading: IconButton(
+                                                              onPressed: () {
+                                                                Get.to(() =>
+                                                                    AddressView(
+                                                                      isEditAddress:
+                                                                          true,
+                                                                      state: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.state,
+                                                                      pinCode: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.pincode,
+                                                                      latLng: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.latLong,
+                                                                      city: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.city,
+                                                                      addressType: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.addressType,
+                                                                      addressId: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.id,
+                                                                      address: profileController
+                                                                          .getAddressListModel
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.address,
+                                                                    ));
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons.edit)),
+                                                          title: Text(
+                                                              "${profileController.getAddressListModel.addressList?[index]?.address}"),
+                                                          trailing: IconButton(
+                                                              onPressed: () {
+                                                                profileController
+                                                                    .removeAddress(
+                                                                        addressId:
+                                                                            "${profileController.getAddressListModel.addressList?[index]?.id}");
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons
+                                                                      .remove)),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
                                 child: Container(
                                   padding: contentHorizontalPadding,
                                   height: Get.height * 0.060,
@@ -95,16 +259,29 @@ class HomeView extends StatelessWidget {
                                             ?.length,
                                         itemBuilder:
                                             (context, index, realIndex) {
-                                          return Container(
-                                            width: Get.width * 0.900,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                      "${controller.getBannerImagesModel.bannerList?[index].bannerImage}",
-                                                    ),
-                                                    fit: BoxFit.fill)),
+                                          return CachedNetworkImage(
+                                            imageUrl:
+                                                "${controller.getBannerImagesModel.bannerList?[index].bannerImage}",
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              width: Get.width * 0.900,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.fill)),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                              color: ColorConstant.orangeAccent,
+                                            )),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
                                           );
                                         },
                                         options: CarouselOptions(

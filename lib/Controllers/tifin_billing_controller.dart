@@ -141,7 +141,7 @@ class TifinBillingController extends GetxController {
   var coupon = TextEditingController();
   RxString totalPriceInCart = "0".obs;
   RxString packagingPrice = "0".obs;
-
+  RxInt satSunTiffinCount = 0.obs;
   initialFunctioun(
       {required double weekendPrice,
       required String tifinCount,
@@ -226,35 +226,36 @@ class TifinBillingController extends GetxController {
 
   getWeekendCount({required int price, required String tiffinCount}) {
     if (onSaturday.value == true && onSunday.value == true) {
-      weekendTiffinCalculatedPrice.value = price * 8;
-      weekendTiffinCount.value = 8;
+      weekendTiffinCalculatedPrice.value =
+          price * (satSunTiffinCount.value * 2);
+      weekendTiffinCount.value = (satSunTiffinCount.value * 2);
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 8)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (satSunTiffinCount.value * 2))}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 8)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (satSunTiffinCount.value * 2))}";
       }
     } else if (onSaturday.value == true) {
-      weekendTiffinCalculatedPrice.value = price * 4;
-      weekendTiffinCount.value = 4;
+      weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
+      weekendTiffinCount.value = satSunTiffinCount.value;
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
       }
     } else if (onSunday.value == true) {
-      weekendTiffinCalculatedPrice.value = price * 4;
-      weekendTiffinCount.value = 4;
+      weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
+      weekendTiffinCount.value = satSunTiffinCount.value;
 
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + 4)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
       }
     } else {
       weekendTiffinCalculatedPrice.value = 0;
@@ -471,7 +472,7 @@ class TifinBillingController extends GetxController {
           '\"amount\"': '\"$amount\"',
           '\"tax\"': '\"$tax\"',
           '\"tax_sgst\"': '\"$taxsGst\"',
-          '\"tax_igst\"': '\"$taxjGst\"',
+          '\"tax_igst\"': '\"\"',
           '\"total\"': '\"$total\"',
           '\"unit\"': '\"$unit\"',
         },
@@ -504,11 +505,11 @@ class TifinBillingController extends GetxController {
         "satsun_tiffin_count": '${weekendTiffinCount.value}',
         "tiffin_start_dt": convertedDate.value,
         "packaging_type": packagingName.value,
-        "tiffintype_lunch": tiffinType.value,
+        "tiffintype_lunch": tiffinTypeLunch.value ? 'Lunch' : '',
         "lunch_time": selectedLunchTime.value,
         "lunch_address_type": isLunchHomeSelected.value ? 'Home' : 'Office',
         "lunch_address_id": addressLunchId.value,
-        "tiffintype_dinner": tiffinType.value,
+        "tiffintype_dinner": tiffinTypeDinner.value ? 'Dinner' : '',
         "dinner_time": selectedDinnerTime.value,
         "dinner_address_type": isDinnerHomeSelected.value ? 'Home' : 'Office',
         "dinner_address_id": addressDinnerId.value,

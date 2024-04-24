@@ -92,31 +92,31 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                             onTap: () {
                               Get.to(() => FoodBillingView(
                                     productImage:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].productImage1}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.productImage1}",
                                     productName:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].productName}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.productName}",
                                     productDescription:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].description}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.description}",
                                     mrp:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].mrp}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.mrp}",
                                     price:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].price}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.price}",
                                     categoryName:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].categoryName}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.categoryName}",
                                     subCategoryName:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].subcategoryName}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.subcategoryName}",
                                     cartId: "1",
                                     productCode:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].productCode}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.productCode}",
                                     tax:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].tax}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.tax}",
                                     total:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].price}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.price}",
                                     unit: "nos",
                                     taxjGst:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].tax}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.tax}",
                                     taxsGst:
-                                        "${controller.getFoodDetailListModel.value.productList?[index].tax}",
+                                        "${controller.getFoodDetailListModel.value.productList?[index]?.tax}",
                                   ));
                             },
                             child: Padding(
@@ -138,15 +138,14 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                                                 shape: BoxShape.circle,
                                                 image: DecorationImage(
                                                     image: NetworkImage(
-                                                        "${controller.getFoodDetailListModel.value.productList?[index].productImage1}"),
+                                                        "${controller.getFoodDetailListModel.value.productList?[index]?.productImage1}"),
                                                     fit: BoxFit.cover),
                                               ),
                                             ),
                                             controller
                                                         .getFoodDetailListModel
                                                         .value
-                                                        .productList?[index]
-                                                        .itemAddStatus ==
+                                                        .productList?[index]?.itemAddStatus ==
                                                     "true"
                                                 ? Padding(
                                                     padding: EdgeInsets.only(
@@ -163,7 +162,7 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                                                                         false),
                                                             icon: Icons.remove),
                                                         Text(
-                                                            "${controller.getFoodDetailListModel.value.productList?[index].itemAddQuantity}",
+                                                            "${controller.getFoodDetailListModel.value.productList?[index]?.itemAddQuantity}",
                                                             style: TextStyleConstant
                                                                 .semiBold18()),
                                                         incDecIconButton(
@@ -192,7 +191,7 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                                                       title: "Add to Cart",
                                                       width: Get.width * 0.300,
                                                     ),
-                                                  ),
+                                                  )
                                           ],
                                         ),
                                       ),
@@ -204,21 +203,21 @@ class _FoodDetailListViewState extends State<FoodDetailListView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "${controller.getFoodDetailListModel.value.productList?[index].productName}",
+                                              "${controller.getFoodDetailListModel.value.productList?[index]?.productName}",
                                               style:
                                                   TextStyleConstant.regular22(
                                                       color:
                                                           ColorConstant.orange),
                                             ),
                                             Text(
-                                              "${controller.getFoodDetailListModel.value.productList?[index].description}",
+                                              "${controller.getFoodDetailListModel.value.productList?[index]?.description}",
                                               style:
                                                   TextStyleConstant.regular16(
                                                       color: ColorConstant
                                                           .orangeAccent),
                                             ),
                                             Text(
-                                              "${controller.getFoodDetailListModel.value.productList?[index].price}/-",
+                                              "${controller.getFoodDetailListModel.value.productList?[index]?.price}/-",
                                               style: TextStyleConstant.bold36(
                                                   color: ColorConstant.orange),
                                             ),

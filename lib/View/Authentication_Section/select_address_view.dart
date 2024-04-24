@@ -46,9 +46,9 @@ class SelectAddressView extends StatelessWidget {
                             child: ListTile(
                               onTap: () async {
                                 controller.latitude.value =
-                                    '${controller.getAddressListModel.addressList?[index].latLong?.split(' ')[0]}';
+                                    '${controller.getAddressListModel.addressList?[index]?.latLong?.split(' ')[0]}';
                                 controller.longitude.value =
-                                    '${controller.getAddressListModel.addressList?[index].latLong?.split(' ')[1]}';
+                                    '${controller.getAddressListModel.addressList?[index]?.latLong?.split(' ')[1]}';
                                 controller.getBranchList().then((value) async {
                                   if (value) {
                                     await StorageServices.setData(
@@ -56,50 +56,43 @@ class SelectAddressView extends StatelessWidget {
                                         prefKey: StorageKeyConstant.address,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .address);
+                                            .addressList?[index]?.address);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.addressType,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .addressType);
+                                            .addressList?[index]?.addressType);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.city,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .city);
+                                            .addressList?[index]?.city);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.state,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .state);
+                                            .addressList?[index]?.state);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.latLng,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .latLong);
+                                            .addressList?[index]?.latLong);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.pinCode,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .pincode);
+                                            .addressList?[index]?.pincode);
                                     await StorageServices.setData(
                                         dataType: StorageKeyConstant.stringType,
                                         prefKey: StorageKeyConstant.branch,
                                         stringData: controller
                                             .getAddressListModel
-                                            .addressList?[index]
-                                            .city);
+                                            .addressList?[index]?.city);
                                     Get.offAll(() => const MainView());
                                   } else {
                                     customToast(
@@ -109,7 +102,7 @@ class SelectAddressView extends StatelessWidget {
                                 });
                               },
                               title: Text(
-                                  "${controller.getAddressListModel.addressList?[index].address}"),
+                                  "${controller.getAddressListModel.addressList?[index]?.address}"),
                             ),
                           ),
                         );

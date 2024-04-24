@@ -181,7 +181,7 @@ class HomeController extends GetxController {
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.branch,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.bname);
+                  getSelectedAddressModel.UserSelectedAddress?.first?.branch);
         }
         CustomLoader.closeCustomLoader();
         update();

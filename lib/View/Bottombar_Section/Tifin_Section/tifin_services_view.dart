@@ -1,14 +1,21 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/color_constant.dart';
 import 'package:vandana/Constant/image_path_constant.dart';
 import 'package:vandana/Constant/layout_constant.dart';
 import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
+import 'package:vandana/Custom_Widgets/custom_toast.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
 import 'package:vandana/View/Bottombar_Section/Tifin_Section/select_vegetable_view.dart';
-
+import 'package:vandana/View/Selected_Subji/Selected_Subji.dart';
+import 'package:intl/intl.dart';
+import '../../../Constant/static_decoration.dart';
 import '../../../Controllers/tiffin_order_controller.dart';
+import '../Home_Section/Tifin_Section/tifin_billing_view.dart';
 
 class TifinServicesView extends StatefulWidget {
   const TifinServicesView({super.key});
@@ -41,95 +48,197 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                 child: Image.asset(ImagePathConstant.rightShaeBg,
                     opacity: const AlwaysStoppedAnimation(0.5))),
             Image.asset(ImagePathConstant.homeUpperBg),
+            // Positioned(
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0,
+            //     child: Image.asset(ImagePathConstant.bottomCurve)),
             Padding(
               padding: EdgeInsets.only(
                   top: Get.height * 0.050,
                   left: screenWidthPadding,
                   right: screenWidthPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    " Hi, ",
-                    style: TextStyleConstant.bold32(color: ColorConstant.white),
-                  ),
-                  Obx(() {
-                    if (tiffinOrderController
-                                .getTifinOrderListModel.value.orderList !=
-                            null &&
-                        tiffinOrderController.getTifinOrderListModel.value
-                                .orderList?.isNotEmpty ==
-                            true) {
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          var data = tiffinOrderController
-                              .getTifinOrderListModel.value.orderList?[index];
-                          return Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    top: Get.height * 0.100,
-                                    bottom: Get.height * 0.050),
-                                child: Row(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Obx(() {
+                      return Text(
+                        " Hi, ${tiffinOrderController.userName.value}",
+                        style: TextStyleConstant.bold32(
+                            color: ColorConstant.white),
+                      );
+                    }),
+                    Obx(() {
+                      if (tiffinOrderController
+                                  .getTifinOrderListModel.value.orderList !=
+                              null &&
+                          tiffinOrderController.getTifinOrderListModel.value
+                                  .orderList?.isNotEmpty ==
+                              true) {
+                        return ListView.builder(
+                          itemBuilder: (context, index) {
+                            var data = tiffinOrderController
+                                .getTifinOrderListModel.value.orderList?[index];
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: Get.height * 0.05,
+                                      bottom: Get.height * 0.050),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (data?.itemList?.isNotEmpty == true)
+                                        CachedNetworkImage(
+                                          imageUrl:
+                                              "${data?.itemList?.first?.productImage}",
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            height: Get.height * 0.172,
+                                            width: Get.width * 0.364,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.fill)),
+                                          ),
+                                          placeholder: (context, url) => Center(
+                                              child: CircularProgressIndicator(
+                                            color: ColorConstant.orangeAccent,
+                                          )),
+                                          errorWidget: (context, url, error) =>
+                                              SizedBox(
+                                            width: Get.width * 0.364,
+                                            child: const Icon(Icons.error),
+                                          ),
+                                        ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Main Course Menu",
+                                              style:
+                                                  TextStyleConstant.regular22(
+                                                      color: ColorConstant
+                                                          .orange)),
+                                          if (data?.itemList?.isNotEmpty ==
+                                              true) ...[
+                                            Text(
+                                              "${data?.itemList?.first?.productName}",
+                                              style:
+                                                  TextStyleConstant.regular18(
+                                                      color: ColorConstant
+                                                          .orangeAccent),
+                                            ),
+                                            SizedBox(
+                                              width: 135,
+                                              child: Text(
+                                                "${data?.itemList?.first?.description}",
+                                                style:
+                                                    TextStyleConstant.regular18(
+                                                        color: ColorConstant
+                                                            .orangeAccent),
+                                              ),
+                                            ),
+                                          ]
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Container(
-                                      height: Get.height * 0.172,
-                                      width: Get.width * 0.364,
-                                      decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  ImagePathConstant.fullThali),
-                                              fit: BoxFit.fill)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(
+                                              color: ColorConstant.orange)),
+                                      child: Text(
+                                        "Total Count : ${data?.tiffinCount}",
+                                        style: TextStyleConstant.regular18(
+                                            color: ColorConstant.orange),
+                                      ),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Main Course Menu",
-                                            style: TextStyleConstant.regular22(
-                                                color: ColorConstant.orange)),
-                                        Text(
-                                          "2 Chapati, 2 sabji, \n1 plate Rise, Dal, Salad\n sweets, butter milk",
-                                          style: TextStyleConstant.regular18(
+                                    GestureDetector(
+                                      onTap: () {
+                                        // Get.to(() => SelectVegetableView());
+                                        Get.to(() => SelectedSubjiView(
+                                              subjiCount: int.parse(
+                                                  '${data?.itemList?.first?.subjiCount}'),
+                                              soNumber: '${data?.soNumber}',
+                                            ));
+                                      },
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height: 40,
+                                        width: Get.width * 0.45,
+                                        decoration: BoxDecoration(
+                                          color: ColorConstant.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          boxShadow: [
+                                            BoxShadow(
                                               color:
-                                                  ColorConstant.orangeAccent),
+                                                  Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 1,
+                                              blurRadius: 2,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    )
+                                        child: Text(
+                                          "Select Vegetable",
+                                          style: TextStyleConstant.regular18(
+                                              color: ColorConstant.orange),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        border: Border.all(
-                                            color: ColorConstant.orange)),
-                                    child: Text(
-                                      "Total Count",
-                                      style: TextStyleConstant.regular18(
-                                          color: ColorConstant.orange),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Get.to(() => SelectVegetableView());
+                                Padding(
+                                  padding: screenVerticalPadding,
+                                  child: const HorizontalDottedLine(),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      String? date =
+                                          await selectDate(context: context);
+
+                                      if (date != null) {
+                                        Get.dialog(
+                                          TiffinTypeAlert(
+                                            tiffinOrderController:
+                                                tiffinOrderController,
+                                            onTap: () {
+                                              tiffinOrderController.cancelOrder(
+                                                  soNumber: '${data?.soNumber}',
+                                                  date: date);
+                                            },
+                                          ),
+                                        );
+                                      } else {
+                                        customToast(
+                                            message:
+                                                'Plese select date to cancel order');
+                                      }
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
                                       height: 40,
-                                      width: Get.width * 0.5,
+                                      width: Get.width * 0.3,
                                       decoration: BoxDecoration(
                                         color: ColorConstant.white,
                                         borderRadius: BorderRadius.circular(10),
@@ -142,73 +251,146 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                           ),
                                         ],
                                       ),
-                                      child: Text(
-                                        "Select Vegetable",
-                                        style: TextStyleConstant.regular18(
-                                            color: ColorConstant.orange),
-                                      ),
+                                      child: Text("Cancel Tiffin",
+                                          style: TextStyleConstant.regular18(
+                                              color: ColorConstant.orange)),
                                     ),
                                   ),
-                                ],
-                              ),
-                              Padding(
-                                padding: screenVerticalPadding,
-                                child: const HorizontalDottedLine(),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Get.to(() => const ThankYouView(
-                                        isCancelOrder: true,
-                                      ));
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 40,
-                                  width: Get.width * 0.3,
-                                  decoration: BoxDecoration(
-                                    color: ColorConstant.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 1,
-                                        blurRadius: 2,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text("Cancel Tiffin",
-                                      style: TextStyleConstant.regular18(
-                                          color: ColorConstant.orange)),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: tiffinOrderController
-                            .getTifinOrderListModel.value.orderList?.length,
-                      );
-                    } else {
-                      return Center(
-                        child: Text(
-                          'No Data Available',
-                          style: TextStyleConstant.bold20(
-                              color: ColorConstant.white),
-                        ),
-                      );
-                    }
-                  })
-                ],
+                              ],
+                            );
+                          },
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: tiffinOrderController
+                              .getTifinOrderListModel.value.orderList?.length,
+                        );
+                      } else {
+                        return Center(
+                          child: Text(
+                            'No Data Available',
+                            style: TextStyleConstant.bold20(
+                                color: ColorConstant.black),
+                          ),
+                        );
+                      }
+                    }),
+                    const SizedBox(
+                      height: 15,
+                    )
+                  ],
+                ),
               ),
             ),
-            Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Image.asset(ImagePathConstant.bottomCurve)),
           ],
         ));
+  }
+}
+
+class TiffinTypeAlert extends StatelessWidget {
+  const TiffinTypeAlert({
+    super.key,
+    required this.tiffinOrderController,
+    required this.onTap,
+  });
+
+  final TiffinOrderController tiffinOrderController;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Tiffin Type",
+                      style: TextStyleConstant.semiBold22().copyWith(
+                          color: ColorConstant.appMainColor,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    height20,
+                    GestureDetector(
+                        onTap: () {
+                          tiffinOrderController.tiffinTypeLunch.value =
+                              !tiffinOrderController.tiffinTypeLunch.value;
+                        },
+                        child: CustomRadioButton(
+                            buttonName: "Lunch",
+                            isSelected: tiffinOrderController.tiffinTypeLunch)),
+                    height10,
+                    GestureDetector(
+                        onTap: () {
+                          tiffinOrderController.tiffinTypeDinner.value =
+                              !tiffinOrderController.tiffinTypeDinner.value;
+                        },
+                        child: CustomRadioButton(
+                            buttonName: "Dinner",
+                            isSelected:
+                                tiffinOrderController.tiffinTypeDinner)),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: onTap,
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40,
+                    width: Get.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: ColorConstant.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text("Cancel Tiffin",
+                        style: TextStyleConstant.regular18(
+                            color: ColorConstant.orange)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Future<String?> selectDate({
+  required BuildContext context,
+}) async {
+  DateTime? picked;
+  String date;
+  picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2101),
+  );
+  if (picked != null) {
+    date = DateFormat('yyyy-MM-dd').format(picked);
+    return date;
+  } else {
+    return null;
   }
 }

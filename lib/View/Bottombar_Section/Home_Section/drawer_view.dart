@@ -8,7 +8,7 @@ import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Initial_Section/get_start_view.dart';
 
-import '../Tiffin_Order/tiffin_order_view.dart';
+import '../Order_View/order_view.dart';
 
 class DrawerView extends StatefulWidget {
   const DrawerView({super.key});
@@ -91,7 +91,7 @@ class _DrawerViewState extends State<DrawerView> {
               tabName: "My Order",
               icon: Icons.account_box_outlined,
               onTap: () {
-                Get.to(() => const TiffinOrderView());
+                Get.to(() => const OrderView());
               },
             ),
             drawerWidget(
