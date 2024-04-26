@@ -12,6 +12,7 @@ import '../../../../Constant/static_decoration.dart';
 import '../../../../Custom_Widgets/custom_button.dart';
 import '../../../../Custom_Widgets/custom_textfield.dart';
 import '../../../../Custom_Widgets/time_slote_widget.dart';
+import '../../../../Models/get_add_on_item_cart_model.dart';
 
 class TifinBillingView extends StatefulWidget {
   final String productImage;
@@ -87,6 +88,70 @@ class _TifinBillingViewState extends State<TifinBillingView>
         day: controller.daysName[int.parse('${tabController2?.index}')],
       );
     });
+  }
+
+  calculateAddOn(GetAddOnItemCartModelAddonItemList? data) {
+    bool isContain = controller.orderItemList.value.any((element) =>
+        element['\"product_code\"'].toString() == '\"${data?.productCode}\"');
+    if (!isContain) {
+      print('Not contain');
+      controller.orderItemList.value.add({
+        '\"cartId\"': '\"${data?.itemAddCartid}\"',
+        '\"category_name\"': '\"${data?.categoryName}\"',
+        '\"subcategory_name\"': '\"${data?.subcategoryName}\"',
+        '\"product_name\"': '\"${data?.productName}\"',
+        '\"product_code\"': '\"${data?.productCode}\"',
+        '\"quantity\"': '\"1\"',
+        '\"price\"': '\"${data?.mrp}\"',
+        '\"amount\"': '\"${data?.price}\"',
+        '\"tax\"': '\"${int.parse(data?.tax ?? '0') / 2}\"',
+        '\"tax_sgst\"': '\"${int.parse(data?.tax ?? '0') / 2}\"',
+        '\"tax_igst\"': '\"\"',
+        '\"total\"': '\"${data?.price}\"',
+        '\"unit\"': '\"nos\"',
+      });
+      double totalCost = 0;
+      if (controller.orderItemList.isNotEmpty) {
+        for (var item in controller.orderItemList) {
+          double price =
+              double.parse(item['\"amount\"'].toString().replaceAll('"', ''));
+          totalCost += price * 22;
+        }
+        controller.addOnPrice.value = '$totalCost';
+      }
+      if(controller.onSaturday.value == true && controller.onSunday.value == true){
+
+      }else if (controller.onSaturday.value == true){
+
+      }else if (controller.onSunday.value == true){
+
+      }
+      controller.packagingPrice.value =
+          "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+      controller.calculateTotal(widget.price);
+      // print(
+      //     'pp:-${controller.packagingPrice.value} ${}');
+    } else {
+      controller.orderItemList.value.removeWhere((element) =>
+          element['\"product_code\"'].toString() == '\"${data?.productCode}\"');
+      double totalCost = 0;
+
+      if (controller.orderItemList.isNotEmpty) {
+        for (var item in controller.orderItemList) {
+          double price =
+              double.parse(item['\"amount\"'].toString().replaceAll('"', ''));
+          totalCost += price * 22;
+        }
+        controller.addOnPrice.value = '$totalCost';
+      } else {
+        controller.addOnPrice.value = '0';
+      }
+
+      controller.packagingPrice.value =
+          "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+      controller.calculateTotal(widget.price);
+    }
+    setState(() {});
   }
 
   @override
@@ -1495,82 +1560,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                       EdgeInsets.only(top: Get.height * 0.020),
                                   child: CustomButton(
                                     onTap: () {
-                                      bool isContain = controller
-                                          .orderItemList.value
-                                          .any((element) =>
-                                              element['\"product_code\"']
-                                                  .toString() ==
-                                              '\"${data?.productCode}\"');
-                                      if (!isContain) {
-                                        print('Not contain');
-                                        controller.orderItemList.value.add({
-                                          '\"cartId\"':
-                                              '\"${data?.itemAddCartid}\"',
-                                          '\"category_name\"':
-                                              '\"${data?.categoryName}\"',
-                                          '\"subcategory_name\"':
-                                              '\"${data?.subcategoryName}\"',
-                                          '\"product_name\"':
-                                              '\"${data?.productName}\"',
-                                          '\"product_code\"':
-                                              '\"${data?.productCode}\"',
-                                          '\"quantity\"': '\"1\"',
-                                          '\"price\"': '\"${data?.mrp}\"',
-                                          '\"amount\"': '\"${data?.price}\"',
-                                          '\"tax\"':
-                                              '\"${int.parse(data?.tax ?? '0') / 2}\"',
-                                          '\"tax_sgst\"':
-                                              '\"${int.parse(data?.tax ?? '0') / 2}\"',
-                                          '\"tax_igst\"': '\"\"',
-                                          '\"total\"': '\"${data?.price}\"',
-                                          '\"unit\"': '\"nos\"',
-                                        });
-                                        double totalCost = 0;
-                                        if (controller
-                                            .orderItemList.isNotEmpty) {
-                                          for (var item
-                                              in controller.orderItemList) {
-                                            double price = double.parse(
-                                                item['\"amount\"']
-                                                    .toString()
-                                                    .replaceAll('"', ''));
-                                            totalCost += price * 22;
-                                          }
-                                          controller.addOnPrice.value =
-                                              '$totalCost';
-                                        }
-                                        controller.packagingPrice.value =
-                                            "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
-                                        controller.calculateTotal(widget.price);
-                                        // print(
-                                        //     'pp:-${controller.packagingPrice.value} ${}');
-                                      } else {
-                                        print('contain');
-
-                                        controller.orderItemList.value
-                                            .removeWhere((element) =>
-                                                element['\"product_code\"']
-                                                    .toString() ==
-                                                '\"${data?.productCode}\"');
-                                        double totalCost = 0;
-                                        if (controller
-                                            .orderItemList.isNotEmpty) {
-                                          for (var item
-                                              in controller.orderItemList) {
-                                            double price = double.parse(
-                                                item['\"amount\"']
-                                                    .toString()
-                                                    .replaceAll('"', ''));
-                                            totalCost += price * 22;
-                                          }
-                                          controller.addOnPrice.value =
-                                              '$totalCost';
-                                        }
-                                        controller.packagingPrice.value =
-                                            "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
-                                        controller.calculateTotal(widget.price);
-                                      }
-                                      setState(() {});
+                                      calculateAddOn(data);
                                     },
                                     title: controller.orderItemList.value.any(
                                             (element) =>

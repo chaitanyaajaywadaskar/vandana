@@ -257,20 +257,20 @@ class TifinBillingController extends GetxController {
       weekendTiffinCount.value = (satSunTiffinCount.value * 2);
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (satSunTiffinCount.value * 2))}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (satSunTiffinCount.value * 2))}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       }
     } else if (onSaturday.value == true) {
       weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
       weekendTiffinCount.value = satSunTiffinCount.value;
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       }
     } else if (onSunday.value == true) {
       weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
@@ -278,17 +278,17 @@ class TifinBillingController extends GetxController {
 
       if (packRegular.value) {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       } else {
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + satSunTiffinCount.value)}";
+            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
       }
     } else {
       weekendTiffinCalculatedPrice.value = 0;
       weekendTiffinCount.value = 0;
 
       packagingPrice.value =
-          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tiffinCount)}";
+          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (orderItemList.length + 1))}";
     }
   }
 
