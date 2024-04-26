@@ -33,4 +33,6 @@ class EndPointConstant {
   static String userSelectedAddress = "user_selected_address.php";
   static String cancelTiffin = "cancel_tiffin.php";
   static String orderTiffinSubjiList = "orderplaced_tiffin_subjilist.php";
+  static String updateSubjiList = "update_subji.php";
+  static String addOnItemList = "add_on_itemlist.php";
 }

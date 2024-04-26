@@ -6,9 +6,12 @@ import 'package:vandana/Constant/storage_key_constant.dart';
 import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_button.dart';
 import 'package:vandana/Services/storage_services.dart';
+import 'package:vandana/View/Bottombar_Section/main_view.dart';
 import 'package:vandana/View/Initial_Section/get_start_view.dart';
 
+import '../../../Controllers/bottombar_controller.dart';
 import '../Order_View/order_view.dart';
+import '../Tifin_Section/tifin_services_view.dart';
 
 class DrawerView extends StatefulWidget {
   const DrawerView({super.key});
@@ -84,7 +87,11 @@ class _DrawerViewState extends State<DrawerView> {
               child: drawerWidget(
                 tabName: "My Tiffin",
                 icon: Icons.home_repair_service_outlined,
-                onTap: () {},
+                onTap: () {
+                  // BottomBarController bottomBarController = Get.find();
+                  // bottomBarController.selectedIndex.value = 2;
+                  Get.to(() => const TifinServicesView());
+                },
               ),
             ),
             drawerWidget(

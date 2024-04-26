@@ -177,6 +177,13 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                               subjiCount: int.parse(
                                                   '${data?.itemList?.first?.subjiCount}'),
                                               soNumber: '${data?.soNumber}',
+                                              enableLunch: data?.tiffintypeLunch
+                                                      ?.isNotEmpty ??
+                                                  false,
+                                              enableDinner: data
+                                                      ?.tiffintypeDinner
+                                                      ?.isNotEmpty ??
+                                                  false,
                                             ));
                                       },
                                       child: Container(
@@ -214,26 +221,32 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                   alignment: Alignment.centerLeft,
                                   child: GestureDetector(
                                     onTap: () async {
-                                      String? date =
-                                          await selectDate(context: context);
+                                      Get.dialog(
+                                        TiffinTypeAlert(
+                                          tiffinOrderController:
+                                              tiffinOrderController,
+                                          enableLunch: data?.tiffintypeLunch
+                                                  ?.isNotEmpty ??
+                                              false,
+                                          enableDinner: data?.tiffintypeDinner
+                                                  ?.isNotEmpty ??
+                                              false,
+                                          onTap: () async {
+                                            String? date = await selectDate(
+                                                context: context);
 
-                                      if (date != null) {
-                                        Get.dialog(
-                                          TiffinTypeAlert(
-                                            tiffinOrderController:
-                                                tiffinOrderController,
-                                            onTap: () {
+                                            if (date != null) {
                                               tiffinOrderController.cancelOrder(
                                                   soNumber: '${data?.soNumber}',
                                                   date: date);
-                                            },
-                                          ),
-                                        );
-                                      } else {
-                                        customToast(
-                                            message:
-                                                'Plese select date to cancel order');
-                                      }
+                                            } else {
+                                              customToast(
+                                                  message:
+                                                      'Plese select date to cancel order');
+                                            }
+                                          },
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
@@ -292,10 +305,15 @@ class TiffinTypeAlert extends StatelessWidget {
     super.key,
     required this.tiffinOrderController,
     required this.onTap,
+    this.enableLunch = false,
+    this.enableDinner = false,
   });
 
   final TiffinOrderController tiffinOrderController;
   final VoidCallback onTap;
+  final bool enableLunch;
+  final bool enableDinner;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -324,24 +342,31 @@ class TiffinTypeAlert extends StatelessWidget {
                           fontWeight: FontWeight.w400),
                     ),
                     height20,
-                    GestureDetector(
-                        onTap: () {
-                          tiffinOrderController.tiffinTypeLunch.value =
-                              !tiffinOrderController.tiffinTypeLunch.value;
-                        },
-                        child: CustomRadioButton(
-                            buttonName: "Lunch",
-                            isSelected: tiffinOrderController.tiffinTypeLunch)),
+                    Visibility(
+                      visible: enableLunch,
+                      child: GestureDetector(
+                          onTap: () {
+                            tiffinOrderController.tiffinTypeLunch.value =
+                                !tiffinOrderController.tiffinTypeLunch.value;
+                          },
+                          child: CustomRadioButton(
+                              buttonName: "Lunch",
+                              isSelected:
+                                  tiffinOrderController.tiffinTypeLunch)),
+                    ),
                     height10,
-                    GestureDetector(
-                        onTap: () {
-                          tiffinOrderController.tiffinTypeDinner.value =
-                              !tiffinOrderController.tiffinTypeDinner.value;
-                        },
-                        child: CustomRadioButton(
-                            buttonName: "Dinner",
-                            isSelected:
-                                tiffinOrderController.tiffinTypeDinner)),
+                    Visibility(
+                      visible: enableDinner,
+                      child: GestureDetector(
+                          onTap: () {
+                            tiffinOrderController.tiffinTypeDinner.value =
+                                !tiffinOrderController.tiffinTypeDinner.value;
+                          },
+                          child: CustomRadioButton(
+                              buttonName: "Dinner",
+                              isSelected:
+                                  tiffinOrderController.tiffinTypeDinner)),
+                    ),
                   ],
                 ),
                 GestureDetector(

@@ -7,7 +7,9 @@ import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Controllers/tifin_billing_controller.dart';
 import 'package:vandana/Custom_Widgets/custom_appbar.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
+import 'package:vandana/Custom_Widgets/custom_toast.dart';
 import '../../../../Constant/static_decoration.dart';
+import '../../../../Custom_Widgets/custom_button.dart';
 import '../../../../Custom_Widgets/custom_textfield.dart';
 import '../../../../Custom_Widgets/time_slote_widget.dart';
 
@@ -235,7 +237,9 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               onTap: () async {
                                 controller
                                     .getAddressListTypewise('Home')
-                                    .then((val) => showDialog(
+                                    .then((val) {
+                                  val != null && val.statusCode == '200'
+                                      ? showDialog(
                                           context: context,
                                           builder: (context) {
                                             return SizedBox(
@@ -312,7 +316,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                               ),
                                             );
                                           },
-                                        ));
+                                        )
+                                      : customToast(
+                                          message: 'No address found');
+                                });
                               },
                               child: Obx(
                                 () => Container(
@@ -337,7 +344,9 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               onTap: () async {
                                 controller
                                     .getAddressListTypewise('Office')
-                                    .then((val) => showDialog(
+                                    .then((val) {
+                                  val != null && val.statusCode == '200'
+                                      ? showDialog(
                                           context: context,
                                           builder: (context) {
                                             return SizedBox(
@@ -412,7 +421,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                               ),
                                             );
                                           },
-                                        ));
+                                        )
+                                      : customToast(
+                                          message: 'No address found');
+                                });
                               },
                               child: Obx(
                                 () => Container(
@@ -502,7 +514,9 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               onTap: () {
                                 controller
                                     .getAddressListTypewise('Home')
-                                    .then((val) => showDialog(
+                                    .then((val) {
+                                  val != null && val.statusCode == '200'
+                                      ? showDialog(
                                           context: context,
                                           builder: (context) {
                                             return SizedBox(
@@ -579,7 +593,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                               ),
                                             );
                                           },
-                                        ));
+                                        )
+                                      : customToast(
+                                          message: 'No address found');
+                                });
                               },
                               child: Obx(
                                 () => Container(
@@ -604,7 +621,9 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               onTap: () {
                                 controller
                                     .getAddressListTypewise('Office')
-                                    .then((val) => showDialog(
+                                    .then((val) {
+                                  val != null && val.statusCode == '200'
+                                      ? showDialog(
                                           context: context,
                                           builder: (context) {
                                             return SizedBox(
@@ -681,7 +700,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                               ),
                                             );
                                           },
-                                        ));
+                                        )
+                                      : customToast(
+                                          message: 'No address found');
+                                });
                               },
                               child: Obx(
                                 () => Container(
@@ -1394,6 +1416,180 @@ class _TifinBillingViewState extends State<TifinBillingView>
                 }),
                 height10,
                 const HorizontalDottedLine(),
+                height20,
+                Text(
+                  'Add More Food Item',
+                  style: TextStyleConstant.bold16(),
+                ),
+                height20,
+                Obx(() {
+                  if (controller.isAddOnCartLoading.value) {
+                    return const CircularProgressIndicator(
+                      color: Colors.orange,
+                    );
+                  }
+                  return SizedBox(
+                    height: 205,
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller
+                          .getAddOnItemModel.value.addonItemList?.length,
+                      itemBuilder: (context, index) {
+                        var data = controller
+                            .getAddOnItemModel.value.addonItemList?[index];
+                        return Padding(
+                          padding: contentVerticalPadding,
+                          child: Container(
+                            padding: contentPadding,
+                            width: 150,
+                            margin: const EdgeInsets.only(right: 15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstant.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 3,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  maxRadius: 30,
+                                  backgroundImage:
+                                      NetworkImage("${data?.productImage1}"),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: contentWidthPadding),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: Get.width * 0.37,
+                                        child: Text(
+                                          data?.productName ?? '',
+                                          style: TextStyleConstant.semiBold18(
+                                              color: ColorConstant.orange),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Price: ₹${data?.price ?? ''}",
+                                        style: TextStyleConstant.semiBold14(
+                                            color: ColorConstant.orange),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: Get.height * 0.020),
+                                  child: CustomButton(
+                                    onTap: () {
+                                      bool isContain = controller
+                                          .orderItemList.value
+                                          .any((element) =>
+                                              element['\"product_code\"']
+                                                  .toString() ==
+                                              '\"${data?.productCode}\"');
+                                      if (!isContain) {
+                                        print('Not contain');
+                                        controller.orderItemList.value.add({
+                                          '\"cartId\"':
+                                              '\"${data?.itemAddCartid}\"',
+                                          '\"category_name\"':
+                                              '\"${data?.categoryName}\"',
+                                          '\"subcategory_name\"':
+                                              '\"${data?.subcategoryName}\"',
+                                          '\"product_name\"':
+                                              '\"${data?.productName}\"',
+                                          '\"product_code\"':
+                                              '\"${data?.productCode}\"',
+                                          '\"quantity\"': '\"1\"',
+                                          '\"price\"': '\"${data?.mrp}\"',
+                                          '\"amount\"': '\"${data?.price}\"',
+                                          '\"tax\"':
+                                              '\"${int.parse(data?.tax ?? '0') / 2}\"',
+                                          '\"tax_sgst\"':
+                                              '\"${int.parse(data?.tax ?? '0') / 2}\"',
+                                          '\"tax_igst\"': '\"\"',
+                                          '\"total\"': '\"${data?.price}\"',
+                                          '\"unit\"': '\"nos\"',
+                                        });
+                                        double totalCost = 0;
+                                        if (controller
+                                            .orderItemList.isNotEmpty) {
+                                          for (var item
+                                              in controller.orderItemList) {
+                                            double price = double.parse(
+                                                item['\"amount\"']
+                                                    .toString()
+                                                    .replaceAll('"', ''));
+                                            totalCost += price * 22;
+                                          }
+                                          controller.addOnPrice.value =
+                                              '$totalCost';
+                                        }
+                                        controller.packagingPrice.value =
+                                            "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+                                        controller.calculateTotal(widget.price);
+                                        // print(
+                                        //     'pp:-${controller.packagingPrice.value} ${}');
+                                      } else {
+                                        print('contain');
+
+                                        controller.orderItemList.value
+                                            .removeWhere((element) =>
+                                                element['\"product_code\"']
+                                                    .toString() ==
+                                                '\"${data?.productCode}\"');
+                                        double totalCost = 0;
+                                        if (controller
+                                            .orderItemList.isNotEmpty) {
+                                          for (var item
+                                              in controller.orderItemList) {
+                                            double price = double.parse(
+                                                item['\"amount\"']
+                                                    .toString()
+                                                    .replaceAll('"', ''));
+                                            totalCost += price * 22;
+                                          }
+                                          controller.addOnPrice.value =
+                                              '$totalCost';
+                                        }
+                                        controller.packagingPrice.value =
+                                            "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+                                        controller.calculateTotal(widget.price);
+                                      }
+                                      setState(() {});
+                                    },
+                                    title: controller.orderItemList.value.any(
+                                            (element) =>
+                                                element['\"product_code\"']
+                                                    .toString() ==
+                                                '\"${data?.productCode}\"')
+                                        ? "Added"
+                                        : "Add on Item",
+                                    width: Get.width * 0.300,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }),
                 height20,
                 SizedBox(
                   width: Get.width,

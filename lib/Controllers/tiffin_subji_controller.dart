@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/endpoint_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_loader.dart';
+import 'package:vandana/Custom_Widgets/custom_toast.dart';
+import 'package:vandana/Models/update_subji_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import '../Models/get_order_subji_list_model.dart';
 import '../Models/get_sabjilist_daywise.dart';
@@ -11,11 +13,14 @@ class TifinSubjiController extends GetxController {
   final getSabjiListDaywiseLunchModel = GetSabjiListDaywiseModel().obs;
   final getOrderSubjiListModel = GetOrderSubjiListModel().obs;
   final getSabjiListDaywiseDinnerModel = GetSabjiListDaywiseModel().obs;
+  final updateSubjiModel = UpdateSubjiModel().obs;
 
   RxList orderItemList = [].obs;
   RxList<DateTime> next7Days = <DateTime>[].obs;
   RxList<String> daysName = <String>[].obs;
   RxInt subjiCount = 0.obs;
+  var enableLunch = false.obs;
+  var enableDinner = false.obs;
 //Day wise list for lunch
   RxList<Map<String, String>> lunchSubjiList1 = <Map<String, String>>[].obs;
   RxList<Map<String, String>> lunchSubjiList2 = <Map<String, String>>[].obs;
@@ -102,6 +107,55 @@ class TifinSubjiController extends GetxController {
 
     getSabjiListDaywiseForLunch(day: daysName[0]);
     getSabjiListDaywiseForDinner(day: daysName[0]);
+  }
+
+  Future updateSubjiList({String soNo = '', subjiCount = ''}) async {
+    CustomLoader.openCustomLoader();
+    try {
+      addDinnerSubjiLists();
+      addLunchSubjiLists();
+      var map = <String, String>{
+        'so_number': soNo,
+        'subji_count': subjiCount,
+        'subji_list_lunch': '${lunchSubjiList.map((element) {
+          return {
+            '\"sId\"': '\"${element['sId']}\"',
+            '\"day\"': '\"${element['day']}\"',
+            '\"sabji\"': '\"${element['sabji']}\"',
+            '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+            '\"date\"': '\"${element['date']}\"',
+          };
+        }).toList()}',
+        'subji_list_dinner': '${dinnerSubjiList.map((element) {
+          return {
+            '\"sId\"': '\"${element['sId']}\"',
+            '\"day\"': '\"${element['day']}\"',
+            '\"sabji\"': '\"${element['sabji']}\"',
+            '\"tiffin_type\"': '\"${element['tiffin_type']}\"',
+            '\"date\"': '\"${element['date']}\"',
+          };
+        }).toList()}',
+      };
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.updateSubjiList, payload: map);
+      // log("Get order placed sabji list payload ::: $map");
+      // log("Get order placed sabji list response ::: $response");
+
+      updateSubjiModel.value = updateSubjiModelFromJson(response["body"]);
+      log('url: ${EndPointConstant.updateSubjiList},\npayload: $map,\nstatus-code :${updateSubjiModel.value.statusCode},\nresponse: ${response["body"]}');
+
+      if (updateSubjiModel.value.statusCode == "200" ||
+          updateSubjiModel.value.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        customToast(message: 'Subji list updated successfully');
+      } else {
+        CustomLoader.closeCustomLoader();
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during updating sabji list ::: $error");
+    }
   }
 
   Future getOrderPlaceSubjiList(

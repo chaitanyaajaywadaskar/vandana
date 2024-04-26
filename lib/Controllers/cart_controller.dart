@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:vandana/Models/post_coupon_model.dart.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Models/post_order_model.dart';
@@ -14,13 +15,16 @@ import 'package:vandana/Models/post_remove_cart_item_model.dart';
 import 'package:vandana/Models/post_update_cart_item_model.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
 
+import '../Models/get_add_on_item_cart_model.dart';
 import '../Models/get_delivery_charges_model.dart';
+import '../Models/post_to_cart_model.dart';
 import 'get_packaging_list_model.dart';
 
 class CartController extends GetxController {
   final getCartItemsListModel = GetCartItemsListModel().obs;
   final getDeliveryChargesModel = DeliveryChargesModel().obs;
-
+  final getAddOnItemModel = GetAddOnItemCartModel().obs;
+  PostToCartModel postToCartModel = PostToCartModel();
   PostOrderModel postOrderModel = PostOrderModel();
   PostCouponModel postCouponModel = PostCouponModel();
   PostRemoveCartItemModel postRemoveCartItemModel = PostRemoveCartItemModel();
@@ -47,11 +51,16 @@ class CartController extends GetxController {
   RxString packagingPrice = "0".obs;
   RxString packagingName = "Regular".obs;
   RxInt deliveryPrice = 0.obs;
-
+  RxInt totalCount = 0.obs;
+  RxBool isAddOnCartLoading = false.obs;
 
   initialFunctioun() async {
     totalPriceInCart.value = '0';
+    totalCount.value = 0;
+    totalQuantityInCart.value = "0";
+    packagingPrice.value = '0';
     discountInCart.value = '0';
+    deliveryPrice.value = 0;
     coupon.clear();
     userCode.value = await StorageServices.getData(
             dataType: StorageKeyConstant.stringType,
@@ -108,9 +117,64 @@ class CartController extends GetxController {
                 .value.packagingList?[0].packagingName
                 .toString() ??
             '';
+        calculateTotal(totalPriceInCart.value);
       });
     });
     getDeliveryCharges();
+    getAddOnItemList();
+  }
+
+  Future postToCart({required int index}) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, String> payload = {
+        "user_type": userType.value,
+        "customer_code": userCode.value,
+        "phone": userPhone.value,
+        "category_name":
+            "${getAddOnItemModel.value.addonItemList?[index]?.categoryName}",
+        "subcategory_name":
+            "${getAddOnItemModel.value.addonItemList?[index]?.subcategoryName}",
+        "product_name":
+            "${getAddOnItemModel.value.addonItemList?[index]?.productName}",
+        "product_code":
+            "${getAddOnItemModel.value.addonItemList?[index]?.productCode}",
+        "unit": "nos",
+        "quantity": "1",
+        "price": "${getAddOnItemModel.value.addonItemList?[index]?.price}",
+        "total": "1",
+        "tax": "${getAddOnItemModel.value.addonItemList?[index]?.tax}",
+      };
+
+      log("Post to cart payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.addCart, payload: payload);
+
+      log("Post to cart response ::: $response");
+
+      postToCartModel = postToCartModelFromJson(response['body']);
+
+      if (postToCartModel.statusCode == "200" ||
+          postToCartModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postToCartModel.message}");
+      } else {
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postToCartModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting product to cart ::: $error");
+    }
+  }
+
+  calculateTotal(String total) {
+    double tempTotal =
+        double.parse(total) + double.parse(deliveryPrice.value.toString());
+
+    tempTotal += double.parse(packagingPrice.value);
+    totalCount.value = tempTotal.toInt();
   }
 
   Future getDeliveryCharges() async {
@@ -138,6 +202,27 @@ class CartController extends GetxController {
     }
   }
 
+  Future getAddOnItemList() async {
+    // CustomLoader.openCustomLoader();
+    try {
+      isAddOnCartLoading.value = true;
+      var payload = <String, String>{
+        "category_name": "Food",
+        "customer_code": userCode.value
+      };
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.addOnItemList, payload: payload);
+
+      getAddOnItemModel.value = getAddOnCartModelFromJson(response["body"]);
+      isAddOnCartLoading.value = false;
+      log('url: ${EndPointConstant.addOnItemList},\npayload: $payload,\nstatus-code :${getAddOnItemModel.value.statusCode},\nresponse: ${response["body"]}');
+    } catch (error) {
+      isAddOnCartLoading.value = false;
+
+      log("Something went wrong during getting add on item list ::: $error");
+    }
+  }
+
   Future getCartItemsList() async {
     CustomLoader.openCustomLoader();
     try {
@@ -154,7 +239,8 @@ class CartController extends GetxController {
 
       log("Get cart items list response ::: $response");
 
-      getCartItemsListModel.value = getCartItemsListModelFromJson(response["body"]);
+      getCartItemsListModel.value =
+          getCartItemsListModelFromJson(response["body"]);
 
       if (getCartItemsListModel.value.statusCode == "200" ||
           getCartItemsListModel.value.statusCode == "201") {
@@ -168,6 +254,8 @@ class CartController extends GetxController {
           quantity += int.parse('${element.quantity ?? 0}');
         });
         totalPriceInCart.value = '$total';
+
+        totalCount.value = int.parse(total.toStringAsFixed(0));
         totalQuantityInCart.value = quantity.toStringAsFixed(0);
         packagingPrice.value =
             "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
@@ -211,8 +299,12 @@ class CartController extends GetxController {
 
   manageCartItems({required int index, required bool isAdd}) {
     int quantity = (isAdd)
-        ? int.parse(getCartItemsListModel.value.cartItemList![index].quantity!) + 1
-        : int.parse(getCartItemsListModel.value.cartItemList![index].quantity!) - 1;
+        ? int.parse(
+                getCartItemsListModel.value.cartItemList![index].quantity!) +
+            1
+        : int.parse(
+                getCartItemsListModel.value.cartItemList![index].quantity!) -
+            1;
 
     num total = (isAdd)
         ? int.parse(getCartItemsListModel.value.cartItemList![index].price!) *
@@ -221,10 +313,23 @@ class CartController extends GetxController {
             int.parse(getCartItemsListModel.value.cartItemList![index].price!);
     if (quantity < 1) {
       removeCartItem(
-          cartId: "${getCartItemsListModel.value.cartItemList?[index].id}");
+              cartId: "${getCartItemsListModel.value.cartItemList?[index].id}")
+          .then((value) {
+        getCartItemsList()
+            .then((value) => calculateTotal(totalPriceInCart.value));
+        getAddOnItemList();
+      });
     } else {
       updateCartItems(
-          index: index, isAdd: isAdd, quantity: "$quantity", total: "$total");
+              index: index,
+              isAdd: isAdd,
+              quantity: "$quantity",
+              total: "$total")
+          .then((value) {
+        getCartItemsList()
+            .then((value) => calculateTotal(totalPriceInCart.value));
+        getAddOnItemList();
+      });
     }
   }
 
@@ -243,8 +348,10 @@ class CartController extends GetxController {
             getCartItemsListModel.value.cartItemList?[index].categoryName,
         "subcategory_name":
             getCartItemsListModel.value.cartItemList?[index].subcategoryName,
-        "product_name": getCartItemsListModel.value.cartItemList?[index].productName,
-        "product_code": getCartItemsListModel.value.cartItemList?[index].productCode,
+        "product_name":
+            getCartItemsListModel.value.cartItemList?[index].productName,
+        "product_code":
+            getCartItemsListModel.value.cartItemList?[index].productCode,
         "unit": "nos",
         "quantity": quantity,
         "price": getCartItemsListModel.value.cartItemList?[index].price,
@@ -265,7 +372,6 @@ class CartController extends GetxController {
       if (postUpdateCartItemModel.statusCode == "200" ||
           postUpdateCartItemModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
-        getCartItemsList();
         update();
       } else {
         CustomLoader.closeCustomLoader();
@@ -296,7 +402,6 @@ class CartController extends GetxController {
           postRemoveCartItemModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
         customToast(message: "${postRemoveCartItemModel.message}");
-        getCartItemsList();
         update();
       } else {
         CustomLoader.closeCustomLoader();
@@ -333,7 +438,7 @@ class CartController extends GetxController {
         "packaging_type": packagingName.value,
         "delivery_charges":
             getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0',
-        "total_bill_amount": totalPriceInCart.value
+        "total_bill_amount": '${totalCount.value}'
       };
 
       log("Post order payload ::: $payload");

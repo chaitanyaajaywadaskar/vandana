@@ -145,7 +145,6 @@ class _CartViewState extends State<CartView> {
                                   color: ColorConstant.orange),
                             ),
                             height10,
-
                             Obx(
                               () => controller.getPackagingListModel.value
                                               .packagingList !=
@@ -174,9 +173,10 @@ class _CartViewState extends State<CartView> {
                                                       .packagingList?[index]
                                                       .packagingName ??
                                                   "";
-
                                           controller.packagingPrice.value =
                                               "${int.parse(controller.getPackagingListModel.value.packagingList?[index].packagingPrice ?? "0") * int.parse(controller.totalQuantityInCart.value)}";
+                                          controller.calculateTotal(controller
+                                              .totalPriceInCart.value);
                                           setState(() {});
                                         },
                                       ),
@@ -241,6 +241,157 @@ class _CartViewState extends State<CartView> {
                             // }),
                             height10,
                             const HorizontalDottedLine(),
+                          ],
+                        ),
+                      if (controller.getCartItemsListModel.value.cartItemList
+                              ?.isNotEmpty ==
+                          true)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            height20,
+                            Text(
+                              'Add More Food Item',
+                              style: TextStyleConstant.bold16(),
+                            ),
+                            height20,
+                            Obx(() {
+                              if (controller.isAddOnCartLoading.value) {
+                                return const CircularProgressIndicator(
+                                  color: Colors.orange,
+                                );
+                              }
+                              return SizedBox(
+                                height: 205,
+                                child: ListView.builder(
+                                  physics: const BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: controller.getAddOnItemModel.value
+                                      .addonItemList?.length,
+                                  itemBuilder: (context, index) {
+                                    var data = controller.getAddOnItemModel
+                                        .value.addonItemList?[index];
+                                    return Padding(
+                                      padding: contentVerticalPadding,
+                                      child: Container(
+                                        padding: contentPadding,
+                                        width: 150,
+                                        margin:
+                                            const EdgeInsets.only(right: 15),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: ColorConstant.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 3,
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            CircleAvatar(
+                                              maxRadius: 30,
+                                              backgroundImage: NetworkImage(
+                                                  "${data?.productImage1}"),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: contentWidthPadding),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    width: Get.width * 0.37,
+                                                    child: Text(
+                                                      data?.productName ?? '',
+                                                      style: TextStyleConstant
+                                                          .semiBold18(
+                                                              color:
+                                                                  ColorConstant
+                                                                      .orange),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Price: ₹${data?.price ?? ''}",
+                                                    style: TextStyleConstant
+                                                        .semiBold14(
+                                                            color: ColorConstant
+                                                                .orange),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            data?.itemAddStatus == "true"
+                                                ? Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top:
+                                                            Get.height * 0.020),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        incDecIconButton(
+                                                            onTap: () => controller
+                                                                .manageCartItems(
+                                                                    index:
+                                                                        index,
+                                                                    isAdd:
+                                                                        false),
+                                                            icon: Icons.remove),
+                                                        Text(
+                                                            "${data?.itemAddQuantity}",
+                                                            style: TextStyleConstant
+                                                                .semiBold18()),
+                                                        incDecIconButton(
+                                                            onTap: () => controller
+                                                                .manageCartItems(
+                                                                    index:
+                                                                        index,
+                                                                    isAdd:
+                                                                        true),
+                                                            icon: Icons.add),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top:
+                                                            Get.height * 0.020),
+                                                    child: CustomButton(
+                                                      onTap: () {
+                                                        controller
+                                                            .postToCart(
+                                                                index: index)
+                                                            .then((value) {
+                                                          controller
+                                                              .getAddOnItemList();
+                                                        });
+                                                      },
+                                                      title: "Add to Cart",
+                                                      width: Get.width * 0.300,
+                                                    ),
+                                                  )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            }),
                           ],
                         ),
                       height20,
@@ -329,6 +480,11 @@ class _CartViewState extends State<CartView> {
                                     color: ColorConstant.orange),
                               );
                             }),
+                            Text(
+                              "Tax: 5%",
+                              style: TextStyleConstant.regular18(
+                                  color: ColorConstant.orange),
+                            ),
                             Padding(
                               padding: EdgeInsets.only(
                                   left: Get.width * 0.500,
@@ -338,7 +494,7 @@ class _CartViewState extends State<CartView> {
                             ),
                             Obx(() {
                               return Text(
-                                "Sub Total: ${controller.totalPriceInCart.value}",
+                                "Sub Total: ${controller.totalCount.value}",
                                 style: TextStyleConstant.regular18(
                                     color: ColorConstant.orange),
                               );

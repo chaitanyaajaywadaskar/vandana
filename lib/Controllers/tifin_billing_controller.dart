@@ -10,6 +10,7 @@ import 'package:vandana/Models/get_delivery_charges_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
+import '../Models/get_add_on_item_cart_model.dart';
 import '../Models/get_address_list_typewise_model.dart';
 import '../Models/get_sabjilist_daywise.dart';
 import '../Models/get_time_slot_model.dart';
@@ -21,6 +22,7 @@ class TifinBillingController extends GetxController {
   final getPackagingListModel = GetPackagingListModel().obs;
   final getSabjiListDaywiseLunchModel = GetSabjiListDaywiseModel().obs;
   final getSabjiListDaywiseDinnerModel = GetSabjiListDaywiseModel().obs;
+  final getAddOnItemModel = GetAddOnItemCartModel().obs;
 
   RxList orderItemList = [].obs;
   RxList<DateTime> next7Days = <DateTime>[].obs;
@@ -124,6 +126,7 @@ class TifinBillingController extends GetxController {
   RxBool isLunchOfficeSelected = false.obs;
   RxBool isDinnerHomeSelected = true.obs;
   RxBool isDinnerOfficeSelected = false.obs;
+  RxBool isAddOnCartLoading = false.obs;
 
   final getAddressListTypeModel = AddressListTypewiseModel().obs;
   final getDeliveryChargesModel = DeliveryChargesModel().obs;
@@ -141,6 +144,7 @@ class TifinBillingController extends GetxController {
   var coupon = TextEditingController();
   RxString totalPriceInCart = "0".obs;
   RxString packagingPrice = "0".obs;
+  RxString addOnPrice = "0".obs;
   RxInt satSunTiffinCount = 0.obs;
   initialFunctioun(
       {required double weekendPrice,
@@ -200,17 +204,39 @@ class TifinBillingController extends GetxController {
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch);
     currentDate.value = "${DateTime.now()}";
+    getAddOnItemList();
   }
 
   calculateTotal(String total) {
     double tempTotal = double.parse(total) +
         double.parse(deliveryPrice.value.toString()) +
-        weekendTiffinCalculatedPrice.value;
+        weekendTiffinCalculatedPrice.value +
+        double.parse(addOnPrice.value);
 
     tempTotal += double.parse(packagingPrice.value);
     totalCount.value = tempTotal.toInt();
   }
 
+  Future getAddOnItemList() async {
+    // CustomLoader.openCustomLoader();
+    try {
+      isAddOnCartLoading.value = true;
+      var payload = <String, String>{
+        "category_name": "Tiffin",
+        "customer_code": userCode.value
+      };
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.addOnItemList, payload: payload);
+
+      getAddOnItemModel.value = getAddOnCartModelFromJson(response["body"]);
+      isAddOnCartLoading.value = false;
+      log('url: ${EndPointConstant.addOnItemList},\npayload: $payload,\nstatus-code :${getAddOnItemModel.value.statusCode},\nresponse: ${response["body"]}');
+    } catch (error) {
+      isAddOnCartLoading.value = false;
+
+      log("Something went wrong during getting add on item list ::: $error");
+    }
+  }
   // getTotalCount(
   //     {String? tiffinPrice,
   //     required String ecoFriendly,
@@ -276,7 +302,7 @@ class TifinBillingController extends GetxController {
     packEcoFriendly.value = true;
   }
 
-  Future getAddressListTypewise(String type) async {
+  Future<AddressListTypewiseModel?> getAddressListTypewise(String type) async {
     try {
       CustomLoader.openCustomLoader();
       Map<String, String> payload = {
@@ -302,9 +328,11 @@ class TifinBillingController extends GetxController {
         CustomLoader.closeCustomLoader();
         log("Something went wrong during getting address list ::: ${getAddressListTypeModel.value.message}");
       }
+      return getAddressListTypeModel.value;
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during getting address list ::: $error");
+      return null;
     }
   }
 
@@ -460,23 +488,21 @@ class TifinBillingController extends GetxController {
     try {
       addDinnerSubjiLists();
       addLunchSubjiLists();
-      orderItemList.value = [
-        {
-          '\"cartId\"': '\"$cartId\"',
-          '\"category_name\"': '\"$categoryName\"',
-          '\"subcategory_name\"': '\"$subCategoryName\"',
-          '\"product_name\"': '\"$productName\"',
-          '\"product_code\"': '\"$productCode\"',
-          '\"quantity\"': '\"1\"',
-          '\"price\"': '\"$price\"',
-          '\"amount\"': '\"$amount\"',
-          '\"tax\"': '\"$tax\"',
-          '\"tax_sgst\"': '\"$taxsGst\"',
-          '\"tax_igst\"': '\"\"',
-          '\"total\"': '\"$total\"',
-          '\"unit\"': '\"$unit\"',
-        },
-      ];
+      orderItemList.value.add({
+        '\"cartId\"': '\"$cartId\"',
+        '\"category_name\"': '\"$categoryName\"',
+        '\"subcategory_name\"': '\"$subCategoryName\"',
+        '\"product_name\"': '\"$productName\"',
+        '\"product_code\"': '\"$productCode\"',
+        '\"quantity\"': '\"1\"',
+        '\"price\"': '\"$price\"',
+        '\"amount\"': '\"$amount\"',
+        '\"tax\"': '\"$tax\"',
+        '\"tax_sgst\"': '\"$taxsGst\"',
+        '\"tax_igst\"': '\"\"',
+        '\"total\"': '\"$total\"',
+        '\"unit\"': '\"$unit\"',
+      });
 
       Map<String, dynamic> payload = {
         "customer_code": userCode.value,

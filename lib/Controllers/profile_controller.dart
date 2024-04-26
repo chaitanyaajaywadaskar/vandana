@@ -13,7 +13,7 @@ import 'package:vandana/Services/storage_services.dart';
 import '../Models/post_selected_address_model.dart';
 
 class ProfileController extends GetxController {
-  GetAddressListModel getAddressListModel = GetAddressListModel();
+  var getAddressListModel = GetAddressListModel().obs;
   PostRemoveAddressModel postRemoveAddressModel = PostRemoveAddressModel();
 
   TextEditingController nameController = TextEditingController();
@@ -31,7 +31,7 @@ class ProfileController extends GetxController {
     initialFunctioun();
   }
 
-  initialFunctioun() async {
+ Future initialFunctioun() async {
     nameController.text = await StorageServices.getData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.userName);
@@ -90,32 +90,32 @@ class ProfileController extends GetxController {
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.address,
-        stringData: getAddressListModel.addressList?[index]?.address);
+        stringData: getAddressListModel.value.addressList?[index]?.address);
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.addressType,
-        stringData: getAddressListModel.addressList?[index]?.addressType ?? '');
+        stringData: getAddressListModel.value.addressList?[index]?.addressType ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.city,
-        stringData: getAddressListModel.addressList?[index]?.city ?? '');
+        stringData: getAddressListModel.value.addressList?[index]?.city ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.state,
-        stringData: getAddressListModel.addressList?[index]?.state ?? '');
+        stringData: getAddressListModel.value.addressList?[index]?.state ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.latLng,
-        stringData: getAddressListModel.addressList?[index]?.latLong ?? '');
+        stringData: getAddressListModel.value.addressList?[index]?.latLong ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.pinCode,
-        stringData: getAddressListModel.addressList?[index]?.pincode ?? '');
+        stringData: getAddressListModel.value.addressList?[index]?.pincode ?? '');
     await StorageServices.setData(
         dataType: StorageKeyConstant.stringType,
         prefKey: StorageKeyConstant.branch,
-        stringData: getAddressListModel.addressList?[index]?.branch ?? '');
-    updateSelectedAddress('${getAddressListModel.addressList?[index]?.id}');
+        stringData: getAddressListModel.value.addressList?[index]?.branch ?? '');
+    updateSelectedAddress('${getAddressListModel.value.addressList?[index]?.id}');
   }
 
   Future getAddressList() async {
@@ -126,22 +126,22 @@ class ProfileController extends GetxController {
         "customer_code": userCode.value
       };
 
-      log("Get address list payload :::  $payload");
+      // log("Get address list payload :::  $payload");
 
       var response = await HttpServices.postHttpMethod(
           url: EndPointConstant.addressList, payload: payload);
 
-      log("Get address list response ::: $response");
+      // log("Get address list response ::: $response");
 
-      getAddressListModel = getAddressListModelFromJson(response["body"]);
+      getAddressListModel.value = getAddressListModelFromJson(response["body"]);
 
-      if (getAddressListModel.statusCode == "200" ||
-          getAddressListModel.statusCode == "201") {
+      if (getAddressListModel.value.statusCode == "200" ||
+          getAddressListModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
       } else {
         CustomLoader.closeCustomLoader();
-        log("Something went wrong during getting address list ::: ${getAddressListModel.message}");
       }
+      log('url: ${EndPointConstant.addressList},\npayload: $payload,\nstatus-code :${getAddressListModel.value.statusCode},\nresponse: ${response["body"]}');
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during getting address list ::: $error");

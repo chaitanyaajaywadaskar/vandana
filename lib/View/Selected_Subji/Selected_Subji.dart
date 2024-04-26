@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../Constant/color_constant.dart';
@@ -13,10 +14,16 @@ import '../Bottombar_Section/Home_Section/Tifin_Section/tifin_billing_view.dart'
 
 class SelectedSubjiView extends StatefulWidget {
   const SelectedSubjiView(
-      {super.key, required this.subjiCount, required this.soNumber});
+      {super.key,
+      required this.subjiCount,
+      required this.soNumber,
+      this.enableLunch = false,
+      this.enableDinner = false});
 
   final int subjiCount;
   final String soNumber;
+  final bool enableLunch;
+  final bool enableDinner;
   @override
   State<SelectedSubjiView> createState() => _SelectedSubjiViewState();
 }
@@ -69,27 +76,33 @@ class _SelectedSubjiViewState extends State<SelectedSubjiView>
                         fontWeight: FontWeight.w400),
                   ),
                   height20,
-                  GestureDetector(
-                      onTap: () {
-                        controller.tiffinTypeLunch.value =
-                            !controller.tiffinTypeLunch.value;
-                        controller.tiffinType.value = 'Lunch';
-                      },
-                      child: CustomRadioButton(
-                          buttonName: "Lunch",
-                          isSelected: controller.tiffinTypeLunch)),
+                  Visibility(
+                    visible: widget.enableLunch,
+                    child: GestureDetector(
+                        onTap: () {
+                          controller.tiffinTypeLunch.value =
+                              !controller.tiffinTypeLunch.value;
+                          controller.tiffinType.value = 'Lunch';
+                        },
+                        child: CustomRadioButton(
+                            buttonName: "Lunch",
+                            isSelected: controller.tiffinTypeLunch)),
+                  ),
                   height10,
-                  GestureDetector(
-                      onTap: () {
-                        controller.tiffinTypeDinner.value =
-                            !controller.tiffinTypeDinner.value;
-                        controller.tiffinType.value = 'Dinner';
-                        controller.getOrderPlaceSubjiList(
-                            soNo: widget.soNumber, tiffinType: 'Dinner');
-                      },
-                      child: CustomRadioButton(
-                          buttonName: "Dinner",
-                          isSelected: controller.tiffinTypeDinner)),
+                  Visibility(
+                    visible: widget.enableDinner,
+                    child: GestureDetector(
+                        onTap: () {
+                          controller.tiffinTypeDinner.value =
+                              !controller.tiffinTypeDinner.value;
+                          controller.tiffinType.value = 'Dinner';
+                          controller.getOrderPlaceSubjiList(
+                              soNo: widget.soNumber, tiffinType: 'Dinner');
+                        },
+                        child: CustomRadioButton(
+                            buttonName: "Dinner",
+                            isSelected: controller.tiffinTypeDinner)),
+                  ),
                 ],
               ),
               Obx(() {
@@ -615,7 +628,11 @@ class _SelectedSubjiViewState extends State<SelectedSubjiView>
                 }
               }),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  controller.updateSubjiList(
+                      soNo: widget.soNumber,
+                      subjiCount: '${widget.subjiCount}');
+                },
                 child: Container(
                   alignment: Alignment.center,
                   height: 40,
