@@ -345,7 +345,7 @@ class _CartViewState extends State<CartView> {
                                                       children: [
                                                         incDecIconButton(
                                                             onTap: () => controller
-                                                                .manageCartItems(
+                                                                .manageCartItemsForAddOn(
                                                                     index:
                                                                         index,
                                                                     isAdd:
@@ -357,7 +357,7 @@ class _CartViewState extends State<CartView> {
                                                                 .semiBold18()),
                                                         incDecIconButton(
                                                             onTap: () => controller
-                                                                .manageCartItems(
+                                                                .manageCartItemsForAddOn(
                                                                     index:
                                                                         index,
                                                                     isAdd:
@@ -376,6 +376,13 @@ class _CartViewState extends State<CartView> {
                                                             .postToCart(
                                                                 index: index)
                                                             .then((value) {
+                                                          controller
+                                                              .getCartItemsList()
+                                                              .then((value) => controller
+                                                                  .calculateTotal(
+                                                                      controller
+                                                                          .totalPriceInCart
+                                                                          .value));
                                                           controller
                                                               .getAddOnItemList();
                                                         });

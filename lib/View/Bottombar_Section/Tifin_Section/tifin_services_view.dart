@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/color_constant.dart';
 import 'package:vandana/Constant/image_path_constant.dart';
@@ -9,9 +7,7 @@ import 'package:vandana/Constant/layout_constant.dart';
 import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 import 'package:vandana/Custom_Widgets/custom_toast.dart';
-import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
-import 'package:vandana/View/Bottombar_Section/Tifin_Section/select_vegetable_view.dart';
-import 'package:vandana/View/Selected_Subji/Selected_Subji.dart';
+import 'package:vandana/View/selected_subji_view/selected_subji_view.dart';
 import 'package:intl/intl.dart';
 import '../../../Constant/static_decoration.dart';
 import '../../../Controllers/tiffin_order_controller.dart';
@@ -173,18 +169,26 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                     GestureDetector(
                                       onTap: () {
                                         // Get.to(() => SelectVegetableView());
-                                        Get.to(() => SelectedSubjiView(
-                                              subjiCount: int.parse(
-                                                  '${data?.itemList?.first?.subjiCount}'),
-                                              soNumber: '${data?.soNumber}',
-                                              enableLunch: data?.tiffintypeLunch
-                                                      ?.isNotEmpty ??
-                                                  false,
-                                              enableDinner: data
-                                                      ?.tiffintypeDinner
-                                                      ?.isNotEmpty ??
-                                                  false,
-                                            ));
+                                        print(
+                                            '${data?.tiffintypeLunch} ${data?.tiffintypeDinner}');
+                                        data?.itemList?.first?.subjiCount
+                                                    ?.isNotEmpty ==
+                                                true
+                                            ? Get.to(() => SelectedSubjiView(
+                                                  subjiCount: int.parse(
+                                                      '${data?.itemList?.first?.subjiCount}'),
+                                                  soNumber: '${data?.soNumber}',
+                                                  enableLunch: data
+                                                          ?.tiffintypeLunch
+                                                          ?.isNotEmpty ??
+                                                      false,
+                                                  enableDinner: data
+                                                          ?.tiffintypeDinner
+                                                          ?.isNotEmpty ??
+                                                      false,
+                                                ))
+                                            : customToast(
+                                                message: 'No subji list found');
                                       },
                                       child: Container(
                                         alignment: Alignment.center,

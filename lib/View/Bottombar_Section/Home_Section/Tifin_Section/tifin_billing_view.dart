@@ -119,13 +119,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
         }
         controller.addOnPrice.value = '$totalCost';
       }
-      if(controller.onSaturday.value == true && controller.onSunday.value == true){
-
-      }else if (controller.onSaturday.value == true){
-
-      }else if (controller.onSunday.value == true){
-
-      }
+      if (controller.onSaturday.value == true &&
+          controller.onSunday.value == true) {
+      } else if (controller.onSaturday.value == true) {
+      } else if (controller.onSunday.value == true) {}
       controller.packagingPrice.value =
           "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
       controller.calculateTotal(widget.price);
@@ -1704,20 +1701,27 @@ class _TifinBillingViewState extends State<TifinBillingView>
                       height10,
                       GestureDetector(
                         onTap: () {
-                          controller.postOrder(
-                              cartId: widget.cartId,
-                              categoryName: widget.categoryName,
-                              subCategoryName: widget.subCategoryName,
-                              productName: widget.productName,
-                              productCode: widget.productCode,
-                              price: widget.price,
-                              amount: widget.price,
-                              tax: widget.taxjGst,
-                              taxsGst: widget.taxsGst,
-                              taxjGst: widget.taxjGst,
-                              total: widget.total,
-                              unit: widget.unit,
-                              tiffinCount: widget.tifinCount);
+                          if (controller.selectedLunchTime.value
+                              .contains("Select Time")) {
+                            customToast(message: 'Please select a lunch time');
+                          } else if (controller.addressLunchId.value.isEmpty) {
+                            customToast(message: 'Please select a address');
+                          } else {
+                            controller.postOrder(
+                                cartId: widget.cartId,
+                                categoryName: widget.categoryName,
+                                subCategoryName: widget.subCategoryName,
+                                productName: widget.productName,
+                                productCode: widget.productCode,
+                                price: widget.price,
+                                amount: widget.price,
+                                tax: widget.taxjGst,
+                                taxsGst: widget.taxsGst,
+                                taxjGst: widget.taxjGst,
+                                total: widget.total,
+                                unit: widget.unit,
+                                tiffinCount: widget.tifinCount);
+                          }
                         },
                         child: Container(
                           alignment: Alignment.center,

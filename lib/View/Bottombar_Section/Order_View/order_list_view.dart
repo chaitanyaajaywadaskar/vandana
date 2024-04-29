@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vandana/Constant/color_constant.dart';
@@ -10,13 +8,9 @@ import 'package:vandana/Constant/layout_constant.dart';
 import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_appbar.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
-import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/thank_you_view.dart';
-import 'package:vandana/View/Bottombar_Section/Tifin_Section/select_vegetable_view.dart';
 
 import '../../../Controllers/order_controller.dart';
-import '../../../Controllers/tiffin_order_controller.dart';
 import '../Home_Section/Food_Section/food_billing_view.dart';
-import '../Home_Section/Tifin_Section/tifin_billing_view.dart';
 
 class OrderViewList extends StatefulWidget {
   const OrderViewList({super.key, required this.index});
@@ -68,7 +62,7 @@ class _OrderViewListState extends State<OrderViewList> {
                   child: Image.asset(ImagePathConstant.bottomCurve)),
               Padding(
                 padding: EdgeInsets.only(
-                    top: Get.height * 0.045,
+                    top: Get.height * 0.02,
                     left: screenWidthPadding,
                     right: screenWidthPadding),
                 child: SingleChildScrollView(
@@ -88,167 +82,76 @@ class _OrderViewListState extends State<OrderViewList> {
                                     ?.isNotEmpty ==
                                 true) {
                           return ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: orderController.getOrderListModel.value
+                                .orderList?[widget.index]?.itemList?.length,
                             itemBuilder: (context, index) {
                               var data = orderController.getOrderListModel.value
                                   .orderList?[widget.index]?.itemList?[index];
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: Get.height * 0.050),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            Get.to(() => FoodBillingView(
-                                                  productImage:
-                                                      "${data?.productImage}",
-                                                  productName:
-                                                      "${data?.prodName}",
-                                                  productDescription:
-                                                      "${data?.description}",
-                                                  mrp: "${data?.mrp}",
-                                                  price: "${data?.price}",
-                                                  categoryName:
-                                                      "${data?.categoryName}",
-                                                  subCategoryName:
-                                                      "${data?.subcategoryName}",
-                                                  cartId: "1",
-                                                  productCode:
-                                                      "${data?.productCode}",
-                                                  tax:
-                                                      "${int.parse('${data?.taxPercent}') / 2}",
-                                                  total: "${data?.total}",
-                                                  unit: "nos",
-                                                  taxjGst:
-                                                      "${int.parse('${data?.taxPercent}') / 2}",
-                                                  taxsGst:
-                                                      "${int.parse('${data?.taxPercent}') / 2}",
-                                                ));
-                                          },
-                                          child: CachedNetworkImage(
-                                            imageUrl: "${data?.productImage}",
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              height: Get.height * 0.172,
-                                              width: Get.width * 0.364,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.fill)),
-                                            ),
-                                            placeholder: (context, url) =>
-                                                SizedBox(
-                                              width: Get.width * 0.364,
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: ColorConstant
-                                                      .orangeAccent,
-                                                ),
-                                              ),
-                                            ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    SizedBox(
-                                              width: Get.width * 0.364,
-                                              child: const Icon(Icons.error),
-                                            ),
-                                          ),
-                                        ),
-                                        Column(
+                              return Padding(
+                                padding: contentVerticalPadding,
+                                child: Container(
+                                  padding: contentPadding,
+                                  width: Get.width,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorConstant.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 3,
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        maxRadius: 30,
+                                        backgroundImage: NetworkImage(
+                                            "${data?.productImage}"),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            left: contentWidthPadding),
+                                        child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text("Main Course Menu",
-                                                style:
-                                                    TextStyleConstant.regular22(
-                                                        color: ColorConstant
-                                                            .orange)),
                                             SizedBox(
-                                              width: 135,
+                                              width: Get.width * 0.37,
                                               child: Text(
-                                                "${data?.productName}",
-                                                style:
-                                                    TextStyleConstant.regular18(
+                                                data?.prodName ?? '',
+                                                style: TextStyleConstant
+                                                    .semiBold18(
                                                         color: ColorConstant
-                                                            .orangeAccent),
+                                                            .orange),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 135,
-                                              child: Text(
-                                                "${data?.description}",
-                                                style:
-                                                    TextStyleConstant.regular18(
-                                                        color: ColorConstant
-                                                            .orangeAccent),
-                                              ),
+                                            Text(
+                                              "Price: ₹${data?.price}",
+                                              style:
+                                                  TextStyleConstant.semiBold14(
+                                                      color:
+                                                          ColorConstant.orange),
                                             ),
                                           ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            _launchCaller(
-                                                '${orderController.getOrderListModel.value.orderList?[widget.index]?.branchContactno}');
-                                          },
-                                          child: const Icon(Icons.call)),
-                                      GestureDetector(
-                                        onTap: () {
-                                          _launchCaller(
-                                              '${orderController.getOrderListModel.value.orderList?[widget.index]?.branchContactno}');
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: 40,
-                                          width: Get.width * 0.45,
-                                          decoration: BoxDecoration(
-                                            color: ColorConstant.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.5),
-                                                spreadRadius: 1,
-                                                blurRadius: 2,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Text(
-                                            "Call Delivery Partner",
-                                            style: TextStyleConstant.regular18(
-                                                color: ColorConstant.orange),
-                                          ),
                                         ),
                                       ),
+                                      const Spacer(),
+                                      Text("${data?.quantity}",
+                                          style:
+                                              TextStyleConstant.semiBold18()),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: screenVerticalPadding,
-                                    child: const HorizontalDottedLine(),
-                                  ),
-                                ],
+                                ),
                               );
                             },
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: orderController.getOrderListModel.value
-                                .orderList?[widget.index]?.itemList?.length,
                           );
                         } else {
                           return Center(
@@ -261,7 +164,55 @@ class _OrderViewListState extends State<OrderViewList> {
                         }
                       }),
                       const SizedBox(
-                        height: 15,
+                        height: 45,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Obx(() {
+                            return Text(
+                              "Total Item: ${orderController.getOrderListModel.value.orderList?[widget.index]?.itemList?.length ?? '0'}",
+                              style: TextStyleConstant.regular18(
+                                  color: ColorConstant.orange),
+                            );
+                          }),
+                          Obx(() {
+                            return Text(
+                              "Dilivery: ${orderController.getOrderListModel.value.orderList?[widget.index]?.deliveryCharges}",
+                              style: TextStyleConstant.regular18().copyWith(
+                                  color: ColorConstant.appMainColor,
+                                  fontWeight: FontWeight.w400),
+                            );
+                          }),
+                          Text(
+                            "Packaging: ${orderController.getOrderListModel.value.orderList?[widget.index]?.packagingPrice}",
+                            style: TextStyleConstant.regular18().copyWith(
+                                color: ColorConstant.appMainColor,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            "Discount: ${'0'}",
+                            style: TextStyleConstant.regular18(
+                                color: ColorConstant.orange),
+                          ),
+                          Text(
+                            "Tax: 5%",
+                            style: TextStyleConstant.regular18(
+                                color: ColorConstant.orange),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: Get.width * 0.500,
+                                bottom: Get.height * 0.010,
+                                top: Get.height * 0.020),
+                            child: const HorizontalDottedLine(),
+                          ),
+                          Text(
+                            "Sub Total: ${orderController.getOrderListModel.value.orderList?[widget.index]?.total}",
+                            style: TextStyleConstant.regular18(
+                                color: ColorConstant.orange),
+                          ),
+                        ],
                       )
                     ],
                   ),

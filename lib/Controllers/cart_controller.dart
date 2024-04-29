@@ -174,7 +174,10 @@ class CartController extends GetxController {
         double.parse(total) + double.parse(deliveryPrice.value.toString());
 
     tempTotal += double.parse(packagingPrice.value);
-    totalCount.value = tempTotal.toInt();
+    double tax = 5;
+    double taxPrice = 0;
+    taxPrice = tempTotal * tax / 100;
+    totalCount.value = tempTotal.toInt() + taxPrice.toInt();
   }
 
   Future getDeliveryCharges() async {
@@ -464,6 +467,122 @@ class CartController extends GetxController {
     } catch (error) {
       CustomLoader.closeCustomLoader();
       log("Something went wrong during posting order ::: $error");
+    }
+  }
+
+   manageCartItemsForAddOn({required int index, required bool isAdd}) {
+    int quantity = (isAdd)
+        ? int.parse(
+                getAddOnItemModel.value.addonItemList![index]?.itemAddQuantity??'0') +
+            1
+        : int.parse(
+                getAddOnItemModel.value.addonItemList![index]?.itemAddQuantity??'0') -
+            1;
+
+    num total = (isAdd)
+        ? int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0') *
+            quantity
+        : int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0') -
+            int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0');
+    if (quantity < 1) {
+      removeCartItem(
+              cartId: "${getAddOnItemModel.value.addonItemList?[index]?.itemAddCartid}")
+          .then((value) {
+        getCartItemsList()
+            .then((value) => calculateTotal(totalPriceInCart.value));
+        getAddOnItemList();
+      });
+    } else {
+      updateCartItemsForAddOn(
+              index: index,
+              isAdd: isAdd,
+              quantity: "$quantity",
+              total: "$total")
+          .then((value) {
+        getCartItemsList()
+            .then((value) => calculateTotal(totalPriceInCart.value));
+        getAddOnItemList();
+      });
+    }
+  }
+
+  Future updateCartItemsForAddOn(
+      {required int index,
+      required bool isAdd,
+      required String quantity,
+      required String total}) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {
+        "user_type": userType.value,
+        "customer_code": userCode.value,
+        "phone": userPhone.value,
+        "category_name":
+            getAddOnItemModel.value.addonItemList?[index]?.categoryName,
+        "subcategory_name":
+            getAddOnItemModel.value.addonItemList?[index]?.subcategoryName,
+        "product_name":
+            getAddOnItemModel.value.addonItemList?[index]?.productName,
+        "product_code":
+            getAddOnItemModel.value.addonItemList?[index]?.productCode,
+        "unit": "nos",
+        "quantity": quantity,
+        "price": getAddOnItemModel.value.addonItemList?[index]?.price,
+        "total": total,
+        "tax": getAddOnItemModel.value.addonItemList?[index]?.tax,
+      };
+
+      log("Post update cart items payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.updateCartItem, payload: payload);
+
+      log("Post update cart items response ::: $response");
+
+      postUpdateCartItemModel =
+          postUpdateCartItemModelFromJson(response["body"]);
+
+      if (postUpdateCartItemModel.statusCode == "200" ||
+          postUpdateCartItemModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        update();
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during posting update cart items ::: ${postUpdateCartItemModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting update cart items ::: $error");
+    }
+  }
+
+  Future removeCartItemForAddOn({required String cartId}) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {"id": cartId};
+
+      log("Post remove cart payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.removeCartItem, payload: payload);
+
+      log("Post remove cart response ::: $response");
+
+      postRemoveCartItemModel =
+          postRemoveCartItemModelFromJson(response["body"]);
+
+      if (postRemoveCartItemModel.statusCode == "200" ||
+          postRemoveCartItemModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postRemoveCartItemModel.message}");
+        update();
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during posting remove cart item ::: ${postRemoveCartItemModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting remove cart item ::: $error");
     }
   }
 
