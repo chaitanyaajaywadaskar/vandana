@@ -102,8 +102,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
         '\"product_name\"': '\"${data?.productName}\"',
         '\"product_code\"': '\"${data?.productCode}\"',
         '\"quantity\"': '\"1\"',
-        '\"price\"': '\"${data?.mrp}\"',
-        '\"amount\"': '\"${data?.price}\"',
+        '\"price\"': '\"${data?.price}\"',
+        '\"amount\"': '\"${data?.mrp}\"',
         '\"tax\"': '\"${int.parse(data?.tax ?? '0') / 2}\"',
         '\"tax_sgst\"': '\"${int.parse(data?.tax ?? '0') / 2}\"',
         '\"tax_igst\"': '\"\"',
@@ -119,10 +119,10 @@ class _TifinBillingViewState extends State<TifinBillingView>
         }
         controller.addOnPrice.value = '$totalCost';
       }
-      if (controller.onSaturday.value == true &&
-          controller.onSunday.value == true) {
-      } else if (controller.onSaturday.value == true) {
-      } else if (controller.onSunday.value == true) {}
+      // if (controller.onSaturday.value == true &&
+      //     controller.onSunday.value == true) {
+      // } else if (controller.onSaturday.value == true) {
+      // } else if (controller.onSunday.value == true) {}
       controller.packagingPrice.value =
           "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
       controller.calculateTotal(widget.price);
@@ -1552,23 +1552,98 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                   ),
                                 ),
                                 const Spacer(),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.only(top: Get.height * 0.020),
-                                  child: CustomButton(
-                                    onTap: () {
-                                      calculateAddOn(data);
-                                    },
-                                    title: controller.orderItemList.value.any(
-                                            (element) =>
-                                                element['\"product_code\"']
-                                                    .toString() ==
-                                                '\"${data?.productCode}\"')
-                                        ? "Added"
-                                        : "Add on Item",
-                                    width: Get.width * 0.300,
-                                  ),
-                                )
+                                controller.orderItemList.value.any((element) =>
+                                        element['\"product_code\"']
+                                            .toString() ==
+                                        '\"${data?.productCode}\"')
+                                    ? Padding(
+                                        padding: EdgeInsets.only(
+                                            top: Get.height * 0.020),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            incDecIconButton(
+                                                onTap: () {
+                                                  if (int.parse(controller
+                                                          .orderItemList[index]
+                                                              ['\"quantity\"']
+                                                          .toString()
+                                                          .replaceAll(
+                                                              '\"', '')) >
+                                                      1) {
+                                                    int qty = int.parse(controller
+                                                            .orderItemList[
+                                                                index]
+                                                                ['\"quantity\"']
+                                                            .toString()
+                                                            .replaceAll(
+                                                                '\"', '')) -
+                                                        1;
+                                                    controller.orderItemList[
+                                                                index]
+                                                            ['\"quantity\"'] =
+                                                        '\"$qty\"';
+                                                  } else {
+                                                    calculateAddOn(data);
+                                                  }
+                                                  setState(() {});
+                                                },
+                                                icon: Icons.remove),
+                                            Text(
+                                                controller.orderItemList[index]
+                                                        ['\"quantity\"']
+                                                    .toString()
+                                                    .replaceAll('\"', ''),
+                                                style: TextStyleConstant
+                                                    .semiBold18()),
+                                            incDecIconButton(
+                                                onTap: () {
+                                                  int qty = int.parse(controller
+                                                          .orderItemList[index]
+                                                              ['\"quantity\"']
+                                                          .toString()
+                                                          .replaceAll(
+                                                              '\"', '')) +
+                                                      1;
+                                                  controller.orderItemList[
+                                                              index]
+                                                          ['\"quantity\"'] =
+                                                      '\"$qty\"';
+                                                  setState(() {});
+                                                },
+                                                icon: Icons.add),
+                                          ],
+                                        ),
+                                      )
+                                    : Padding(
+                                        padding: EdgeInsets.only(
+                                            top: Get.height * 0.020),
+                                        child: CustomButton(
+                                          onTap: () {
+                                            calculateAddOn(data);
+                                          },
+                                          title: "Add on Item",
+                                          width: Get.width * 0.300,
+                                        ),
+                                      ),
+                                // Padding(
+                                //   padding:
+                                //       EdgeInsets.only(top: Get.height * 0.020),
+                                //   child: CustomButton(
+                                //     onTap: () {
+                                //       calculateAddOn(data);
+                                //     },
+                                //     title: controller.orderItemList.value.any(
+                                //             (element) =>
+                                //                 element['\"product_code\"']
+                                //                     .toString() ==
+                                //                 '\"${data?.productCode}\"')
+                                //         ? "Added"
+                                //         : "Add on Item",
+                                //     width: Get.width * 0.300,
+                                //   ),
+                                // )
                               ],
                             ),
                           ),
@@ -1975,6 +2050,11 @@ class CustomRadioButton extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget incDecIconButton({required Function()? onTap, required IconData icon}) {
+  return IconButton(
+      onPressed: onTap, icon: Icon(icon, color: ColorConstant.orange));
 }
 
 String formatDate(String date) {
