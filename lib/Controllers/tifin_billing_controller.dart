@@ -104,6 +104,7 @@ class TifinBillingController extends GetxController {
   RxString pinCode = "".obs;
   RxString branchName = "".obs;
   RxString currentDate = "".obs;
+  RxString tiffinCount = "0".obs;
 
   RxBool onSaturday = false.obs;
   RxBool onSunday = false.obs;
@@ -144,6 +145,7 @@ class TifinBillingController extends GetxController {
   var coupon = TextEditingController();
   RxString totalPriceInCart = "0".obs;
   RxString packagingPrice = "0".obs;
+  RxString singlePackagingCost = "0".obs;
   RxString addOnPrice = "0".obs;
   RxInt satSunTiffinCount = 0.obs;
   initialFunctioun(
@@ -155,6 +157,8 @@ class TifinBillingController extends GetxController {
     getDeliveryCharges(category: category);
     getWeekendCount(price: weekendPrice.toInt(), tiffinCount: tifinCount);
     getPackagingList(category: category).then((value) {
+      singlePackagingCost.value =
+          '${getPackagingListModel.value.packagingList?[0].packagingPrice}';
       packagingPrice.value =
           "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tifinCount)}";
 
@@ -212,9 +216,12 @@ class TifinBillingController extends GetxController {
         double.parse(deliveryPrice.value.toString()) +
         weekendTiffinCalculatedPrice.value +
         double.parse(addOnPrice.value);
-
+    double tax = 5;
+    double taxPrice = 0;
+    taxPrice = tempTotal * tax / 100;
+    print('Tax:- $taxPrice');
     tempTotal += double.parse(packagingPrice.value);
-    totalCount.value = tempTotal.toInt();
+    totalCount.value = tempTotal.toInt() + taxPrice.toInt();
   }
 
   Future getAddOnItemList() async {
@@ -628,7 +635,7 @@ class TifinBillingController extends GetxController {
     try {
       Map<String, dynamic> payload = {
         "customer_code": userCode.value,
-        "total": totalPriceInCart.value,
+        "total": '${totalCount.value}',
         "coupon_code": coupon.text,
       };
 
@@ -643,8 +650,7 @@ class TifinBillingController extends GetxController {
 
       if (postCouponModel.statusCode == "200" ||
           postCouponModel.statusCode == "201") {
-        coupon.clear();
-        totalPriceInCart.value = '${postCouponModel.finalPrice ?? 0}';
+        totalCount.value = int.parse('${postCouponModel.finalPrice ?? 0}');
         discountInCart.value = '${postCouponModel.couponPrice ?? 0}';
         CustomLoader.closeCustomLoader();
         customToast(message: "${postCouponModel.message}");

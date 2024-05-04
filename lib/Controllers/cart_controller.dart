@@ -470,23 +470,29 @@ class CartController extends GetxController {
     }
   }
 
-   manageCartItemsForAddOn({required int index, required bool isAdd}) {
+  manageCartItemsForAddOn({required int index, required bool isAdd}) {
     int quantity = (isAdd)
-        ? int.parse(
-                getAddOnItemModel.value.addonItemList![index]?.itemAddQuantity??'0') +
+        ? int.parse(getAddOnItemModel
+                    .value.addonItemList![index]?.itemAddQuantity ??
+                '0') +
             1
-        : int.parse(
-                getAddOnItemModel.value.addonItemList![index]?.itemAddQuantity??'0') -
+        : int.parse(getAddOnItemModel
+                    .value.addonItemList![index]?.itemAddQuantity ??
+                '0') -
             1;
 
     num total = (isAdd)
-        ? int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0') *
+        ? int.parse(
+                getAddOnItemModel.value.addonItemList![index]?.price ?? '0') *
             quantity
-        : int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0') -
-            int.parse(getAddOnItemModel.value.addonItemList![index]?.price??'0');
+        : int.parse(
+                getAddOnItemModel.value.addonItemList![index]?.price ?? '0') -
+            int.parse(
+                getAddOnItemModel.value.addonItemList![index]?.price ?? '0');
     if (quantity < 1) {
       removeCartItem(
-              cartId: "${getAddOnItemModel.value.addonItemList?[index]?.itemAddCartid}")
+              cartId:
+                  "${getAddOnItemModel.value.addonItemList?[index]?.itemAddCartid}")
           .then((value) {
         getCartItemsList()
             .then((value) => calculateTotal(totalPriceInCart.value));
@@ -606,9 +612,9 @@ class CartController extends GetxController {
 
       if (postCouponModel.statusCode == "200" ||
           postCouponModel.statusCode == "201") {
-        coupon.clear();
         totalPriceInCart.value = '${postCouponModel.finalPrice ?? 0}';
         discountInCart.value = '${postCouponModel.couponPrice ?? 0}';
+        totalCount.value = int.parse('${postCouponModel.finalPrice ?? 0}');
         CustomLoader.closeCustomLoader();
         customToast(message: "${postCouponModel.message}");
         Get.back();

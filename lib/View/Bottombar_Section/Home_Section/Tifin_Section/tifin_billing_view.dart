@@ -68,6 +68,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
   @override
   void initState() {
     super.initState();
+    controller.tiffinCount.value = widget.tifinCount;
     controller.satSunTiffinCount.value = int.parse(widget.satSunTiffinCount);
     controller.subjiCount.value = int.parse(widget.subjiCount);
     tabController = TabController(length: 7, vsync: this);
@@ -111,20 +112,32 @@ class _TifinBillingViewState extends State<TifinBillingView>
         '\"unit\"': '\"nos\"',
       });
       double totalCost = 0;
+      int totalQuantity = 0;
+
       if (controller.orderItemList.isNotEmpty) {
         for (var item in controller.orderItemList) {
+          int quantity =
+              int.parse(item['\"quantity\"'].toString().replaceAll('"', ''));
+
           double price =
-              double.parse(item['\"amount\"'].toString().replaceAll('"', ''));
-          totalCost += price * 22;
+              double.parse(item['\"amount\"'].toString().replaceAll('"', '')) *
+                  quantity;
+          totalCost += price;
+          print(
+              'Cost $totalCost $quantity ${double.parse(item['\"price\"'].toString().replaceAll('"', ''))}');
+          totalQuantity += quantity;
         }
         controller.addOnPrice.value = '$totalCost';
+        print(totalQuantity);
       }
       // if (controller.onSaturday.value == true &&
       //     controller.onSunday.value == true) {
       // } else if (controller.onSaturday.value == true) {
       // } else if (controller.onSunday.value == true) {}
+      controller.tiffinCount.value =
+          '${int.parse(widget.tifinCount) + totalQuantity}';
       controller.packagingPrice.value =
-          "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+          "${int.parse(controller.singlePackagingCost.value) * (int.parse(widget.tifinCount) + totalQuantity)}";
       controller.calculateTotal(widget.price);
       // print(
       //     'pp:-${controller.packagingPrice.value} ${}');
@@ -132,12 +145,20 @@ class _TifinBillingViewState extends State<TifinBillingView>
       controller.orderItemList.value.removeWhere((element) =>
           element['\"product_code\"'].toString() == '\"${data?.productCode}\"');
       double totalCost = 0;
+      int totalQuantity = 0;
 
       if (controller.orderItemList.isNotEmpty) {
         for (var item in controller.orderItemList) {
+          int quantity =
+              int.parse(item['\"quantity\"'].toString().replaceAll('"', ''));
+
           double price =
-              double.parse(item['\"amount\"'].toString().replaceAll('"', ''));
-          totalCost += price * 22;
+              double.parse(item['\"amount\"'].toString().replaceAll('"', '')) *
+                  quantity;
+          totalCost += price;
+          print(
+              'Cost $totalCost $quantity ${double.parse(item['\"price\"'].toString().replaceAll('"', ''))}');
+          totalQuantity += quantity;
         }
         controller.addOnPrice.value = '$totalCost';
       } else {
@@ -145,7 +166,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
       }
 
       controller.packagingPrice.value =
-          "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
+          "${int.parse(controller.singlePackagingCost.value) * (int.parse(widget.tifinCount) * (controller.orderItemList.length + 1))}";
       controller.calculateTotal(widget.price);
     }
     setState(() {});
@@ -1422,12 +1443,13 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               .packagingList?[0]
                               .packagingName ??
                           "";
-
+                      controller.singlePackagingCost.value =
+                          '${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0")}';
                       controller.packagingPrice.value = controller
                                   .packEcoFriendly.value ==
                               true
-                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(widget.tifinCount)}"
-                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(widget.tifinCount)}";
+                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.tiffinCount.value)}"
+                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.tiffinCount.value)}";
                       controller.calculateTotal(widget.price);
                       // controller.getTotalCount(
                       //     tiffinCount: widget.tifinCount,
@@ -1454,12 +1476,13 @@ class _TifinBillingViewState extends State<TifinBillingView>
                               .packagingList?[1]
                               .packagingName ??
                           "";
-
+                      controller.singlePackagingCost.value =
+                          '${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0")}';
                       controller.packagingPrice.value = controller
                                   .packEcoFriendly.value ==
                               true
-                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(widget.tifinCount)}"
-                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(widget.tifinCount)}";
+                          ? "${int.parse(controller.getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * int.parse(controller.tiffinCount.value)}"
+                          : "${int.parse(controller.getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(controller.tiffinCount.value)}";
                       controller.calculateTotal(widget.price);
 
                       // controller.getTotalCount(
@@ -1580,10 +1603,71 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                             .replaceAll(
                                                                 '\"', '')) -
                                                         1;
+                                                    int amount = int.parse(
+                                                        controller
+                                                            .orderItemList[
+                                                                index]
+                                                                ['\"price\"']
+                                                            .toString()
+                                                            .replaceAll(
+                                                                '\"', ''));
                                                     controller.orderItemList[
                                                                 index]
                                                             ['\"quantity\"'] =
                                                         '\"$qty\"';
+                                                    controller.orderItemList[
+                                                                index]
+                                                            ['\"amount\"'] =
+                                                        '\"${int.parse('${int.parse('$amount') * int.parse('$qty')}')}\"';
+                                                    controller.orderItemList[
+                                                                index]
+                                                            ['\"total\"'] =
+                                                        '\"${int.parse('${int.parse('$amount') * int.parse('$qty')}')}\"';
+
+                                                    //After added plus minus thing
+                                                    double totalCost = 0;
+                                                    int totalQuantity = 0;
+
+                                                    if (controller.orderItemList
+                                                        .isNotEmpty) {
+                                                      for (var item
+                                                          in controller
+                                                              .orderItemList) {
+                                                        int quantity = int.parse(
+                                                            item['\"quantity\"']
+                                                                .toString()
+                                                                .replaceAll(
+                                                                    '"', ''));
+
+                                                        double price =
+                                                            double.parse(item[
+                                                                        '\"price\"']
+                                                                    .toString()
+                                                                    .replaceAll(
+                                                                        '"',
+                                                                        '')) *
+                                                                quantity;
+                                                        totalCost += price;
+                                                        print(
+                                                            'Cost $totalCost $quantity ${double.parse(item['\"price\"'].toString().replaceAll('"', ''))}');
+                                                        totalQuantity +=
+                                                            quantity;
+                                                      }
+                                                      controller.addOnPrice
+                                                          .value = '$totalCost';
+                                                      print(totalQuantity);
+                                                    } else {
+                                                      controller.addOnPrice
+                                                          .value = '0';
+                                                    }
+                                                    controller
+                                                            .tiffinCount.value =
+                                                        '${int.parse(widget.tifinCount) + totalQuantity}';
+                                                    controller.packagingPrice
+                                                            .value =
+                                                        "${int.parse(controller.singlePackagingCost.value) * int.parse(controller.tiffinCount.value)}";
+                                                    controller.calculateTotal(
+                                                        widget.price);
                                                   } else {
                                                     calculateAddOn(data);
                                                   }
@@ -1606,10 +1690,66 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                           .replaceAll(
                                                               '\"', '')) +
                                                       1;
+                                                  int amount = int.parse(
+                                                      controller
+                                                          .orderItemList[index]
+                                                              ['\"price\"']
+                                                          .toString()
+                                                          .replaceAll(
+                                                              '\"', ''));
                                                   controller.orderItemList[
                                                               index]
                                                           ['\"quantity\"'] =
                                                       '\"$qty\"';
+                                                  controller.orderItemList[
+                                                          index]['\"amount\"'] =
+                                                      '\"${int.parse('${int.parse('$amount') * int.parse('$qty')}')}\"';
+                                                  controller.orderItemList[
+                                                          index]['\"total\"'] =
+                                                      '\"$qty\"';
+                                                  print(controller
+                                                          .orderItemList[index]
+                                                      ['\"amount\"']);
+                                                  //After added plus minus thing
+                                                  double totalCost = 0;
+                                                  int totalQuantity = 0;
+
+                                                  if (controller.orderItemList
+                                                      .isNotEmpty) {
+                                                    for (var item in controller
+                                                        .orderItemList) {
+                                                      int quantity = int.parse(
+                                                          item['\"quantity\"']
+                                                              .toString()
+                                                              .replaceAll(
+                                                                  '"', ''));
+
+                                                      double price = double.parse(
+                                                              item['\"price\"']
+                                                                  .toString()
+                                                                  .replaceAll(
+                                                                      '"',
+                                                                      '')) *
+                                                          quantity;
+                                                      totalCost += price;
+                                                      print(
+                                                          'Cost $totalCost $quantity ${double.parse(item['\"price\"'].toString().replaceAll('"', ''))}');
+                                                      totalQuantity += quantity;
+                                                    }
+                                                    controller.addOnPrice
+                                                        .value = '$totalCost';
+                                                    print(totalQuantity);
+                                                  } else {
+                                                    controller
+                                                        .addOnPrice.value = '0';
+                                                  }
+                                                  controller.tiffinCount.value =
+                                                      '${int.parse(widget.tifinCount) + totalQuantity}';
+                                                  controller.packagingPrice
+                                                          .value =
+                                                      "${int.parse(controller.singlePackagingCost.value) * int.parse(controller.tiffinCount.value)}";
+                                                  controller.calculateTotal(
+                                                      widget.price);
                                                   setState(() {});
                                                 },
                                                 icon: Icons.add),
@@ -1684,7 +1824,17 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                           children: [
                                             TextButton(
                                               onPressed: () {
-                                                controller.postCoupon();
+                                                if (controller
+                                                    .coupon.text.isEmpty) {
+                                                  customToast(
+                                                      message:
+                                                          'Please enter a coupon code');
+                                                } else {
+                                                  controller.postCoupon().then(
+                                                      (value) =>
+                                                          setState(() {}));
+                                                }
+                                                setState(() {});
                                               },
                                               child: Text(
                                                 'Apply',
@@ -1720,11 +1870,13 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             color: ColorConstant.appMainColor,
                             fontWeight: FontWeight.w400),
                       ),
-                      Text(
-                        "Coupon: ${controller.discountInCart.value}",
-                        style: TextStyleConstant.regular18(
-                            color: ColorConstant.orange),
-                      ),
+                      Obx(() {
+                        return Text(
+                          "Coupon: ${controller.discountInCart.value}",
+                          style: TextStyleConstant.regular18(
+                              color: ColorConstant.orange),
+                        );
+                      }),
                       Text(
                         "Tax: ${widget.tax}%",
                         style: TextStyleConstant.regular18(
@@ -1781,6 +1933,9 @@ class _TifinBillingViewState extends State<TifinBillingView>
                             customToast(message: 'Please select a lunch time');
                           } else if (controller.addressLunchId.value.isEmpty) {
                             customToast(message: 'Please select a address');
+                          } else if (controller.convertedDate.value
+                              .contains("Tap to select Date")) {
+                            customToast(message: 'Please select start date');
                           } else {
                             controller.postOrder(
                                 cartId: widget.cartId,

@@ -70,6 +70,7 @@ class CustomTextField extends StatelessWidget {
       focusNode: focusNode,
       minLines: 1,
       onTap: onTap,
+      readOnly: isReadOnly ?? false,
       onChanged: onChange,
       onFieldSubmitted: onSubmitted,
       validator: validator,

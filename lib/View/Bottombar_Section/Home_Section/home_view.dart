@@ -13,7 +13,6 @@ import 'package:vandana/Custom_Widgets/custom_toast.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Food_Section/select_food_view.dart';
 import 'package:vandana/View/Bottombar_Section/Home_Section/Tifin_Section/select_tifin_view.dart';
 
-import '../../../Controllers/profile_controller.dart';
 import '../../Authentication_Section/address_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -24,11 +23,9 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final profileController = Get.find<ProfileController>();
   @override
   void initState() {
     super.initState();
-    profileController.initialFunctioun();
   }
 
   @override
@@ -78,11 +75,11 @@ class _HomeViewState extends State<HomeView> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      if (profileController.getAddressListModel
-                                                  .value.addressList !=
+                                      if (controller.getAddressListModel.value
+                                                  .addressList !=
                                               null &&
-                                          profileController.getAddressListModel
-                                              .value.addressList!.isNotEmpty) {
+                                          controller.getAddressListModel.value
+                                              .addressList!.isNotEmpty) {
                                         showDialog(
                                           context: context,
                                           builder: (context) {
@@ -136,12 +133,11 @@ class _HomeViewState extends State<HomeView> {
                                                         child: ListView.builder(
                                                           physics:
                                                               const BouncingScrollPhysics(),
-                                                          itemCount:
-                                                              profileController
-                                                                  .getAddressListModel
-                                                                  .value
-                                                                  .addressList
-                                                                  ?.length,
+                                                          itemCount: controller
+                                                              .getAddressListModel
+                                                              .value
+                                                              .addressList
+                                                              ?.length,
                                                           shrinkWrap: true,
                                                           itemBuilder:
                                                               (context, index) {
@@ -149,23 +145,15 @@ class _HomeViewState extends State<HomeView> {
                                                               child: ListTile(
                                                                 onTap:
                                                                     () async {
-                                                                  profileController
-                                                                          .addressController
-                                                                          .text =
-                                                                      "${profileController.getAddressListModel.value.addressList?[index]?.address}";
-                                                                  await profileController
-                                                                      .setAddressDetail(
-                                                                          index:
-                                                                              index)
-                                                                      .then(
-                                                                          (value) async {
-                                                                    setState(
-                                                                        () {});
-                                                                    controller
-                                                                        .getSelectedBranch();
-                                                                  });
+                                                                  controller.updateSelectedAddress(controller
+                                                                          .getAddressListModel
+                                                                          .value
+                                                                          .addressList?[
+                                                                              index]
+                                                                          ?.id ??
+                                                                      '');
 
-                                                                  profileController
+                                                                  controller
                                                                       .update();
                                                                   Get.back();
                                                                 },
@@ -175,37 +163,37 @@ class _HomeViewState extends State<HomeView> {
                                                                 //           AddressView(
                                                                 //             isEditAddress:
                                                                 //                 true,
-                                                                //             state: profileController
+                                                                //             state: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.state,
-                                                                //             pinCode: profileController
+                                                                //             pinCode: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.pincode,
-                                                                //             latLng: profileController
+                                                                //             latLng: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.latLong,
-                                                                //             city: profileController
+                                                                //             city: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.city,
-                                                                //             addressType: profileController
+                                                                //             addressType: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.addressType,
-                                                                //             addressId: profileController
+                                                                //             addressId: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
                                                                 //                 ?.id,
-                                                                //             address: profileController
+                                                                //             address: controller
                                                                 //                 .getAddressListModel
                                                                 //                 .value
                                                                 //                 .addressList?[index]
@@ -216,13 +204,13 @@ class _HomeViewState extends State<HomeView> {
                                                                 //         Icons
                                                                 //             .edit)),
                                                                 title: Text(
-                                                                    "${profileController.getAddressListModel.value.addressList?[index]?.address}"),
+                                                                    "${controller.getAddressListModel.value.addressList?[index]?.address}"),
                                                                 trailing:
                                                                     IconButton(
                                                                         onPressed:
                                                                             () {
-                                                                          profileController.removeAddress(
-                                                                              addressId: "${profileController.getAddressListModel.value.addressList?[index]?.id}");
+                                                                          controller.removeAddress(
+                                                                              addressId: "${controller.getAddressListModel.value.addressList?[index]?.id}");
                                                                         },
                                                                         icon: const Icon(
                                                                             Icons.remove)),
@@ -290,14 +278,6 @@ class _HomeViewState extends State<HomeView> {
                                     style: TextStyleConstant.semiBold18(
                                         color: ColorConstant.white),
                                   ),
-                                  // child: Text(
-                                  //   controller.selectedBranch.value.isNotEmpty
-                                  //       ? controller.selectedBranch.value
-                                  //       : 'Not Available',
-                                  //   textAlign: TextAlign.center,
-                                  //   style: TextStyleConstant.semiBold18(
-                                  //       color: ColorConstant.white),
-                                  // ),
                                 ),
                               )
                             ],

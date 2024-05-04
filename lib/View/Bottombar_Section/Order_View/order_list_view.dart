@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,8 +8,10 @@ import 'package:vandana/Constant/textstyle_constant.dart';
 import 'package:vandana/Custom_Widgets/custom_appbar.dart';
 import 'package:vandana/Custom_Widgets/custom_dotted_line.dart';
 
+import '../../../Constant/static_decoration.dart';
 import '../../../Controllers/order_controller.dart';
-import '../Home_Section/Food_Section/food_billing_view.dart';
+import '../../../Custom_Widgets/custom_textfield.dart';
+import '../Cart_Section/cart_view.dart';
 
 class OrderViewList extends StatefulWidget {
   const OrderViewList({super.key, required this.index});
@@ -166,6 +167,58 @@ class _OrderViewListState extends State<OrderViewList> {
                       const SizedBox(
                         height: 45,
                       ),
+                      const HorizontalDottedLine(),
+                      height10,
+                      Text(
+                        "Packaging",
+                        style: TextStyleConstant.regular22(
+                            color: ColorConstant.orange),
+                      ),
+                      height10,
+                      Obx(() {
+                        return NewRadioButton(
+                          buttonName:
+                              "${orderController.getOrderListModel.value.orderList?[widget.index]?.packagingType}",
+                          isSelected: true,
+                          onTap: () {},
+                        );
+                      }),
+                      const HorizontalDottedLine(),
+                      height20,
+                      CustomTextField(
+                          controller: TextEditingController(
+                              text: orderController.getOrderListModel.value
+                                      .orderList?[widget.index]?.couponCode ??
+                                  ''),
+                          fillColor: Colors.white,
+                          hintText: 'coupon code',
+                          isReadOnly: true,
+                          suffixIcon: orderController
+                                      .getOrderListModel
+                                      .value
+                                      .orderList?[widget.index]
+                                      ?.couponCode
+                                      ?.isNotEmpty ==
+                                  true
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: Text(
+                                        'Applied',
+                                        style: TextStyleConstant.semiBold14(
+                                            color: Colors.green),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : null,
+                          enable: true),
+                      const SizedBox(
+                        height: 45,
+                      ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -191,7 +244,7 @@ class _OrderViewListState extends State<OrderViewList> {
                                 fontWeight: FontWeight.w400),
                           ),
                           Text(
-                            "Discount: ${'0'}",
+                            "Discount: ${orderController.getOrderListModel.value.orderList?[widget.index]?.couponAmount ?? 0}",
                             style: TextStyleConstant.regular18(
                                 color: ColorConstant.orange),
                           ),

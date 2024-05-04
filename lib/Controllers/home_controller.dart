@@ -1,4 +1,6 @@
-import 'dart:math';
+// import 'dart:math';
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:vandana/Constant/endpoint_constant.dart';
@@ -10,10 +12,14 @@ import 'package:vandana/Models/get_category_list_model.dart';
 import 'package:vandana/Services/http_services.dart';
 import 'package:vandana/Services/storage_services.dart';
 
+import '../Custom_Widgets/custom_toast.dart';
+import '../Models/get_address_list_model.dart';
 import '../Models/get_item_list_model.dart';
 import '../Models/get_sabji_list_model copy.dart';
 import '../Models/get_selected_address_model.dart';
 import '../Models/get_sub_category_data_model.dart';
+import '../Models/post_remove_address_model.dart';
+import '../Models/post_selected_address_model.dart';
 
 class HomeController extends GetxController {
   GetBannerImagesModel getBannerImagesModel = GetBannerImagesModel();
@@ -21,6 +27,10 @@ class HomeController extends GetxController {
   GetCategoryListModel getCategoryListModel = GetCategoryListModel();
   GetBranchListModel getBranchListModel = GetBranchListModel();
   Rx<SubCategoryDataModel> subCategoryDataModel = SubCategoryDataModel().obs;
+  var getAddressListModel = GetAddressListModel().obs;
+  PostSelectedAddressModel postSelectedAddressModel =
+      PostSelectedAddressModel();
+  PostRemoveAddressModel postRemoveAddressModel = PostRemoveAddressModel();
 
   RxString userName = "".obs;
   RxString userType = "".obs;
@@ -91,6 +101,101 @@ class HomeController extends GetxController {
     getBranchList();
     getBannerImages();
     getCategoryList();
+    getAddressList();
+  }
+
+  Future getAddressList() async {
+    try {
+      // CustomLoader.openCustomLoader();
+      Map<String, String> payload = {
+        "user_type": userType.value,
+        "customer_code": customerCode.value
+      };
+
+      // log("Get address list payload :::  $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.addressList, payload: payload);
+
+      // log("Get address list response ::: $response");
+
+      getAddressListModel.value = getAddressListModelFromJson(response["body"]);
+
+      // if (getAddressListModel.value.statusCode == "200" ||
+      //     getAddressListModel.value.statusCode == "201") {
+      //   CustomLoader.closeCustomLoader();
+      // } else {
+      //   CustomLoader.closeCustomLoader();
+      // }
+      log('url: ${EndPointConstant.addressList},\npayload: $payload,\nstatus-code :${getAddressListModel.value.statusCode},\nresponse: ${response["body"]}');
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during getting address list ::: $error");
+    }
+  }
+
+  Future updateSelectedAddress(String id) async {
+    CustomLoader.openCustomLoader();
+    try {
+      Map<String, dynamic> payload = {
+        "id": id,
+        "customer_code": customerCode.value,
+        "address_status": "selected",
+      };
+
+      log("Post selected address payload ::: $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.selectedAddressUpdate, payload: payload);
+
+      log("Post selected address response ::: $response");
+
+      postSelectedAddressModel =
+          postSelectedAddressModelFromJson(response["body"]);
+
+      if (postSelectedAddressModel.statusCode == "200" ||
+          postSelectedAddressModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        getSelectedBranch();
+        // customToast(message: "${postSelectedAddressModel.message}");
+      } else {
+        CustomLoader.closeCustomLoader();
+        log("Something went wrong during posting address ::: ${postSelectedAddressModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting address ::: $error");
+    }
+  }
+
+  Future removeAddress({required String addressId}) async {
+    try {
+      CustomLoader.openCustomLoader();
+      Map<String, String> payload = {"id": addressId};
+
+      log("Post remove address payload :::  $payload");
+
+      var response = await HttpServices.postHttpMethod(
+          url: EndPointConstant.removeAddress, payload: payload);
+
+      log("Post remove address response ::: $response");
+
+      postRemoveAddressModel = postRemoveAddressModelFromJson(response["body"]);
+
+      if (postRemoveAddressModel.statusCode == "200" ||
+          postRemoveAddressModel.statusCode == "201") {
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postRemoveAddressModel.message}");
+        Get.back();
+        getAddressList();
+      } else {
+        CustomLoader.closeCustomLoader();
+        customToast(message: "${postRemoveAddressModel.message}");
+      }
+    } catch (error) {
+      CustomLoader.closeCustomLoader();
+      log("Something went wrong during posting remove list ::: $error");
+    }
   }
 
   Future getBannerImages() async {
