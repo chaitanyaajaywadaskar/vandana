@@ -120,7 +120,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
               int.parse(item['\"quantity\"'].toString().replaceAll('"', ''));
 
           double price =
-              double.parse(item['\"amount\"'].toString().replaceAll('"', '')) *
+              double.parse(item['\"price\"'].toString().replaceAll('"', '')) *
                   quantity;
           totalCost += price;
           print(
@@ -153,7 +153,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
               int.parse(item['\"quantity\"'].toString().replaceAll('"', ''));
 
           double price =
-              double.parse(item['\"amount\"'].toString().replaceAll('"', '')) *
+              double.parse(item['\"price\"'].toString().replaceAll('"', '')) *
                   quantity;
           totalCost += price;
           print(
@@ -1588,6 +1588,8 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                           children: [
                                             incDecIconButton(
                                                 onTap: () {
+                                                  //To REMOVE
+
                                                   if (int.parse(controller
                                                           .orderItemList[index]
                                                               ['\"quantity\"']
@@ -1655,11 +1657,12 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                       }
                                                       controller.addOnPrice
                                                           .value = '$totalCost';
-                                                      print(totalQuantity);
                                                     } else {
                                                       controller.addOnPrice
                                                           .value = '0';
                                                     }
+                                                    print(
+                                                        'Total quantity :- ${totalQuantity}');
                                                     controller
                                                             .tiffinCount.value =
                                                         '${int.parse(widget.tifinCount) + totalQuantity}';
@@ -1683,6 +1686,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                     .semiBold18()),
                                             incDecIconButton(
                                                 onTap: () {
+                                                  //To ADD
                                                   int qty = int.parse(controller
                                                           .orderItemList[index]
                                                               ['\"quantity\"']
@@ -1706,7 +1710,7 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                                       '\"${int.parse('${int.parse('$amount') * int.parse('$qty')}')}\"';
                                                   controller.orderItemList[
                                                           index]['\"total\"'] =
-                                                      '\"$qty\"';
+                                                      '\"${int.parse('${int.parse('$amount') * int.parse('$qty')}')}\"';
                                                   print(controller
                                                           .orderItemList[index]
                                                       ['\"amount\"']);
@@ -1799,6 +1803,56 @@ class _TifinBillingViewState extends State<TifinBillingView>
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
+                      Text(
+                        "Tiffin Price: ${widget.mrp}",
+                        style: TextStyleConstant.regular18().copyWith(
+                          color: ColorConstant.appMainColor,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Text(
+                        "Discount: ${int.parse(widget.mrp.toString()) - int.parse(widget.price.toString())}",
+                        style: TextStyleConstant.regular18().copyWith(
+                            color: ColorConstant.appMainColor,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Obx(
+                        () => Text(
+                          "Packaging: ${controller.packagingPrice.value}",
+                          style: TextStyleConstant.regular18().copyWith(
+                              color: ColorConstant.appMainColor,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Obx(() {
+                        return Text(
+                          "Dilivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0'}",
+                          style: TextStyleConstant.regular18().copyWith(
+                              color: ColorConstant.appMainColor,
+                              fontWeight: FontWeight.w400),
+                        );
+                      }),
+                      Obx(() => controller.onSaturday.value == true ||
+                              controller.onSunday.value == true
+                          ? Text(
+                              "Weekend Tiffins: ${controller.weekendTiffinCalculatedPrice.toString()}",
+                              style: TextStyleConstant.regular18().copyWith(
+                                  color: ColorConstant.appMainColor,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          : const SizedBox()),
+                      Obx(() {
+                        return Text(
+                          "Coupon: ${controller.discountInCart.value}",
+                          style: TextStyleConstant.regular18(
+                              color: ColorConstant.orange),
+                        );
+                      }),
+                      Text(
+                        "Tax: ${widget.tax}%",
+                        style: TextStyleConstant.regular18(
+                            color: ColorConstant.orange),
+                      ),
                       if (controller.discountInCart.value == '0')
                         InkWell(
                           onTap: () {
@@ -1857,56 +1911,6 @@ class _TifinBillingViewState extends State<TifinBillingView>
                                 color: Colors.green),
                           ),
                         ),
-                      Text(
-                        "Tiffin Price: ${widget.mrp}",
-                        style: TextStyleConstant.regular18().copyWith(
-                          color: ColorConstant.appMainColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      Text(
-                        "Discount: ${int.parse(widget.mrp.toString()) - int.parse(widget.price.toString())}",
-                        style: TextStyleConstant.regular18().copyWith(
-                            color: ColorConstant.appMainColor,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Obx(() {
-                        return Text(
-                          "Coupon: ${controller.discountInCart.value}",
-                          style: TextStyleConstant.regular18(
-                              color: ColorConstant.orange),
-                        );
-                      }),
-                      Text(
-                        "Tax: ${widget.tax}%",
-                        style: TextStyleConstant.regular18(
-                            color: ColorConstant.orange),
-                      ),
-                      Obx(
-                        () => Text(
-                          "Packaging: ${controller.packagingPrice.value}",
-                          style: TextStyleConstant.regular18().copyWith(
-                              color: ColorConstant.appMainColor,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      Obx(() {
-                        return Text(
-                          "Dilivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0'}",
-                          style: TextStyleConstant.regular18().copyWith(
-                              color: ColorConstant.appMainColor,
-                              fontWeight: FontWeight.w400),
-                        );
-                      }),
-                      Obx(() => controller.onSaturday.value == true ||
-                              controller.onSunday.value == true
-                          ? Text(
-                              "Weekend Tiffins: ${controller.weekendTiffinCalculatedPrice.toString()}",
-                              style: TextStyleConstant.regular18().copyWith(
-                                  color: ColorConstant.appMainColor,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          : const SizedBox()),
                       Padding(
                         padding: EdgeInsets.only(
                             left: Get.width * 0.4, top: 10, bottom: 10),

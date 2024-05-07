@@ -219,8 +219,9 @@ class TifinBillingController extends GetxController {
     double tax = 5;
     double taxPrice = 0;
     taxPrice = tempTotal * tax / 100;
-    print('Tax:- $taxPrice');
     tempTotal += double.parse(packagingPrice.value);
+    print(
+        'Tax:- $taxPrice, Weekend:- ${weekendTiffinCalculatedPrice.value}, addOn:- ${addOnPrice.value}, total:- $tempTotal, packaging:- ${packagingPrice.value}');
     totalCount.value = tempTotal.toInt() + taxPrice.toInt();
   }
 
@@ -293,9 +294,10 @@ class TifinBillingController extends GetxController {
     } else {
       weekendTiffinCalculatedPrice.value = 0;
       weekendTiffinCount.value = 0;
-
       packagingPrice.value =
-          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (orderItemList.length + 1))}";
+          "${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (orderItemList.length))}";
+      // packagingPrice.value =
+      //     "${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (orderItemList.length + 1))}";
     }
   }
 

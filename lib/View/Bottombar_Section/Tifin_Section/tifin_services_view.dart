@@ -236,13 +236,22 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                                   ?.isNotEmpty ??
                                               false,
                                           onTap: () async {
-                                            String? date = await selectDate(
-                                                context: context);
-
-                                            if (date != null) {
+                                            // String? date = await selectDate(
+                                            //     context: context);
+                                            DateTimeRange? result =
+                                                await showDateRangePicker(
+                                              context: context,
+                                              firstDate: DateTime(2022, 1,
+                                                  1), // the earliest allowable
+                                              lastDate: DateTime(2030, 12,
+                                                  31), // the latest allowable
+                                              currentDate: DateTime.now(),
+                                              saveText: 'Done',
+                                            );
+                                            if (result != null) {
                                               tiffinOrderController.cancelOrder(
                                                   soNumber: '${data?.soNumber}',
-                                                  date: date);
+                                                  date: '${result.start}');
                                             } else {
                                               customToast(
                                                   message:
@@ -251,6 +260,34 @@ class _TifinServicesViewState extends State<TifinServicesView> {
                                           },
                                         ),
                                       );
+
+                                      //Old Code
+                                      // Get.dialog(
+                                      //   TiffinTypeAlert(
+                                      //     tiffinOrderController:
+                                      //         tiffinOrderController,
+                                      //     enableLunch: data?.tiffintypeLunch
+                                      //             ?.isNotEmpty ??
+                                      //         false,
+                                      //     enableDinner: data?.tiffintypeDinner
+                                      //             ?.isNotEmpty ??
+                                      //         false,
+                                      //     onTap: () async {
+                                      //       String? date = await selectDate(
+                                      //           context: context);
+
+                                      //       if (date != null) {
+                                      //         tiffinOrderController.cancelOrder(
+                                      //             soNumber: '${data?.soNumber}',
+                                      //             date: date);
+                                      //       } else {
+                                      //         customToast(
+                                      //             message:
+                                      //                 'Plese select date to cancel order');
+                                      //       }
+                                      //     },
+                                      //   ),
+                                      // );
                                     },
                                     child: Container(
                                       alignment: Alignment.center,

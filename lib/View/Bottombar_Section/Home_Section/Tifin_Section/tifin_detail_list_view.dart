@@ -61,48 +61,52 @@ class _TifinDetailListViewState extends State<TifinDetailListView> {
                       onTap: () {
                         Get.to(() => TifinBillingView(
                               productImage:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.productImage1}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].productImage1}",
                               productName:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.productName}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].productName}",
                               productDescription:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.description}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].description}",
                               mrp:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.mrp}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].mrp}",
                               price:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.price}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].price}",
                               categoryName:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.categoryName}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].categoryName}",
                               subCategoryName:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.subcategoryName}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].subcategoryName}",
                               cartId: "1",
                               productCode:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.productCode}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].productCode}",
                               tax: controller.getFoodDetailListModel.value
-                                      .productList?[index]?.tax ??
+                                      .productList?[index].tax ??
                                   '',
                               total:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.price}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].price}",
                               unit: "nos",
                               taxjGst: (int.parse(controller
                                               .getFoodDetailListModel
                                               .value
-                                              .productList?[index]?.tax ??
+                                              .productList?[index]
+                                              .tax ??
                                           '') /
                                       2)
                                   .toString(),
                               taxsGst: (int.parse(controller
                                               .getFoodDetailListModel
                                               .value
-                                              .productList?[index]?.tax ??
+                                              .productList?[index]
+                                              .tax ??
                                           '') /
                                       2)
                                   .toString(),
                               weekendPrice:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.satSundayPrice}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].satSundayPrice}",
                               tifinCount:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.tiffinCount}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].tiffinCount}",
                               subjiCount:
-                                  "${controller.getFoodDetailListModel.value.productList?[index]?.subjiCount}", satSunTiffinCount:  "${controller.getFoodDetailListModel.value.productList?[index]?.subjiCount}",
+                                  "${controller.getFoodDetailListModel.value.productList?[index].subjiCount}",
+                              satSunTiffinCount:
+                                  "${controller.getFoodDetailListModel.value.productList?[index].satSunTiffinCount}",
                             ));
                       },
                       child: Padding(
@@ -124,7 +128,7 @@ class _TifinDetailListViewState extends State<TifinDetailListView> {
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
                                               image: NetworkImage(
-                                                  "${controller.getFoodDetailListModel.value.productList?[index]?.productImage1}"),
+                                                  "${controller.getFoodDetailListModel.value.productList?[index].productImage1}"),
                                               fit: BoxFit.cover),
                                         ),
                                       ),
@@ -133,7 +137,7 @@ class _TifinDetailListViewState extends State<TifinDetailListView> {
                                             top: Get.height * 0.020),
                                         child: CustomButton(
                                           title:
-                                              "Total Count: ${controller.getFoodDetailListModel.value.productList?[index]?.tiffinCount}",
+                                              "Total Count: ${controller.getFoodDetailListModel.value.productList?[index].tiffinCount}",
                                           width: Get.width * 0.35,
                                         ),
                                       ),

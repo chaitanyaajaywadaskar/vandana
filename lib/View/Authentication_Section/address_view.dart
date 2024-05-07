@@ -43,6 +43,7 @@ class _AddressViewState extends State<AddressView> {
   void initState() {
     super.initState();
     if (widget.isEditAddress) {
+      controller.initialFunctioun();
       controller.selectedAddressType.value = widget.addressType!;
       controller.stateController.text = widget.state!;
       controller.cityController.text = widget.city!;
@@ -57,6 +58,8 @@ class _AddressViewState extends State<AddressView> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        '${controller.selectedBranchCode.value} ${controller.selectedBranch.value} ');
     return Scaffold(
       body: Form(
         key: controller.formKey,

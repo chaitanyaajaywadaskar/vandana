@@ -22,8 +22,8 @@ import '../Models/post_remove_address_model.dart';
 import '../Models/post_selected_address_model.dart';
 
 class HomeController extends GetxController {
-  GetBannerImagesModel getBannerImagesModel = GetBannerImagesModel();
-  GetSelectedAddressModel getSelectedAddressModel = GetSelectedAddressModel();
+  var getBannerImagesModel = GetBannerImagesModel();
+  var getSelectedAddressModel = GetSelectedAddressModel().obs;
   GetCategoryListModel getCategoryListModel = GetCategoryListModel();
   GetBranchListModel getBranchListModel = GetBranchListModel();
   Rx<SubCategoryDataModel> subCategoryDataModel = SubCategoryDataModel().obs;
@@ -105,6 +105,7 @@ class HomeController extends GetxController {
   }
 
   Future getAddressList() async {
+    print('call huva');
     try {
       // CustomLoader.openCustomLoader();
       Map<String, String> payload = {
@@ -243,57 +244,57 @@ class HomeController extends GetxController {
 
       debugPrint("Get user selected response ::: $response");
 
-      getSelectedAddressModel =
+      getSelectedAddressModel.value =
           getSelectedAddressModelFromJson(response["body"]);
 
-      if (getSelectedAddressModel.statusCode == "200" ||
-          getSelectedAddressModel.statusCode == "201") {
-        if (getSelectedAddressModel.UserSelectedAddress != null &&
-            getSelectedAddressModel.UserSelectedAddress?.isNotEmpty == true) {
+      if (getSelectedAddressModel.value.statusCode == "200" ||
+          getSelectedAddressModel.value.statusCode == "201") {
+        if (getSelectedAddressModel.value.UserSelectedAddress != null &&
+            getSelectedAddressModel.value.UserSelectedAddress?.isNotEmpty == true) {
           selectedBranch.value =
-              getSelectedAddressModel.UserSelectedAddress?.first?.bname ?? '';
+              getSelectedAddressModel.value.UserSelectedAddress?.first?.bname ?? '';
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.addressType,
-              stringData: getSelectedAddressModel
+              stringData: getSelectedAddressModel.value
                   .UserSelectedAddress?.first?.addressType);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.state,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.state);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.state);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.city,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.city);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.city);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.pinCode,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.pincode);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.pincode);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.address,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.address);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.address);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.latLng,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.latLong);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.latLong);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.branch,
               stringData:
-                  getSelectedAddressModel.UserSelectedAddress?.first?.branch);
+                  getSelectedAddressModel.value.UserSelectedAddress?.first?.branch);
         }
         CustomLoader.closeCustomLoader();
         update();
       } else {
         CustomLoader.closeCustomLoader();
         debugPrint(
-            "Something went wrong during getting user selected  ::: ${getSelectedAddressModel.message}");
+            "Something went wrong during getting user selected  ::: ${getSelectedAddressModel.value.message}");
       }
     } catch (error) {
       CustomLoader.closeCustomLoader();

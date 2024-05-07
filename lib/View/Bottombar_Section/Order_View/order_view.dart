@@ -91,7 +91,9 @@ class _OrderViewState extends State<OrderView> {
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.all(10),
                                   onTap: () {
-                                    Get.to(() =>  OrderViewList(index: index,));
+                                    Get.to(() => OrderViewList(
+                                          index: index,
+                                        ));
                                   },
                                   leading: Column(
                                     crossAxisAlignment:
@@ -104,13 +106,13 @@ class _OrderViewState extends State<OrderView> {
                                           children: [
                                             TextSpan(text: '${data?.soNumber}')
                                           ])),
-                                      Text.rich(TextSpan(
-                                          text: 'Total Amount. : ',
-                                          style: TextStyleConstant.bold14(),
-                                          children: [
-                                            TextSpan(
-                                                text: '${data?.finalAmount}')
-                                          ])),
+                                      // Text.rich(TextSpan(
+                                      //     text: 'Total Amount. : ',
+                                      //     style: TextStyleConstant.bold14(),
+                                      //     children: [
+                                      //       TextSpan(
+                                      //           text: '${data?.finalAmount}')
+                                      //     ])),
                                     ],
                                   ),
                                   trailing: Column(
@@ -168,167 +170,3 @@ class _OrderViewState extends State<OrderView> {
         ));
   }
 }
-
-
-  //  return Column(
-  //                             children: [
-  //                               Padding(
-  //                                 padding: EdgeInsets.only(
-  //                                     bottom: Get.height * 0.050),
-  //                                 child: Row(
-  //                                   mainAxisAlignment:
-  //                                       MainAxisAlignment.spaceBetween,
-  //                                   children: [
-  //                                     if (data?.itemList?.isNotEmpty == true)
-  //                                       InkWell(
-  //                                         onTap: () {
-  //                                           Get.to(() => FoodBillingView(
-  //                                                 productImage:
-  //                                                     "${data?.itemList?.first?.productImage}",
-  //                                                 productName:
-  //                                                     "${data?.itemList?.first?.prodName}",
-  //                                                 productDescription:
-  //                                                     "${data?.itemList?.first?.description}",
-  //                                                 mrp:
-  //                                                     "${data?.itemList?.first?.mrp}",
-  //                                                 price:
-  //                                                     "${data?.itemList?.first?.price}",
-  //                                                 categoryName:
-  //                                                     "${data?.itemList?.first?.categoryName}",
-  //                                                 subCategoryName:
-  //                                                     "${data?.itemList?.first?.subcategoryName}",
-  //                                                 cartId: "1",
-  //                                                 productCode:
-  //                                                     "${data?.itemList?.first?.productCode}",
-  //                                                 tax:
-  //                                                     "${int.parse('${data?.itemList?.first?.taxPercent}') / 2}",
-  //                                                 total:
-  //                                                     "${data?.itemList?.first?.total}",
-  //                                                 unit: "nos",
-  //                                                 taxjGst:
-  //                                                     "${int.parse('${data?.itemList?.first?.taxPercent}') / 2}",
-  //                                                 taxsGst:
-  //                                                     "${int.parse('${data?.itemList?.first?.taxPercent}') / 2}",
-  //                                               ));
-  //                                         },
-  //                                         child: CachedNetworkImage(
-  //                                           imageUrl:
-  //                                               "${data?.itemList?.first?.productImage}",
-  //                                           imageBuilder:
-  //                                               (context, imageProvider) =>
-  //                                                   Container(
-  //                                             height: Get.height * 0.172,
-  //                                             width: Get.width * 0.364,
-  //                                             decoration: BoxDecoration(
-  //                                                 shape: BoxShape.circle,
-  //                                                 image: DecorationImage(
-  //                                                     image: imageProvider,
-  //                                                     fit: BoxFit.fill)),
-  //                                           ),
-  //                                           placeholder: (context, url) =>
-  //                                               SizedBox(
-  //                                             width: Get.width * 0.364,
-  //                                             child: Center(
-  //                                               child:
-  //                                                   CircularProgressIndicator(
-  //                                                 color: ColorConstant
-  //                                                     .orangeAccent,
-  //                                               ),
-  //                                             ),
-  //                                           ),
-  //                                           errorWidget:
-  //                                               (context, url, error) =>
-  //                                                   SizedBox(
-  //                                             width: Get.width * 0.364,
-  //                                             child: const Icon(Icons.error),
-  //                                           ),
-  //                                         ),
-  //                                       ),
-  //                                     Column(
-  //                                       mainAxisAlignment:
-  //                                           MainAxisAlignment.center,
-  //                                       crossAxisAlignment:
-  //                                           CrossAxisAlignment.start,
-  //                                       children: [
-  //                                         Text("Main Course Menu",
-  //                                             style:
-  //                                                 TextStyleConstant.regular22(
-  //                                                     color: ColorConstant
-  //                                                         .orange)),
-  //                                         if (data?.itemList?.isNotEmpty ==
-  //                                             true) ...[
-  //                                           SizedBox(
-  //                                             width: 135,
-  //                                             child: Text(
-  //                                               "${data?.itemList?.first?.productName}",
-  //                                               style:
-  //                                                   TextStyleConstant.regular18(
-  //                                                       color: ColorConstant
-  //                                                           .orangeAccent),
-  //                                             ),
-  //                                           ),
-  //                                           SizedBox(
-  //                                             width: 135,
-  //                                             child: Text(
-  //                                               "${data?.itemList?.first?.description}",
-  //                                               style:
-  //                                                   TextStyleConstant.regular18(
-  //                                                       color: ColorConstant
-  //                                                           .orangeAccent),
-  //                                             ),
-  //                                           ),
-  //                                         ]
-  //                                       ],
-  //                                     )
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                               Row(
-  //                                 mainAxisAlignment:
-  //                                     MainAxisAlignment.spaceEvenly,
-  //                                 children: [
-  //                                   GestureDetector(
-  //                                       onTap: () {
-  //                                         _launchCaller(
-  //                                             '${data?.branchContactno}');
-  //                                       },
-  //                                       child: const Icon(Icons.call)),
-  //                                   GestureDetector(
-  //                                     onTap: () {
-  //                                       _launchCaller(
-  //                                           '${data?.branchContactno}');
-  //                                     },
-  //                                     child: Container(
-  //                                       alignment: Alignment.center,
-  //                                       height: 40,
-  //                                       width: Get.width * 0.45,
-  //                                       decoration: BoxDecoration(
-  //                                         color: ColorConstant.white,
-  //                                         borderRadius:
-  //                                             BorderRadius.circular(10),
-  //                                         boxShadow: [
-  //                                           BoxShadow(
-  //                                             color:
-  //                                                 Colors.grey.withOpacity(0.5),
-  //                                             spreadRadius: 1,
-  //                                             blurRadius: 2,
-  //                                             offset: const Offset(0, 2),
-  //                                           ),
-  //                                         ],
-  //                                       ),
-  //                                       child: Text(
-  //                                         "Call Delivery Partner",
-  //                                         style: TextStyleConstant.regular18(
-  //                                             color: ColorConstant.orange),
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                               Padding(
-  //                                 padding: screenVerticalPadding,
-  //                                 child: const HorizontalDottedLine(),
-  //                               ),
-  //                             ],
-  //                           );
-                      

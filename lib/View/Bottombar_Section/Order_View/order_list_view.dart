@@ -261,7 +261,7 @@ class _OrderViewListState extends State<OrderViewList> {
                             child: const HorizontalDottedLine(),
                           ),
                           Text(
-                            "Sub Total: ${orderController.getOrderListModel.value.orderList?[widget.index]?.total}",
+                            "Sub Total: ${double.parse('${double.parse('${orderController.getOrderListModel.value.orderList?[widget.index]?.total}') + double.parse('${orderController.getOrderListModel.value.orderList?[widget.index]?.packagingPrice}') + double.parse('${orderController.getOrderListModel.value.orderList?[widget.index]?.packagingPrice}')}').toStringAsFixed(0)}",
                             style: TextStyleConstant.regular18(
                                 color: ColorConstant.orange),
                           ),

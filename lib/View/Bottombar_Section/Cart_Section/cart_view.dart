@@ -166,6 +166,9 @@ class _CartViewState extends State<CartView> {
                                                     .packagingName
                                                     .toString(),
                                         onTap: () {
+                                          controller.singlePackagingCost.value =
+                                              '${int.parse(controller.getPackagingListModel.value.packagingList?[index].packagingPrice ?? "0")}';
+
                                           controller.packagingName.value =
                                               controller
                                                       .getPackagingListModel
@@ -408,6 +411,39 @@ class _CartViewState extends State<CartView> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
+                            Text(
+                              "Total Item: ${controller.getCartItemsListModel.value.cartItemList?.length ?? '0'}",
+                              style: TextStyleConstant.regular18(
+                                  color: ColorConstant.orange),
+                            ),
+                            Obx(() {
+                              return Text(
+                                "Dilivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0'}",
+                                style: TextStyleConstant.regular18().copyWith(
+                                    color: ColorConstant.appMainColor,
+                                    fontWeight: FontWeight.w400),
+                              );
+                            }),
+                            Obx(
+                              () => Text(
+                                "Packaging: ${controller.packagingPrice.value}",
+                                style: TextStyleConstant.regular18().copyWith(
+                                    color: ColorConstant.appMainColor,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            Obx(() {
+                              return Text(
+                                "Discount: ${controller.discountInCart.value}",
+                                style: TextStyleConstant.regular18(
+                                    color: ColorConstant.orange),
+                              );
+                            }),
+                            Text(
+                              "Tax: 5%",
+                              style: TextStyleConstant.regular18(
+                                  color: ColorConstant.orange),
+                            ),
                             if (controller.discountInCart.value == '0')
                               InkWell(
                                 onTap: () {
@@ -459,39 +495,6 @@ class _CartViewState extends State<CartView> {
                                       color: Colors.green),
                                 ),
                               ),
-                            Text(
-                              "Total Item: ${controller.getCartItemsListModel.value.cartItemList?.length ?? '0'}",
-                              style: TextStyleConstant.regular18(
-                                  color: ColorConstant.orange),
-                            ),
-                            Obx(() {
-                              return Text(
-                                "Dilivery: ${controller.getDeliveryChargesModel.value.dcList?[0]?.deliveryChargesAmt ?? '0'}",
-                                style: TextStyleConstant.regular18().copyWith(
-                                    color: ColorConstant.appMainColor,
-                                    fontWeight: FontWeight.w400),
-                              );
-                            }),
-                            Obx(
-                              () => Text(
-                                "Packaging: ${controller.packagingPrice.value}",
-                                style: TextStyleConstant.regular18().copyWith(
-                                    color: ColorConstant.appMainColor,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            Obx(() {
-                              return Text(
-                                "Discount: ${controller.discountInCart.value}",
-                                style: TextStyleConstant.regular18(
-                                    color: ColorConstant.orange),
-                              );
-                            }),
-                            Text(
-                              "Tax: 5%",
-                              style: TextStyleConstant.regular18(
-                                  color: ColorConstant.orange),
-                            ),
                             Padding(
                               padding: EdgeInsets.only(
                                   left: Get.width * 0.500,

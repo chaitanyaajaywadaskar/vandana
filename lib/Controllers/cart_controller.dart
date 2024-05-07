@@ -53,6 +53,7 @@ class CartController extends GetxController {
   RxInt deliveryPrice = 0.obs;
   RxInt totalCount = 0.obs;
   RxBool isAddOnCartLoading = false.obs;
+  RxString singlePackagingCost = "0".obs;
 
   initialFunctioun() async {
     totalPriceInCart.value = '0';
@@ -111,6 +112,8 @@ class CartController extends GetxController {
     getCartItemsList().whenComplete(() {
       update();
       getPackagingList().then((value) {
+        singlePackagingCost.value =
+            '${getPackagingListModel.value.packagingList?[0].packagingPrice}';
         packagingPrice.value =
             "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
         packagingName.value = getPackagingListModel
@@ -261,7 +264,7 @@ class CartController extends GetxController {
         totalCount.value = int.parse(total.toStringAsFixed(0));
         totalQuantityInCart.value = quantity.toStringAsFixed(0);
         packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(totalQuantityInCart.value)}";
+            "${int.parse(singlePackagingCost.value) * int.parse(totalQuantityInCart.value)}";
 
         CustomLoader.closeCustomLoader();
         update();

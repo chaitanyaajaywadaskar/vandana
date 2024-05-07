@@ -51,6 +51,7 @@ class ProductList {
   String? price;
   String? mrp;
   String? dinnerLunchPrice;
+  String? satSunTiffinCount;
   String? satSundayPrice;
   String? tiffinCount;
   String? subjiCount;
@@ -70,6 +71,7 @@ class ProductList {
     this.price,
     this.mrp,
     this.dinnerLunchPrice,
+    this.satSunTiffinCount,
     this.satSundayPrice,
     this.tiffinCount,
     this.subjiCount,
@@ -90,6 +92,7 @@ class ProductList {
         price: json["price"],
         mrp: json["mrp"],
         dinnerLunchPrice: json["dinner_lunch_price"],
+        satSunTiffinCount: json["sat_sunday_tiffin_count"],
         satSundayPrice: json["sat_sunday_price"],
         tiffinCount: json["tiffin_count"],
         subjiCount: json["subji_count"],
@@ -110,6 +113,7 @@ class ProductList {
         "price": price,
         "mrp": mrp,
         "dinner_lunch_price": dinnerLunchPrice,
+        "sat_sunday_tiffin_count": satSunTiffinCount,
         "sat_sunday_price": satSundayPrice,
         "tiffin_count": tiffinCount,
         "subji_count": subjiCount,

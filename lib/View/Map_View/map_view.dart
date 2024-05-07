@@ -94,7 +94,7 @@ class _MapScreenState extends State<MapScreen> {
         "${first.name}, ${first.subThoroughfare}, ${first.thoroughfare}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea} ${first.postalCode}, ${first.country}";
     addressController.coordinatesController.text =
         '${double.parse('${position.latitude}').toStringAsFixed(3)}, ${double.parse('${position.longitude}').toStringAsFixed(3)}';
-
+    print('branch ${first.subLocality}');
     bool isContain = addressController.getBranchListModel.branchList?.any(
             (element) =>
                 element?.branchName.toString().trim().toLowerCase() ==

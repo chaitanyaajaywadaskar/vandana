@@ -125,8 +125,10 @@ class AddressController extends GetxController {
           }
         });
 
-        log('data:------------>>> ${selectedBranchCode.value}');
+        log('contain data:------------>>> ${selectedBranchCode.value}');
       } else {
+        log('not contain data:------------>>> ${selectedBranchCode.value}');
+
         selectedBranch.value = 'Not Available';
       }
 
@@ -251,7 +253,7 @@ class AddressController extends GetxController {
         "contact_no": userPhone.value,
         "branch": selectedBranchCode.value.isNotEmpty
             ? selectedBranchCode.value
-            : 'mr0035'
+            : 'Not Available'
       };
 
       log("Post address payload ::: $payload");
@@ -360,7 +362,9 @@ class AddressController extends GetxController {
         "lat_long": latLng,
         "receivers_name": userName.value,
         "contact_no": userPhone.value,
-        "branch": selectedBranchCode.value
+        "branch": selectedBranchCode.value.isNotEmpty
+            ? selectedBranchCode.value
+            : 'Not Available'
       };
 
       log("Edit address payload ::: $payload");
