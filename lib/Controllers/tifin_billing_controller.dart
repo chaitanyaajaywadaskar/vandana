@@ -105,6 +105,8 @@ class TifinBillingController extends GetxController {
   RxString branchName = "".obs;
   RxString currentDate = "".obs;
   RxString tiffinCount = "0".obs;
+  RxString tax = '0'.obs;
+  RxString addOnTiffinCount = "0".obs;
 
   RxBool onSaturday = false.obs;
   RxBool onSunday = false.obs;
@@ -154,16 +156,18 @@ class TifinBillingController extends GetxController {
       required String tifinPrice,
       required String category}) async {
     getNext7Days();
-    getDeliveryCharges(category: category);
-    getWeekendCount(price: weekendPrice.toInt(), tiffinCount: tifinCount);
-    getPackagingList(category: category).then((value) {
-      singlePackagingCost.value =
-          '${getPackagingListModel.value.packagingList?[0].packagingPrice}';
-      packagingPrice.value =
-          "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tifinCount)}";
+    getDeliveryCharges(category: category).then((value) {
+      getWeekendCount(price: weekendPrice.toInt(), tiffinCount: tifinCount);
+      getPackagingList(category: category).then((value) {
+        singlePackagingCost.value =
+            '${getPackagingListModel.value.packagingList?[0].packagingPrice}';
+        packagingPrice.value =
+            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * int.parse(tifinCount)}";
 
-      calculateTotal(tifinPrice);
+        calculateTotal(tifinPrice);
+      });
     });
+
     // getTotalCount(
     //     tiffinCount: tifinCount,
     //     tiffinPrice: tifinPrice,
@@ -212,17 +216,18 @@ class TifinBillingController extends GetxController {
   }
 
   calculateTotal(String total) {
+    double taxPrice = 0;
+    taxPrice = int.parse(total) * (double.parse(tax.value) / 100);
     double tempTotal = double.parse(total) +
         double.parse(deliveryPrice.value.toString()) +
         weekendTiffinCalculatedPrice.value +
-        double.parse(addOnPrice.value);
-    double tax = 5;
-    double taxPrice = 0;
-    taxPrice = tempTotal * tax / 100;
+        double.parse(addOnPrice.value) +
+        taxPrice.toInt();
+
     tempTotal += double.parse(packagingPrice.value);
     print(
-        'Tax:- $taxPrice, Weekend:- ${weekendTiffinCalculatedPrice.value}, addOn:- ${addOnPrice.value}, total:- $tempTotal, packaging:- ${packagingPrice.value}');
-    totalCount.value = tempTotal.toInt() + taxPrice.toInt();
+        'Total :- $total, Tax:- $taxPrice, Delivery Price:-${deliveryPrice.value}, Weekend:- ${weekendTiffinCalculatedPrice.value}, addOn:- ${addOnPrice.value}, temptotal:- $tempTotal, packaging:- ${packagingPrice.value}');
+    totalCount.value = tempTotal.toInt();
   }
 
   Future getAddOnItemList() async {
@@ -263,42 +268,37 @@ class TifinBillingController extends GetxController {
       weekendTiffinCalculatedPrice.value =
           price * (satSunTiffinCount.value * 2);
       weekendTiffinCount.value = (satSunTiffinCount.value * 2);
-      if (packRegular.value) {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      } else {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      }
+      this.tiffinCount.value =
+          '${int.parse('${int.parse(tiffinCount) + weekendTiffinCount.value + int.parse(addOnTiffinCount.value)}')}';
+      packagingPrice.value =
+          '${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (weekendTiffinCount.value))}';
     } else if (onSaturday.value == true) {
       weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
       weekendTiffinCount.value = satSunTiffinCount.value;
-      if (packRegular.value) {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      } else {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      }
+      this.tiffinCount.value =
+          '${int.parse('${int.parse(tiffinCount) + weekendTiffinCount.value + int.parse(addOnTiffinCount.value)}')}';
+      packagingPrice.value =
+          '${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (weekendTiffinCount.value))}';
     } else if (onSunday.value == true) {
       weekendTiffinCalculatedPrice.value = price * satSunTiffinCount.value;
       weekendTiffinCount.value = satSunTiffinCount.value;
-
-      if (packRegular.value) {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[0].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      } else {
-        packagingPrice.value =
-            "${int.parse(getPackagingListModel.value.packagingList?[1].packagingPrice ?? "0") * (int.parse(tiffinCount) + (weekendTiffinCount.value + (orderItemList.length + 1)))}";
-      }
+      this.tiffinCount.value =
+          '${int.parse('${int.parse(tiffinCount) + weekendTiffinCount.value + int.parse(addOnTiffinCount.value)}')}';
+      packagingPrice.value =
+          '${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (weekendTiffinCount.value))}';
     } else {
       weekendTiffinCalculatedPrice.value = 0;
       weekendTiffinCount.value = 0;
+      this.tiffinCount.value =
+          '${int.parse('${int.parse(tiffinCount) + weekendTiffinCount.value + int.parse(addOnTiffinCount.value)}')}';
+
       packagingPrice.value =
-          "${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (orderItemList.length))}";
+          "${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount))}";
       // packagingPrice.value =
       //     "${int.parse(singlePackagingCost.value) * (int.parse(tiffinCount) + (orderItemList.length + 1))}";
     }
+    print(
+        'Add on ${addOnTiffinCount.value} tiffinCount:${tiffinCount} weekend ${weekendTiffinCount.value} totalCount:- ${this.tiffinCount.value}');
   }
 
   ifRegularSelected() {
@@ -491,7 +491,6 @@ class TifinBillingController extends GetxController {
     required String taxjGst,
     required String total,
     required String unit,
-    required String tiffinCount,
   }) async {
     CustomLoader.openCustomLoader();
     try {
@@ -534,7 +533,7 @@ class TifinBillingController extends GetxController {
         "order_category": "Tiffin",
         "coupon_code": coupon.text,
         "coupon_amount": discountInCart.value,
-        "tiffin_count": tiffinCount,
+        "tiffin_count": tiffinCount.value,
         "weekend_sat": onSaturday.value ? 'Yes' : 'no',
         "weekend_sun": onSunday.value ? 'Yes' : 'no',
         "satsun_tiffin_count": '${weekendTiffinCount.value}',

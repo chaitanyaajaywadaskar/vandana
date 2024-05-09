@@ -263,8 +263,8 @@ class CartController extends GetxController {
 
         totalCount.value = int.parse(total.toStringAsFixed(0));
         totalQuantityInCart.value = quantity.toStringAsFixed(0);
-        packagingPrice.value =
-            "${int.parse(singlePackagingCost.value) * int.parse(totalQuantityInCart.value)}";
+        // packagingPrice.value =
+        //     "${int.parse(singlePackagingCost.value) * int.parse(totalQuantityInCart.value)}";
 
         CustomLoader.closeCustomLoader();
         update();

@@ -22,9 +22,9 @@ import '../Models/post_remove_address_model.dart';
 import '../Models/post_selected_address_model.dart';
 
 class HomeController extends GetxController {
-  var getBannerImagesModel = GetBannerImagesModel();
+  var getBannerImagesModel = GetBannerImagesModel().obs;
   var getSelectedAddressModel = GetSelectedAddressModel().obs;
-  GetCategoryListModel getCategoryListModel = GetCategoryListModel();
+  var getCategoryListModel = GetCategoryListModel().obs;
   GetBranchListModel getBranchListModel = GetBranchListModel();
   Rx<SubCategoryDataModel> subCategoryDataModel = SubCategoryDataModel().obs;
   var getAddressListModel = GetAddressListModel().obs;
@@ -211,16 +211,17 @@ class HomeController extends GetxController {
 
       debugPrint("Get banner images response ::: $response");
 
-      getBannerImagesModel = getBannerImagesModelFromJson(response["body"]);
+      getBannerImagesModel.value =
+          getBannerImagesModelFromJson(response["body"]);
 
-      if (getBannerImagesModel.statusCode == "200" ||
-          getBannerImagesModel.statusCode == "201") {
+      if (getBannerImagesModel.value.statusCode == "200" ||
+          getBannerImagesModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
         update();
       } else {
         CustomLoader.closeCustomLoader();
         debugPrint(
-            "Something went wrong during getting banner images ::: ${getBannerImagesModel.message}");
+            "Something went wrong during getting banner images ::: ${getBannerImagesModel.value.message}");
       }
     } catch (error) {
       CustomLoader.closeCustomLoader();
@@ -250,44 +251,46 @@ class HomeController extends GetxController {
       if (getSelectedAddressModel.value.statusCode == "200" ||
           getSelectedAddressModel.value.statusCode == "201") {
         if (getSelectedAddressModel.value.UserSelectedAddress != null &&
-            getSelectedAddressModel.value.UserSelectedAddress?.isNotEmpty == true) {
+            getSelectedAddressModel.value.UserSelectedAddress?.isNotEmpty ==
+                true) {
           selectedBranch.value =
-              getSelectedAddressModel.value.UserSelectedAddress?.first?.bname ?? '';
+              getSelectedAddressModel.value.UserSelectedAddress?.first?.bname ??
+                  '';
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.addressType,
-              stringData: getSelectedAddressModel.value
-                  .UserSelectedAddress?.first?.addressType);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.addressType);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.state,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.state);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.state);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.city,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.city);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.city);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.pinCode,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.pincode);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.pincode);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.address,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.address);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.address);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.latLng,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.latLong);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.latLong);
           await StorageServices.setData(
               dataType: StorageKeyConstant.stringType,
               prefKey: StorageKeyConstant.branch,
-              stringData:
-                  getSelectedAddressModel.value.UserSelectedAddress?.first?.branch);
+              stringData: getSelectedAddressModel
+                  .value.UserSelectedAddress?.first?.branch);
         }
         CustomLoader.closeCustomLoader();
         update();
@@ -312,16 +315,16 @@ class HomeController extends GetxController {
 
       debugPrint("Get category list response ::: $response");
 
-      getCategoryListModel = getCategoryListModelFromJson(response["body"]);
+      getCategoryListModel.value = getCategoryListModelFromJson(response["body"]);
 
-      if (getCategoryListModel.statusCode == "200" ||
-          getCategoryListModel.statusCode == "201") {
+      if (getCategoryListModel.value.statusCode == "200" ||
+          getCategoryListModel.value.statusCode == "201") {
         CustomLoader.closeCustomLoader();
         update();
       } else {
         CustomLoader.closeCustomLoader();
         debugPrint(
-            "Something went wrong during getting category list ::: ${getCategoryListModel.message}");
+            "Something went wrong during getting category list ::: ${getCategoryListModel.value.message}");
       }
     } catch (error) {
       CustomLoader.closeCustomLoader();

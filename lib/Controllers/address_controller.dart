@@ -236,7 +236,7 @@ class AddressController extends GetxController {
   //   return earthRadius * c;
   // }
 
-  Future postAddress() async {
+  Future postAddress({bool isFromTIffin = false}) async {
     CustomLoader.openCustomLoader();
     try {
       Map<String, dynamic> payload = {
@@ -268,7 +268,8 @@ class AddressController extends GetxController {
       if (postAddressModel.statusCode == "200" ||
           postAddressModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
-        updateSelectedAddress(postAddressModel.addressDetails?.id ?? '');
+        updateSelectedAddress(postAddressModel.addressDetails?.id ?? '',
+            isFromTIffin: isFromTIffin);
         await StorageServices.setData(
             dataType: StorageKeyConstant.stringType,
             prefKey: StorageKeyConstant.addressType,
@@ -308,7 +309,7 @@ class AddressController extends GetxController {
     }
   }
 
-  Future updateSelectedAddress(String id) async {
+  Future updateSelectedAddress(String id, {bool isFromTIffin = false}) async {
     CustomLoader.openCustomLoader();
     try {
       Map<String, dynamic> payload = {
@@ -330,7 +331,11 @@ class AddressController extends GetxController {
       if (postSelectedAddressModel.statusCode == "200" ||
           postSelectedAddressModel.statusCode == "201") {
         CustomLoader.closeCustomLoader();
-        Get.offAll(() => const MainView());
+        if (isFromTIffin) {
+          Get.back();
+        } else {
+          Get.offAll(() => const MainView());
+        }
         // customToast(message: "${postSelectedAddressModel.message}");
       } else {
         CustomLoader.closeCustomLoader();

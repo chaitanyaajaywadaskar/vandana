@@ -13,6 +13,7 @@ import 'package:vandana/View/Map_View/map_view.dart';
 
 class AddressView extends StatefulWidget {
   final bool isEditAddress;
+  final bool isFromTiffin;
   final String? addressType;
   final String? addressId;
   final String? state;
@@ -30,7 +31,8 @@ class AddressView extends StatefulWidget {
       this.address,
       this.latLng,
       this.city,
-      this.addressId});
+      this.addressId,
+      this.isFromTiffin = false});
 
   @override
   State<AddressView> createState() => _AddressViewState();
@@ -183,7 +185,8 @@ class _AddressViewState extends State<AddressView> {
                                       latLng: "${widget.latLng}");
                                 } else {
                                   // controller.getBranchList();
-                                  controller.postAddress();
+                                  controller.postAddress(
+                                      isFromTIffin: widget.isFromTiffin);
                                 }
                               } else {
                                 customToast(

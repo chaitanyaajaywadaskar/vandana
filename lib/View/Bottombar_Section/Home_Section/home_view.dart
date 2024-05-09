@@ -61,20 +61,18 @@ class _HomeViewState extends State<HomeView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Obx(
-                               (){
-                                return SizedBox(
-                                  width: Get.width * 0.4,
-                                  child: Text(
-                                    " Hi, ${controller.userName.value}",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyleConstant.bold20(
-                                        color: ColorConstant.white),
-                                  ),
-                                );
-                              }
-                            ),
+                            Obx(() {
+                              return SizedBox(
+                                width: Get.width * 0.4,
+                                child: Text(
+                                  " Hi, ${controller.userName.value}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyleConstant.bold20(
+                                      color: ColorConstant.white),
+                                ),
+                              );
+                            }),
                             Obx(() {
                               return InkWell(
                                 onTap: () {
@@ -254,67 +252,73 @@ class _HomeViewState extends State<HomeView> {
                           ],
                         ),
                         const Spacer(),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            padding: contentHorizontalPadding,
-                            height: Get.height * 0.060,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorConstant.orange,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: ColorConstant.transparent,
+                        Obx(() {
+                          return GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding: contentHorizontalPadding,
+                              height: Get.height * 0.060,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: ColorConstant.orange,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: ColorConstant.transparent,
+                                ),
+                              ),
+                              child: Text(
+                                controller.getSelectedAddressModel.value
+                                        .UserSelectedAddress?.first?.bname ??
+                                    'Not Available',
+                                textAlign: TextAlign.center,
+                                style: TextStyleConstant.semiBold18(
+                                    color: ColorConstant.white),
                               ),
                             ),
-                            child: Text(
-                              controller.getSelectedAddressModel.value
-                                      .UserSelectedAddress?.first?.bname ??
-                                  'Not Available',
-                              textAlign: TextAlign.center,
-                              style: TextStyleConstant.semiBold18(
-                                  color: ColorConstant.white),
-                            ),
-                          ),
-                        )
+                          );
+                        })
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 15),
-                      child: SizedBox(
-                          height: Get.height * 0.180,
-                          width: Get.width,
-                          child: (controller.getBannerImagesModel.bannerList !=
-                                  null)
-                              ? CarouselSlider.builder(
-                                  itemCount: controller
-                                      .getBannerImagesModel.bannerList?.length,
-                                  itemBuilder: (context, index, realIndex) {
-                                    return CachedNetworkImage(
-                                      imageUrl:
-                                          "${controller.getBannerImagesModel.bannerList?[index].bannerImage}",
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        width: Get.width * 0.900,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.fill)),
-                                      ),
-                                      placeholder: (context, url) => Center(
-                                          child: CircularProgressIndicator(
-                                        color: ColorConstant.orangeAccent,
-                                      )),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    );
-                                  },
-                                  options: CarouselOptions(
-                                      autoPlay: true, viewportFraction: 1))
-                              : const CustomNoDataFound()),
-                    ),
+                    Obx(() {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 15),
+                        child: SizedBox(
+                            height: Get.height * 0.180,
+                            width: Get.width,
+                            child: (controller.getBannerImagesModel.value
+                                        .bannerList !=
+                                    null)
+                                ? CarouselSlider.builder(
+                                    itemCount: controller.getBannerImagesModel
+                                        .value.bannerList?.length,
+                                    itemBuilder: (context, index, realIndex) {
+                                      return CachedNetworkImage(
+                                        imageUrl:
+                                            "${controller.getBannerImagesModel.value.bannerList?[index].bannerImage}",
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          width: Get.width * 0.900,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.fill)),
+                                        ),
+                                        placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator(
+                                          color: ColorConstant.orangeAccent,
+                                        )),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      );
+                                    },
+                                    options: CarouselOptions(
+                                        autoPlay: true, viewportFraction: 1))
+                                : const CustomNoDataFound()),
+                      );
+                    }),
                     Text(
                       "Everyday",
                       style:
@@ -323,92 +327,97 @@ class _HomeViewState extends State<HomeView> {
                     const SizedBox(
                       height: 5,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: (controller.getCategoryListModel.categoryList !=
-                              null)
-                          ? GridView.builder(
-                              padding: const EdgeInsets.all(5),
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 200,
-                                      mainAxisExtent: Get.height * 0.2,
-                                      childAspectRatio: 200 / 200,
-                                      crossAxisSpacing: 25,
-                                      mainAxisSpacing: 25),
-                              itemCount: controller.getCategoryListModel
-                                      .categoryList?.length ??
-                                  0,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext ctx, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (controller
-                                            .getCategoryListModel
-                                            .categoryList?[index]
-                                            .categoryName ==
-                                        "Tiffin") {
-                                      Get.to(() => const SelectTifinView());
-                                    } else {
-                                      Get.to(() => SelectFoodView(
-                                            categoryName:
-                                                '${controller.getCategoryListModel.categoryList?[index].categoryName}',
-                                          ));
-                                    }
-                                  },
-                                  child: Container(
-                                    height: Get.height * 0.250,
-                                    width: Get.width * 0.5,
-                                    decoration: BoxDecoration(
-                                        // borderRadius:
-                                        //     BorderRadius.circular(1000),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 3,
-                                            blurRadius: 5,
-                                            offset: const Offset(0, 2),
+                    Obx(() {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: (controller
+                                    .getCategoryListModel.value.categoryList !=
+                                null)
+                            ? GridView.builder(
+                                padding: const EdgeInsets.all(5),
+                                shrinkWrap: true,
+                                gridDelegate:
+                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 200,
+                                        mainAxisExtent: Get.height * 0.2,
+                                        childAspectRatio: 200 / 200,
+                                        crossAxisSpacing: 25,
+                                        mainAxisSpacing: 25),
+                                itemCount: controller.getCategoryListModel.value
+                                        .categoryList?.length ??
+                                    0,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (BuildContext ctx, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (controller
+                                              .getCategoryListModel
+                                              .value
+                                              .categoryList?[index]
+                                              .categoryName ==
+                                          "Tiffin") {
+                                        Get.to(() => const SelectTifinView());
+                                      } else {
+                                        Get.to(() => SelectFoodView(
+                                              categoryName:
+                                                  '${controller.getCategoryListModel.value.categoryList?[index].categoryName}',
+                                            ));
+                                      }
+                                    },
+                                    child: Container(
+                                      height: Get.height * 0.250,
+                                      width: Get.width * 0.5,
+                                      decoration: BoxDecoration(
+                                          // borderRadius:
+                                          //     BorderRadius.circular(1000),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 3,
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                          color: ColorConstant.white),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: contentPadding,
+                                            child: Container(
+                                              height: Get.width * 0.150,
+                                              width: Get.width * 0.150,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          "${controller.getCategoryListModel.value.categoryList?[index].categoryImage}"),
+                                                      fit: BoxFit.fill)),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Text(
+                                                "${controller.getCategoryListModel.value.categoryList?[index].categoryName}",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyleConstant
+                                                    .semiBold22(
+                                                        color: ColorConstant
+                                                            .orangeAccent)),
                                           ),
                                         ],
-                                        color: ColorConstant.white),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: contentPadding,
-                                          child: Container(
-                                            height: Get.width * 0.150,
-                                            width: Get.width * 0.150,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                        "${controller.getCategoryListModel.categoryList?[index].categoryImage}"),
-                                                    fit: BoxFit.fill)),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Text(
-                                              "${controller.getCategoryListModel.categoryList?[index].categoryName}",
-                                              textAlign: TextAlign.center,
-                                              style:
-                                                  TextStyleConstant.semiBold22(
-                                                      color: ColorConstant
-                                                          .orangeAccent)),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              })
-                          : const CustomNoDataFound(),
-                    )
+                                  );
+                                })
+                            : const CustomNoDataFound(),
+                      );
+                    })
                   ],
                 ),
               ),
